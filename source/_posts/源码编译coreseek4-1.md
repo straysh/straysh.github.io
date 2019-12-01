@@ -2,6 +2,8 @@
 title: 源码编译coreseek4_1
 date: 2015-09-07 13:49:53
 tags: Sphinx
+categories:
+- 博文
 ---
 # 准备工作
 ```bash

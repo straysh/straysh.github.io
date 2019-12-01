@@ -2,6 +2,7 @@
 title: apache_faqs
 date: 2015-08-04 10:16:47
 tags: Apache
+category: 博文
 ---
 * 反向代理
 ```

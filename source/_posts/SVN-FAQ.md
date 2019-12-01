@@ -2,6 +2,8 @@
 title: SVN_FAQ
 date: 2015-08-04 10:19:56
 tags: SVN
+categories:
+- 博文
 ---
 # 从trunk向branch合并
 ```bash

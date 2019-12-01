@@ -2,6 +2,8 @@
 title: 创建Google App
 date: 2014-11-28 21:09:15
 tags: PHP
+categories:
+- 博文
 ---
 * 第一步，打开https://console.developers.google.com，点击create project
 

@@ -2,6 +2,8 @@
 title: 'PHP 5.4 on CentOS/RHEL 7.0, 6.5 and 5.10 via Yum'
 date: 2014-11-17 13:46:09
 tags: PHP
+categories:
+- 博文
 ---
 ###PHP 5.4 on CentOS/RHEL 7.0, 6.5 and 5.10 via Yum###
 [原文](https://webtatic.com/packages/php54/)

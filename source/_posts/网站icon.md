@@ -2,6 +2,8 @@
 title: 网站icon
 date: 2015-09-07 19:37:07
 tags: Javascript
+categories:
+- 博文
 ---
 ### Topics
 * `icon` vs `shortcut icon`

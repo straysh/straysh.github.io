@@ -2,6 +2,8 @@
 title: Yii_Fragment_Caching
 date: 2013-10-04 11:20:42
 tags: Translation
+categories:
+- 博文
 ---
 # 译文
 

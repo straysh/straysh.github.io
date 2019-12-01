@@ -2,6 +2,8 @@
 title: laravel队列的使用(三)-beanstalk-driver
 date: 2016-07-06 16:16:53
 tags: PHP
+categories:
+- 博文
 ---
 ## 数据库驱动的队列示例
 这次增加对失败的队列任务的处理,详细内容从Step5开始

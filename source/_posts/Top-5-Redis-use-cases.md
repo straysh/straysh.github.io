@@ -2,6 +2,8 @@
 title: Top 5 Redis use cases
 date: 2015-08-07 12:22:29
 tags: Redis
+categories:
+- 博文
 ---
 原文: http://objectrocket.com/blog/how-to/top-5-redis-use-cases
 

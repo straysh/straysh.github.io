@@ -2,6 +2,8 @@
 title: Configuring MySQL To Use UTF-8
 date: 2013-12-10 10:02:26
 tags: MySQL
+categories:
+- 博文
 ---
 <p>A project I’m working on at the moment is going to have multiple language options available, not all of which use the same alphabet (e.g. Russian and Chinese).</p>
 <p>

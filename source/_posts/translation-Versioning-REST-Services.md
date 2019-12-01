@@ -2,6 +2,8 @@
 title: translation_Versioning_REST_Services
 date: 2013-10-04 11:11:51
 tags: Translation
+categories:
+- 博文
 ---
 # 译文
 Scott Seely解释了何时发人员需要创建一个新的<a href="http://en.wikipedia.org/wiki/Endpoint">endpoint</a>。这篇高水准的、非语言相关的文章解释了怎样给REST服务打上版本号以及各个选项在何时才有意义。

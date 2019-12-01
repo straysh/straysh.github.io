@@ -2,6 +2,8 @@
 title: mysql_faq
 date: 2013-12-22 21:15:48
 tags: MySQL
+categories:
+- 博文
 ---
 #### int(5) 的含义，存储时使用多岁字节？最大能存放的数是多少？
 

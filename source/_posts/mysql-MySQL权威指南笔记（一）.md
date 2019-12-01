@@ -2,6 +2,8 @@
 title: mysql_MySQL权威指南笔记（一）
 date: 2013-09-29 10:44:10
 tags: MySQL
+categories:
+- 博文
 ---
 ### SELECT语句的常用元素
 * Literal

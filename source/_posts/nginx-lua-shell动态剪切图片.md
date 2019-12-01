@@ -2,6 +2,8 @@
 title: nginx+lua+shell动态剪切图片
 date: 2015-08-04 10:15:03
 tags: Nginx
+categories:
+- 博文
 ---
 假设http://static.yumcircle.com/1.jpg这个是源图片
 

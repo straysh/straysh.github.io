@@ -2,6 +2,8 @@
 title: Sphinx进阶
 date: 2015-07-20 13:40:49
 tags: Sphinx
+categories:
+- 博文
 ---
 # 安装
 1. 在官网下载[源码包](http://sphinxsearch.com/downloads/release/)

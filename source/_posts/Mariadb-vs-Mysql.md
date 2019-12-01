@@ -2,6 +2,8 @@
 title: Mariadb vs Mysql
 date: 2015-10-07 10:47:45
 tags: MySQL
+categories:
+- 博文
 ---
 #### 遇到的问题 `Headers and client library minor version mismatch. Headers:50544 Library:50627`
 ```

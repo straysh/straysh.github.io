@@ -2,6 +2,8 @@
 title: 'HOWTO: prevent ''stdin: is not a tty'' errors when using ssh'
 date: 2013-12-10 09:00:04
 tags: Misc
+categories:
+- 博文
 ---
 link:<a href="http://www.vpshostingforum.com/howto-prevent-stdin-not-tty-errors-when-using-ssh-t4152.html">http://www.vpshostingforum.com/howto-prevent-stdin-not-tty-errors-when-using-ssh-t4152.html</a>
 <p>

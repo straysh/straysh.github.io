@@ -2,6 +2,8 @@
 title: mysql导出select结果到文件
 date: 2013-12-16 09:54:22
 tags: MySQL
+categories:
+- 博文
 ---
 ```sql
 mysql -h{ip} -u{account} -p -e "query statement" db > file 

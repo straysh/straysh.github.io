@@ -2,6 +2,8 @@
 title: pptp配置
 date: 2014-03-13 13:25:26
 tags: Misc
+categories:
+- 博文
 ---
 ```bash
 1.yum -y install ppp pptp

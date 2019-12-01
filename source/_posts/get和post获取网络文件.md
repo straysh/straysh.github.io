@@ -2,6 +2,8 @@
 title: get和post获取网络文件
 date: 2015-08-07 11:02:53
 tags: PHP
+categories:
+- 博文
 ---
 #### `file_get_content` 以 `GET` 方式获取文件
 ```php

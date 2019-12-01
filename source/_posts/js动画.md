@@ -2,6 +2,8 @@
 title: js动画
 date: 2015-08-04 14:45:25
 tags: Javascript
+categories:
+- 博文
 ---
 游戏动画，Flash动画里一个比较重要的概念是 帧频 ，即每秒播放多少帧动画，一般动画是30帧/秒，单位为fps（frames per second）。
 

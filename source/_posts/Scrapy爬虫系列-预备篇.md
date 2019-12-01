@@ -2,6 +2,8 @@
 title: Scrapy爬虫系列-预备篇
 date: 2016-07-14 11:31:02
 tags: PHP
+categories:
+- 博文
 ---
 以前一直是在Web开发框架下(YII、Laravel)的Console模块中开发自己的爬虫,再结合shell脚本,发起多进程并发抓取数据.这一套下来,复杂且艰难之处在于要在shell和php之间来回调试,并且我对shell的错误处理甚是粗陋,再加上诸如`find`、`grep`、`awk`各种命令的参数繁多,整个开发的过程痛并快乐着.
 

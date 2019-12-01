@@ -1,8 +1,9 @@
 ---
 title: MySQL锁
 date: 2018-09-18 21:29:44
-tags: mysql 锁
-category: MySQL
+tags: MySQL 锁
+categories:
+- 博文
 mathjax: true
 ---
 

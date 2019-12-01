@@ -1,7 +1,9 @@
 ---
 title: php_rabbitmq
 date: 2019-04-07 20:49:26
-tags:
+tags: PHP
+categories:
+- 博文
 ---
 
 ## 名词释义

@@ -2,6 +2,8 @@
 title: laravel队列的使用(五)-dig-into-source
 date: 2016-07-07 11:46:09
 tags: PHP
+categories:
+- 博文
 ---
 ## Laravel队列源代码解析
 这边文章中,将简单梳理一下Laravel队列的源代码,主要弄清楚代码的执行流.

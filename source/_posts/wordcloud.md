@@ -2,6 +2,8 @@
 title: wordcloud
 date: 2015-08-07 14:48:08
 tags: R
+categories:
+- 博文
 ---
 http://zjdian.com/2014/10/24/2014-10-24-r-package-wordcloud/
 http://www.niubua.com/?p=1684&utm_source=tuicool

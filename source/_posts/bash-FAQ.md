@@ -2,6 +2,8 @@
 title: bash FAQ
 date: 2015-08-06 10:16:31
 tags: Linux
+categories:
+- 博文
 ---
 * pstree
 ```bash

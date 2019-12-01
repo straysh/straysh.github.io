@@ -2,6 +2,8 @@
 title: The Little Redis Book
 date: 2015-07-22 12:47:59
 tags: Redis
+categories:
+- 博文
 ---
 # 关于本书
 

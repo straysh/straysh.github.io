@@ -2,6 +2,8 @@
 title: Linux shell用法和技巧
 date: 2013-12-21 15:33:44
 tags: Linux
+categories:
+- 博文
 ---
 检查远程端口是否对bash开放：
 ```bash

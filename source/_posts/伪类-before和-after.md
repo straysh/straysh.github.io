@@ -2,6 +2,8 @@
 title: '伪类::before和::after'
 date: 2015-09-08 09:53:01
 tags: Javascript
+categories:
+- 博文
 ---
 CSS 有两个说不上常用的伪类 :before 和 :after，偶尔会被人用来添加些自定义格式什么的，但是它们的功用不仅于此。前几天发现了 Creative Link Effects 这个非常有意思的介绍创意链接特效的页面，里面惊人的效果大量使用到的特性除了 transform 属性进行变形之外，就是接下来要介绍的这两个伪元素了。
 

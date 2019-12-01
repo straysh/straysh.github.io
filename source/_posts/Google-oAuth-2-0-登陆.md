@@ -2,6 +2,8 @@
 title: Google+ oAuth 2.0 登陆
 date: 2014-11-28 20:43:36
 tags: PHP
+categories:
+- 博文
 ---
 今天要写的是一个系列，主题是使用google+账号登陆自己的网站。
 

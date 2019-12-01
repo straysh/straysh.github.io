@@ -1,7 +1,9 @@
 ---
 title: php_framework_of_filter_01
 date: 2019-04-20 11:47:37
-tags:
+tags: PHP
+categories:
+- 博文
 ---
 
 思考$_GET/$_POST/$_SERVER与INPUT_GET/INPUT_POST/INPUT_SERVER的区别

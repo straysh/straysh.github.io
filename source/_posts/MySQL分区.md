@@ -2,6 +2,8 @@
 title: MySQL分区
 date: 2014-11-12 16:50:53
 tags: MySQL
+categories:
+- 博文
 ---
 http://dev.mysql.com/doc/refman/5.5/en/partitioning-limitations-partitioning-keys-unique-keys.html
 

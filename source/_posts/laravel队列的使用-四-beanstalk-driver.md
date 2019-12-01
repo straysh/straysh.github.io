@@ -2,6 +2,8 @@
 title: laravel队列的使用(四)-beanstalk-driver
 date: 2016-07-07 10:45:11
 tags: PHP
+categories:
+- 博文
 ---
 ## Beanstalk驱动的队列示例
 在开始介绍如何在Laravel中使用Beanstalkd之前,我们先安装一个Beanstalkd的Web版管理工具.在文章的最后,会介绍队列中常用的其他几个api.

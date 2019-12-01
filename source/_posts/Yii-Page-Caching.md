@@ -2,6 +2,8 @@
 title: Yii_Page_Caching
 date: 2013-10-07 20:06:37
 tags: Translation
+categories:
+- 博文
 ---
 # 译文
 1.输出缓存 <br>2.HTTP缓存

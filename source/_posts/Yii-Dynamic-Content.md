@@ -2,6 +2,8 @@
 title: Yii_Dynamic_Content
 date: 2013-10-04 11:27:10
 tags: Translation
+categories:
+- 博文
 ---
 # 译文
 <h2 id="toc_0.1">动态内容</h2>

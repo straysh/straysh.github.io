@@ -2,6 +2,8 @@
 title: mysql_MySQL权威指南笔记（二）
 date: 2013-10-03 14:09:06
 tags: MySQL
+categories:
+- 博文
 ---
 接着刚才的话题。FROM子句中的表引用table reference是可以用表表达式table expression来替换的(这两者本身也是等价的)
 ```sql

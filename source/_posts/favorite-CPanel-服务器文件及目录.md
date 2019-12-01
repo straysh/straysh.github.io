@@ -2,6 +2,8 @@
 title: favorite_CPanel|服务器文件及目录
 date: 2013-12-10 09:52:02
 tags: Misc
+categories:
+- 博文
 ---
 <h4>Apache</h4>
 ```config

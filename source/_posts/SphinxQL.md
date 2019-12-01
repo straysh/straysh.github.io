@@ -2,6 +2,8 @@
 title: SphinxQL
 date: 2015-07-20 13:41:17
 tags: Sphinx
+categories:
+- 博文
 ---
 # 配置文件
 参考页底的配置文件

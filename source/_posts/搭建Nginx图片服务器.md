@@ -2,6 +2,8 @@
 title: 搭建Nginx图片服务器
 date: 2014-11-13 10:46:55
 tags: Nginx
+categories:
+- 博文
 ---
 ### Part-I 安装Nginx ####
 1. 安装PCRE

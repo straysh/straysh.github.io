@@ -2,6 +2,8 @@
 title: demo blog入口分析
 date: 2013-09-29 10:44:48
 tags: Yii
+categories:
+- 博文
 ---
 首先搭建demo blog环境，更改数据库连接如下
 ```php

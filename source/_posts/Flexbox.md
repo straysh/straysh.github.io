@@ -2,6 +2,8 @@
 title: Flexbox
 date: 2015-08-29 15:01:31
 tags: Javascript
+categories:
+- 博文
 ---
 * [一个完整的Flexbox指南](http://www.w3cplus.com/css3/a-guide-to-flexbox.html)
 * [Flexbox，更优雅的布局](http://segmentfault.com/a/1190000002490633)

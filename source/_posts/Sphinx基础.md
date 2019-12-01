@@ -2,6 +2,8 @@
 title: Sphinx基础
 date: 2015-07-16 22:00:31
 tags: Sphinx
+categories:
+- 博文
 ---
 # 什么是Sphinx
 

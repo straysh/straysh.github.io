@@ -2,6 +2,8 @@
 title: oAuth授权的过程
 date: 2014-11-28 22:35:02
 tags: PHP
+categories:
+- 博文
 ---
 [查看原文，点击这里](https://developers.google.com/accounts/docs/OAuth2)
 
