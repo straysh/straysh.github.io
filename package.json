@@ -13,7 +13,8 @@
     "delete": "pm2 delete blog",
     "status": "pm2 status blog",
     "restart": "pm2 restart blog",
-    "log": "pm2 log"
+    "log": "pm2 log",
+    "postinstall": "cp ./themes/hexo-util/lib/highlight.js node_modules/highlight.js"
   },
   "dependencies": {
     "hexo": "^3.8.0",
