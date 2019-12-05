@@ -6,11 +6,7 @@ tags: Golang
 categories: 博文
 ---
 
-#### BeforeUpdate执行成功,但updated_at仍是时间字符串,写入数据库错误
 # BeforeUpdate执行成功,但updated_at仍是时间字符串,写入数据库错误
-## BeforeUpdate执行成功,但updated_at仍是时间字符串,写入数据库错误
-### BeforeUpdate执行成功,但updated_at仍是时间字符串,写入数据库错误
-#### BeforeUpdate执行成功,但updated_at仍是时间字符串,写入数据库错误
 ```
 (/app/Golang/blog/models/tag.go:75) 
 [2019-12-04 23:27:41]  Error 1265: Data truncated for column 'updated_at' at row 1 
@@ -66,7 +62,7 @@ func updateTimeStampForCreateCallback(scope *Scope) {
 }
 ```
 
-##### 解决方案
+## 解决方案
 重新注册`gorm:update_time_stamp`事件,重写`updateTimeStampForUpdateCallback`方法:
 ```golang
 ...
