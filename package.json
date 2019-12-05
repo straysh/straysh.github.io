@@ -14,7 +14,7 @@
     "status": "pm2 status blog",
     "restart": "pm2 restart blog",
     "log": "pm2 log",
-    "postinstall": "cp ./themes/hexo-util/lib/highlight.js node_modules/highlight.js"
+    "postinstall": "cp ./themes/highlight.js node_modules/hexo-util/lib/highlight.js"
   },
   "dependencies": {
     "hexo": "^3.8.0",
