@@ -34,16 +34,6 @@
         </li>
         <% } %>
       </ul>
-
-      <% if (page && page.content) {%>
-      <div class="slimContent">
-        <nav id="toc" class="article-toc">
-          <h3 class="toc-title"><%= __('article.catalogue') %></h3>
-          <%- toc(page.content) %>
-        </nav>
-      </div>
-      <%}%>
-
       <%- partial('_common/social', null, {cache: !config.relative_link}) %>
     </nav>
   </div>
