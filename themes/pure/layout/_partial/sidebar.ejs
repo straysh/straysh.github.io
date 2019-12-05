@@ -1,24 +1,31 @@
 <aside class="sidebar" itemscope itemtype="http://schema.org/WPSideBar">
   <div class="slimContent">
-    <ul class="sidebar-nav motion-element" style="text-align:center; opacity: 1; display: block; transform: translateX(0px);">
-      <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
-        文章目录
-      </li>
-      <li class="sidebar-nav-overview" data-target="site-overview-wrap">
-        系统列表
-      </li>
-    </ul>
-    <section class="site-overview-wrap sidebar-panel" style="opacity: 0; display: none;">
-      <% theme.widgets.forEach(function(widget){ %>
-        <%- partial('_widget/' + widget) %>
-      <% }) %>
-    </section>
 
-    <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active" style="opacity: 1; display: block;">
-      <nav id="toc" class="article-toc">
-        <h3 class="toc-title"><%= __('article.catalogue') %></h3>
-        <%- toc(page.content) %>
-      </nav>
-    </section>
+    <% if(page && page.content){ %>
+      <ul class="sidebar-nav motion-element" style="text-align:center; opacity: 1; display: block; transform: translateX(0px);">
+        <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+          系统列表
+        </li>
+      </ul>
+      <section class="site-overview-wrap sidebar-panel" style="opacity: 0; display: none;">
+        <% theme.widgets.forEach(function(widget){ %>
+          <%- partial('_widget/' + widget) %>
+        <% }) %>
+      </section>
+
+      <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active" style="opacity: 1; display: block;">
+        <nav id="toc" class="article-toc">
+          <h3 class="toc-title"><%= __('article.catalogue') %></h3>
+          <%- toc(page.content) %>
+        </nav>
+      </section>
+    <% }else{ %>
+        <% theme.widgets.forEach(function(widget){ %>
+          <%- partial('_widget/' + widget) %>
+        <% }) %>
+    <% } %>
   </div>
 </aside>
