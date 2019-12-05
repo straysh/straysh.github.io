@@ -74,4 +74,32 @@ $(function() {
     }
     $menuList[activeIndex] && $($menuList[activeIndex]).addClass('active');
   }
+
+  let $sidebarToc = $('.sidebar-nav .sidebar-nav-toc');
+  let $sidebarOverview = $('.sidebar-nav .sidebar-nav-overview');
+  let $toc = $('section.post-toc-wrap');
+  let $overview = $('section.site-overview-wrap');
+  $sidebarToc.on('click', function(){
+    $(this).addClass("sidebar-nav-active");
+    $sidebarOverview.removeClass("sidebar-nav-active");
+
+    $toc.addClass("sidebar-panel-active").css({
+      opacity: 1, display: "block"
+    })
+    $overview.removeClass("sidebar-panel-active").css({
+      opacity: 0, display: 'none'
+    })
+  });
+
+  $sidebarOverview.on('click', function(){
+    $(this).addClass("sidebar-nav-active");
+    $sidebarToc.removeClass("sidebar-nav-active");
+
+    $toc.removeClass("sidebar-panel-active").css({
+      opacity: 0, display: 'none'
+    })
+    $overview.addClass("sidebar-panel-active").css({
+      opacity: 1, display: "block"
+    })
+  });
 });
