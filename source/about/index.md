@@ -45,15 +45,15 @@ sidebar: custom
 
 写了4年代码，激情越盛。唯尚有一憾：惯性单身。
 
-#### 专业技能：
-* 熟练掌握PHP，C、Java、Python、Android 略懂。
-* 熟练掌握Laravel、Yii、ThinkPHP框架，其他常用框架略有尝试。
-* 熟练掌握MySQL、MongoDB、Memcache、Ngnix、Redis。
-* 熟练掌握MySQL事务、存储过程、索引优化、分区等相关技术
-* 熟练使用SVN、GIT版本控制器。
-* 熟练掌握html、css、js(jQuery)以及ajax等前端技术。
-* 后端Nodejs略有研究，基于Socket.io为项目独立研发过一套聊天系统
-* 熟悉Linux操作系统，能够在Linux环境下熟练开发。
+#### 技能清单
+- 熟练掌握Golang，Nodejs，PHP。
+- 熟练掌握Gin(Golang后端Restfull框架)， express(NodeJs后端框架)，Laravel、Yii、ThinkPHP等PHP Web框架。
+- 熟练掌握MySQL、MongoDB、Memcache、Ngnix、Redis、RabbitMQ。
+- 熟练掌握MySQL事务、存储过程、索引优化、分区等相关技术。
+- 熟练使用SVN、GIT版本控制器。
+- 熟练掌握html、css、js(jQuery)以及ajax等前端技术。
+- 熟练NodeJs后端技术栈， React-Native移动端技术栈。
+- 熟悉Linux操作系统、bash脚本、lua脚本，能够在Linux环境下熟练开发。
 
 #### 联系方式：
 <ul>
