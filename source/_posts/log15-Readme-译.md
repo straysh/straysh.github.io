@@ -10,7 +10,7 @@ categories: 博文
 `log15`包提供了一种固执且简洁的最佳实践工具包(both human and machine readable)。它是仿造标准库`io`和`net/http`构建的。
 
 这个包强制仅记录`key/value`对。键必须是字符串。值可以是任何类型。默认的输出格式是`logfmt`，也可以选择使用`JSON`格式。例如:
-`log。Info("page accessed"， "path"， r。URL。Path， "user_id"， user。id)`
+`log.Info("page accessed"， "path"， r.URL。Path， "user_id"， user.id)`
 输出一行记录如下:
 `lvl=info t=2014-05-02T16:07:23-0700 msg="page accessed" path=/org/71/profile user_id=9`
 
@@ -19,7 +19,7 @@ categories: 博文
 ### 快速入门
 首先需要引入库文件：
 `import log "github.com/inconshreveable/log15"`
-然后可以开始使用日志了：
+然后可以开始使用了：
 ```golang
 func main() {
     log.Info("Program starting", "args", os.Args)
@@ -29,15 +29,15 @@ func main() {
 ### 惯例
 记录对人有意义的信息是常见且良好的实践，传递给日志函数的第一个参数*隐式*的对应键`msg`。
 
-另外，消息的`level`值会自动使用键`lvl`，同样当前时间戳会使用键`t`。
+另外，消息的`level`值会自动使用键`lvl`，而当前时间戳会使用键`t`。
 
-可以使用一组键值对作为额外的上下文提供给日志函数。`log15` allows you to favor terseness， ordering， and speed over safety。这种折中对日志函数是合理的。不需要显示的指明键值对，`log15`理解它们在变长参数列表中的含义:
-`log。Warn("size out of bounds"， "low"， lowBound， "high"， highBound， "val"， val)`
-若你非常关注类型的安全性，你可以传入一个`log。Ctx`:
-`log。Warn("size out of bounds"， log。Ctx{"low": lowBound， "high": highBound， "val": val})`
+可以使用任何额外的键值对作为上下文提供给日志函数。`log15` allows you to favor terseness， ordering， and speed over safety。这种折中对日志函数是合理的。不需要显示的指明键值对，`log15`理解它们在变长参数列表中的含义:
+`log.Warn("size out of bounds"， "low"， lowBound， "high"， highBound， "val"， val)`
+若你非常关注类型的安全性，你可以传入一个`log.Ctx`:
+`log.Warn("size out of bounds"， log.Ctx{"low": lowBound， "high": highBound， "val": val})`
 
 ### 上下文`logger`
-常常需要添加一个上下文到日志中以便跟踪其操作。网络请求是一个很好的例子。你能够很容易的创建一个携带上下文的日志，输出的每行日志都将自动包含该上下文信息：
+常常需要添加一个上下文到日志中以便跟踪其操作。例如网络请求。能够很容易的创建一个携带上下文的日志，输出的每行日志都将自动包含该上下文信息：
 ```golang
 requestlogger := log.New("path", r.URL.Path)
 
@@ -54,7 +54,8 @@ type Handler interface {
     Log(r *Record) error
 }
 ```
-`Handlers`会过滤并格式化日志记录行，或转发到其他`Handlers`。该包`ethereum/go-ethereum/log`包实现了几个常用的日志模式，用以创建可扩展、自定义的日志结构。
+`Handlers`会过滤并格式化日志记录行，或转发到其他`Handlers`。该包`ethereum/go-ethereum/log`实现了几个常用的日志模式，用以创建可扩展、自定义的日志结构。
+
 以下例子展示了打印`logfmt`格式到标准输出的句柄:
 `handler := log.StreamHandler(os.Stdout, log.LogfmtFormat())`
 
