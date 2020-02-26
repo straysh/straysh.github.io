@@ -5,7 +5,9 @@
 <% } else { %>
   <div class="content article-list">
     <% page.posts.each(function(post, i){ %>
+      <% if(!post.exclude_homepage){ %>
       <%- partial('archive-post', {post: post, even: i % 2 == 0}) %>
+      <%}%>
     <% }) %>
   </div>
 <% } %>
