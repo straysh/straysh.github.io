@@ -9,7 +9,7 @@
  */
 
 /**
- * 
+ *
  */
 
 /* Mixins */
@@ -5434,6 +5434,10 @@ table table {
 
 .icon-calendar-times:before {
   content: "\e89a";
+}
+
+.icon-thumb-tack:before {
+  content: "\e08d";
 }
 
 .icon-close:before {

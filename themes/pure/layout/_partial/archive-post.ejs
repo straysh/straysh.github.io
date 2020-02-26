@@ -8,6 +8,13 @@
   </div>
   <% } %>
   <p class="article-meta">
+    <% if (post.top){ %>
+      <span>
+          <i class="icon icon-anchor"></i>
+          <span>置顶</span>
+          <span class="post-meta-divider">|</span>
+      </span>
+    <% } %>
     <%- partial('post/date', {class_name: 'article-date', date_format: 'MMM D'}) %>
     <%- partial('post/category') %>
     <%- partial('post/tag') %>

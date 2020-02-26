@@ -6,6 +6,11 @@
         <%- partial('post/title', {class_name: 'article-title'}) %>
       <% } %>
       <div class="article-meta">
+        <% if (post.top){ %>
+        <i class="fa fa-thumb-tack"></i>
+        <span style="color:#7D26CD;">置顶</span>
+        <span class="post-meta-divider">|</span>
+        <% } %>
         <%- partial('post/date', {class_name: 'article-date', date_format: null}) %>
         <%- partial('post/category') %>
         <%- partial('post/tag') %>
