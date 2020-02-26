@@ -7,9 +7,11 @@
       <% } %>
       <div class="article-meta">
         <% if (post.top){ %>
-        <i class="fa fa-thumb-tack"></i>
-        <span style="color:#7D26CD;">置顶</span>
-        <span class="post-meta-divider">|</span>
+          <span>
+              <i class="icon icon-anchor"></i>
+              <span>置顶</span>
+              <span class="post-meta-divider">|</span>
+          </span>
         <% } %>
         <%- partial('post/date', {class_name: 'article-date', date_format: null}) %>
         <%- partial('post/category') %>
