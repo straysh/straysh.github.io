@@ -42,6 +42,9 @@ categories:
   5. `Select tables optimized away` - 仅通过使用索引，优化器可能仅从聚合函数结果中返回一行。如MIN/MAX/MyISAM引擎中的Count(*)
   6. `No tables used` - Query语句中使用from dual（即空表）或不含任何from子句
 
+# 索引
+用以高效查询数据的数据结构。
+
 # Hash索引
 底层数据结构是哈希表，只能用于等值查询，在碰撞场景下效率低，无法利用索引完成排序，没有最左匹配特性。
 
@@ -58,6 +61,7 @@ categories:
 ## 联合索引的索引覆盖
 
 ## 联合索引的最左匹配原则
+<table><tr><th>假设索引idx_a_b_c(`a`,`b`,`c`)</th><th>索引是否使用</th></tr><tr><td>where a=3</td><td></td></tr><tr><td>where a=3 and b=4</td><td></td></tr><tr><td>where a=3 and b=4 and c=5</td><td></td></tr><tr><td>where c=5 and a=3 and b=4</td><td></td></tr><tr><td>where b=4 / where b=4 and c=5 /<br>where c=5</td><td></td></tr><tr><td>where a=3 and c=5</td><td></td></tr><tr><td>where a=3 and b&gt;4 and c=5</td><td></td></tr><tr><td>where a is null and b is not null</td><td></td></tr><tr><td>where a &lt;&gt; 3 and b=4</td><td></td></tr><tr><td>where a^3&gt;0</td><td></td></tr><tr><td>where a=3 and b like 'k%' and c=5</td><td></td></tr><tr><td>where a=3 and b like '%k%' and c=5</td><td></td></tr><tr><td>where a=3 and b like 'k%k%' and c=5</td><td></td></tr></table>
 
 ## 索引下推 - Index Condition Pushdown Optimization
 
