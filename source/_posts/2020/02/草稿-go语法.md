@@ -1,6 +1,7 @@
 ---
 title: 草稿_go语法
 date: 2020-02-14 15:27:42
+toc: true
 tags: 
 - Golang
 categories: 博文

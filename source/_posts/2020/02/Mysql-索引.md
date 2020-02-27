@@ -1,6 +1,7 @@
 ---
 title: Mysql_索引
 date: 2020-02-24 18:12:01
+toc: true
 tags: 
 - MySQL
 categories: 
@@ -40,3 +41,25 @@ categories:
   4. `Impossible where` - where语句可能导致没有符合条件的行。
   5. `Select tables optimized away` - 仅通过使用索引，优化器可能仅从聚合函数结果中返回一行。如MIN/MAX/MyISAM引擎中的Count(*)
   6. `No tables used` - Query语句中使用from dual（即空表）或不含任何from子句
+
+# Hash索引
+底层数据结构是哈希表，只能用于等值查询，在碰撞场景下效率低，无法利用索引完成排序，没有最左匹配特性。
+
+# B+树索引 - Innodb
+底层数据结构是多路平衡查询树，节点天然有序，额外的适用于范围查询。
+[不准犹豫！再有人问你为什么MySQL用B+树做索引，就把这篇文章发给她](https://mp.weixin.qq.com/s?__biz=Mzg2NzA4MTkxNQ==&mid=2247486251&idx=1&sn=296f07b65b5a73a15337541fb4bc6572&key=e1d18effe01e13c43433cc33c5161f00872a430ca41b577f513fa082b7f46bd37471f7cfe2954afa430e0eaf04288da8b98daa275053c639d985c27ec0dd8b286dcf0196305776d4004cac349def25e0&ascene=1&uin=MTA4MTU0ODIyMg%3D%3D&devicetype=Windows+7&version=6208006f&lang=zh_CN&exportkey=AZxQ0x8eUrIpA2TZSIvCers%3D&pass_ticket=eYprKboj%2F%2FVkb9z2n1rVgrNb833slBE0lMIXwN27FvVBipjBM67fSOf2ZckEmBBo)
+
+## 聚簇索引
+即主键索引。索引所在的页储存了数据行。
+
+## 非聚簇索引
+非主键索引。索引所在的页只存储了主键值，若需要其他数据需要回表查询。
+
+## 联合索引的索引覆盖
+
+## 联合索引的最左匹配原则
+
+## 索引下推 - Index Condition Pushdown Optimization
+
+## 索引失效场景
+[不看后悔的腾讯面试题：SQL语句为什么执行的很慢？](https://mp.weixin.qq.com/s?__biz=MzI4NTA1MDEwNg==&mid=2650777604&idx=1&sn=9a0cfd88cfe15e9f198a7be02e2db3f6&chksm=f3f91d91c48e9487f0f815a77e3ab35e2bd7172e5e4a06deff7ea6d819748283e6e6db78f9d0&mpshare=1&scene=1&srcid=0226IIHf7SrQUneNI0PUIVBL&sharer_sharetime=1582723108055&sharer_shareid=0a5f0581869913747e54ca097f77ea2b&key=e6296972ac076826e6bb923456fb1df47326c43fe252e5b370eb168cb3ea72f9b988f65af9d04dfa654dac6a14bd6967cb08ce845ee7dd30a255d230ed38975133d7d9dd10f3a01fb011d037222eb5e2&ascene=1&uin=MTA4MTU0ODIyMg%3D%3D&devicetype=Windows+7&version=6208006f&lang=zh_CN&exportkey=AQthZutP%2Bxc63SO0tW7U5NY%3D&pass_ticket=eYprKboj%2F%2FVkb9z2n1rVgrNb833slBE0lMIXwN27FvVBipjBM67fSOf2ZckEmBBo)
