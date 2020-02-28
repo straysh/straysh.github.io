@@ -2,7 +2,9 @@
 title: MySQL_B+Tree索引
 date: 2020-02-27 20:50:08
 tags:
+- Mysql
 categories:
+- 博文
 ---
 索引是提高查询效率的，在MySQL中以B+树索引为主（绝大部分MySQL数据库引擎都是用的Innodb，而Innodb默认使用B+树）。
 B+树索引又分为聚簇索引和非聚簇索引，本文着重介绍聚簇索引。
