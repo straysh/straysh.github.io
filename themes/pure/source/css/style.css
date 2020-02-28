@@ -7331,6 +7331,16 @@ body.okayNav-loaded {
   background: linear-gradient(to right, #494683 0%, #555299 80%, #555299 100%);
 }
 
+@media (min-width: 768px) {
+  .re-small {
+    width: 80%;
+  }
+}
+.img-subtitle {
+  color: #5c5c5c;
+  font-size: 0.8em;
+}
+
 @media (min-width: 767px) {
   .modal-center {
     text-align: center;
