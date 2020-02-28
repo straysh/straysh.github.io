@@ -1,7 +1,7 @@
 ---
 title: 'HOWTO: prevent ''stdin: is not a tty'' errors when using ssh'
 date: 2013-12-10 09:00:04
-tags: Misc
+tags: Linux
 categories:
 - 博文
 ---

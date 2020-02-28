@@ -1,7 +1,7 @@
 ---
 title: pptp配置
 date: 2014-03-13 13:25:26
-tags: Misc
+tags: Linux
 categories:
 - 博文
 ---
