@@ -7,12 +7,16 @@
 hexo.extend.helper.register('thumbnail', function (post) {
     return post.thumbnail || post.banner || '';
 });
-hexo.extend.helper.register('hasTag', function(arr, target){
-    let result = false;
-    arr.each(function(tag){
-        console.log(tag.name===target, tag.name, target)
-        if(tag.name === target) result = true;
-    });
+hexo.extend.helper.register('transTag', function(tags){
+    let tagMap = {
+        'Translation': '<span style="color:#008e59;">[译]</span>',
+        'Banbrick': '<span style="color:#008e59;">[搬]</span>',
+    };
+    let arr = {};
+    tags.each(tag=>{arr[tag.name] = tag.name});
 
-    return result;
+    let target = arr['Translation'] && 'Translation';
+    target = target || (arr['Banbrick'] && 'Banbrick');
+
+    return tagMap[target] || '';
 });
