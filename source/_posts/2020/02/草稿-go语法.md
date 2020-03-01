@@ -472,3 +472,18 @@ cannot use composite literal (type T) as type Intf in assignment:
 当变量类型本身就是引用类型是,上述方法集约束是强约束.
 否则,`go`有语法糖会自动转换.
 
+---
+挖坑待读
+1. [图解Go语言内存分配](https://mp.weixin.qq.com/s?__biz=MzAxMzc4Mzk1Mw==&mid=2649840966&idx=1&sn=44037e2e27f29943c8f5ea648bb2b768&chksm=8398bbb8b4ef32ae47cf5206b7736b47a820acf54fcc18e64f0aaba129a88a6c0173e71731c9&scene=126&sessionid=1583042919&key=6ee24c58972fa441eb99d6da75b107ea5da7d9b9535a30e926d89c9cb4f435d7cf0585f16cd82c707a10c384b3ca3c00b51c0f69916185c75ca419a0b26b70c2b8cf00521ffbc1196e6844360bb14382&ascene=1&uin=MTA4MTU0ODIyMg%3D%3D&devicetype=Windows+7&version=6208006f&lang=zh_CN&exportkey=Abx0W8IBZJU29981q8LqhnE%3D&pass_ticket=H9KugKX66caf%2FO6hk1fW3TFdlTbKusIswgbiLVUQZcdxYhvcZNoDNBQ7FB7khUoW)
+2. [码农桃花源](https://qcrao91.gitbook.io/go/)
+3. [为什么遍历 Go map 是无序的？](https://mp.weixin.qq.com/s?__biz=MzAxMzc4Mzk1Mw==&mid=2649840965&idx=1&sn=f75d4d2dbd1f74e5cbe3e84d9b2c226e&chksm=8398bbbbb4ef32ad41021c84a198edf28ac85ca7925146de31d839838d50347a34a3fed23fff&scene=126&sessionid=1583042919&key=8b9241dd6b6217d753bd4cd8168ed7eeb802f2265a9c2b7dc62e2597c4f3eb0395949dae9a15b45d2e2e954691a55ada720e40b1cedc41b70e4fa0415c6edf951dc279a9b1fba471dd98abc64505ed38&ascene=1&uin=MTA4MTU0ODIyMg%3D%3D&devicetype=Windows+7&version=6208006f&lang=zh_CN&exportkey=ASYUZZ8JYgloPz7H3SwYdMY%3D&pass_ticket=H9KugKX66caf%2FO6hk1fW3TFdlTbKusIswgbiLVUQZcdxYhvcZNoDNBQ7FB7khUoW)
+  `for range map` 启动时会随机选择map的起始位置`fastrand()`
+5. Golang垃圾回收
+  1. [图解Golang的GC算法](https://mp.weixin.qq.com/s?__biz=MzUzMjk0ODI0OA%3D%3D&mid=2247483727&idx=1&sn=abe1e6896cb398bde2517b469d07afa0&scene=45#wechat_redirect)
+  2. [为什么golang的gc不用stw？](https://www.zhihu.com/question/326191221/answer/721062767)
+  ![gc_algorithm_phases](/images/golang/gc_algorithm_phases.jpg)
+  3. **[Golang 垃圾回收剖析](http://legendtkl.com/2017/04/28/golang-gc/)**
+4. [Go 语言的实现为何使用Plan 9的汇编器?](https://zhuanlan.zhihu.com/p/29892487)
+5. Golang调度器
+  1. [Go 语言调度（一）: 系统调度](https://mp.weixin.qq.com/s?__biz=MzAxMzc4Mzk1Mw==&mid=2649840949&idx=1&sn=9bf2e2181c2a95e80d2de5393fa22551&chksm=8398bbcbb4ef32ddfad04efd5e6c8adf4321fb83a6b0b84b8e0384a31a5e18aa488cacd5dfb1&scene=126&sessionid=1583042991&key=d9c35d22f9135c5ec8a1822db1301a5470b9fdc87056eec856e887f0e65087fffc2c922fd4075801a370b872b5d2400cfdcded968054a1371f993bf0ad078693782e807201d3063cd4fc9bdd14db1caa&ascene=1&uin=MTA4MTU0ODIyMg%3D%3D&devicetype=Windows+7&version=6208006f&lang=zh_CN&exportkey=AZ10h6LQmdk8VJ%2FmS7LaI5Q%3D&pass_ticket=H9KugKX66caf%2FO6hk1fW3TFdlTbKusIswgbiLVUQZcdxYhvcZNoDNBQ7FB7khUoW)
+  2. [Go调度器系列（2）宏观看调度器](https://mp.weixin.qq.com/s?__biz=MzAxMzc4Mzk1Mw==&mid=2649840961&idx=1&sn=0176123660b248a922f388c4e876e97c&chksm=8398bbbfb4ef32a98d6f6f7f444b5e0e30e93aa919c081521b2a4cdc540c4e20703231973af3&scene=126&sessionid=1583042964&key=8b9241dd6b6217d70f6171eb87abe943acf5ca408bf363c85136882842a82c1a996c3fd0ba5eb49fc3579e8520d85212b68627f1ab9c941aa3fd1baa04a04b3d82f9e7f4d276bee1bafe1079b8b1f97b&ascene=1&uin=MTA4MTU0ODIyMg%3D%3D&devicetype=Windows+7&version=6208006f&lang=zh_CN&exportkey=AS4FbvfA5oNLHUsx%2FYvDJis%3D&pass_ticket=H9KugKX66caf%2FO6hk1fW3TFdlTbKusIswgbiLVUQZcdxYhvcZNoDNBQ7FB7khUoW)
