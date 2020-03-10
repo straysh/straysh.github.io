@@ -14,6 +14,17 @@ categories:
 # TCP/UDP工作在传输层
 ![tcp/ip协议族](/images/linux/tpcip_struct.jpeg)
 
+TPC/IP协议族
+- **ARP**: 是正向解析地址协议(Address Resolution Protocol),通过已知的IP,寻找对应主机的MAC地址.
+- **RARP**: 是反向地址转换协议,通过MAC地址确定IP地址.
+- **IP**: 是因特网互联协议`Internet Protocol`
+- **ICMP**: 是Internet控制报文协议`Internet Control Message Protocol`,用于在IP主机、路由器之间传递控制消息.
+- **IGMP**: 是Internet组管理协议`Internet Group Management Protocol`,是协议族中的组播协议,运行在主机和组播路由器之间.
+- **TCP**: 传输控制协议`Transmission Control Protocol`,一种面向连接的、可靠的、基于字节流的传输层协议.
+- **UDP**: 用户数据报协议`User Datagram Protocol`，是无连接的、不可靠的、基于报文的传输层协议.
+- **HTTP**: 超文本传输协议`Hyper Text Transfer Protocol`,互联中应用最广泛的一种协议.
+- **FTP**: 文件传输协议`File Transfer Protocol`
+
 
 ## 用户数据报协议 UDP（User Datagram Protocol）
 UDP面向数据报，无连接，不可靠，可以一对一，一对多，多对一，多对多互相通信（组播）。
