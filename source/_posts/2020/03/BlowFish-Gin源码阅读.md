@@ -217,6 +217,80 @@ P.S. 这里再额外挖一下#Line35`serverHandler{c.server}.ServeHTTP(w, w.req)
 之后，调用了`sh.srv.Handler.ServeHTTP(rw, req)`，这里的`srv`就是本文步骤2中`构造server对象`的这个server对象。
 因此这里的`.Handler.ServeHTTP`最终调用的是我们的`HTTP Server`demo中#Line4-9的代码。
 
+## Gin的启动过程
+挖完了`net/http`包，对http网络请求的过程有了一个整体的认知，接下来正式开挖Gin。
+1. 启动服务非常简便`engine := gin.New()`然后`engine.Run(":8080")` <a href="/images/golang/gin/gin_New.png" data-caption="gin_New" data-fancybox class="fancy_box_trg">&nbsp;</a>
+```golang
+func main() {
+    engine := gin.New()
+
+    //engine.GET("/someGet", getting)
+    ...
+    //engine.Use(middlewares.Authenticate())
+
+    engine.Run(":8080")
+}
+```
+2. `gin.New()`的细节。其中`Engine`的结构 <a href="/images/golang/gin/gin_Engine.png" data-caption="Server_start" data-fancybox class="fancy_box_trg">&nbsp;</a>
+其中：
+- `RedirectTrailingSlash`若请求地址是`/foo/`且未匹配，但`/foo`可以匹配，则将客户端重定向到`/foo`，若请求是GET则状态码是301，其他动词则是307
+- `RedirectFixedPath`未匹配时尝试去除多余的`../`或`//`以修正路径(且转化为小写)，例如`/FOO`或`/..//FOO`都能匹配`/foo`
+- `HandleMethodNotAllowed`未匹配时尝试其他动词，若路由匹配则以状态码405响应，否则将请求代理到`NotFound`句柄。
+```golang
+// New returns a new blank Engine instance without any middleware attached.
+// By default the configuration is:
+// - RedirectTrailingSlash:  true
+// - RedirectFixedPath:      false
+// - HandleMethodNotAllowed: false
+// - ForwardedByClientIP:    true
+// - UseRawPath:             false
+// - UnescapePathValues:     true
+func New() *Engine {
+	debugPrintWARNINGNew() //debug模式下打印开发模式警告
+	engine := &Engine{
+		RouterGroup: RouterGroup{ // 路由分组
+			Handlers: nil,
+			basePath: "/",
+			root:     true,
+		},
+		FuncMap:                template.FuncMap{}, // 模板函数？
+		RedirectTrailingSlash:  true,
+		RedirectFixedPath:      false,
+		HandleMethodNotAllowed: false,
+		ForwardedByClientIP:    true,
+		AppEngine:              defaultAppEngine,
+		UseRawPath:             false,
+		UnescapePathValues:     true,
+		MaxMultipartMemory:     defaultMultipartMemory,
+		trees:                  make(methodTrees, 0, 9),
+		delims:                 render.Delims{Left: "{{", Right: "}}"},
+		secureJsonPrefix:       "while(1);",
+	}
+	engine.RouterGroup.engine = engine
+	engine.pool.New = func() interface{} { // 连接池
+		return engine.allocateContext()
+	}
+	return engine
+}
+```
+
+3. `engine.Run(":8080")`中的细节。它仅仅是`http.ListenAndServe(address, engine)`的语法糖，啥也没做。
+因此可以看出来，Gin对网络底层没做任何处理，直接使用了`net/http`包。其核心代码全部在`Engine`这个结构体中。根据我们分析`net/http`包的经验，Engine中一定实现了`ServeHTTP`方法
+```golang
+// Run attaches the router to a http.Server and starts listening and serving HTTP requests.
+// It is a shortcut for http.ListenAndServe(addr, router)
+// Note: this method will block the calling goroutine indefinitely unless an error happens.
+func (engine *Engine) Run(addr ...string) (err error) {
+	defer func() { debugPrintError(err) }()
+
+	address := resolveAddress(addr) // addr 是动态参数，默认值取:8080
+	debugPrint("Listening and serving HTTP on %s\n", address)
+	err = http.ListenAndServe(address, engine)
+	return
+}
+```
+
+4. `engine.ServeHTTP`到底干了啥？
 
 # 路由
 ## `Trie`
