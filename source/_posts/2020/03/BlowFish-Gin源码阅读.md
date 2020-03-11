@@ -137,13 +137,13 @@ func (srv *Server) Serve(l net.Listener) error {
     }
 }
 ```
-5. 继续挖`go c.serve(connCtx)`看看Gin是如何处理一个Request的。先快速扫一下这个函数里面做了哪些事情：
+5. 继续挖`go c.serve(connCtx)`看看`net/http`是如何处理一个Request的。先快速扫一下这个函数里面做了哪些事情：
   1. #Line20`w, err := c.readRequest(ctx)`构建Response对象。向内追找到HTTP协议的解析过程`newTextprotoReader`。**目标3找到**。
   2. #Line35`serverHandler{c.server}.ServeHTTP(w, w.req)` 处理业务逻辑(即用户定义的路由逻辑)。`ServeHTTP`的第一个参数`w`就是Response对象，负责向客户端响应数据，`w.req`即Request，负责解析请求参数、头信息等。
   3. #Line40`w.finishRequest()`中有flush操作，到这里服务器已经完成了数据响应。
   3. #Line50-64处理了`keep-alive`重用连接和`idle_timeout`空闲超时断开连接的逻辑。这里涉及到一些网络知识不具体展开。
   若设置了`Connection: close`或者服务器保持连接直到空闲超时，都会return从而执行#Line5中的defer代码,注意源代码中的#Line1775~1777 <a href="/images/golang/gin/defer_conn_close.png" data-fancybox data-caption="Server_start" class="fancy_box_trg">&nbsp;</a>。**目标4找到**
-  4. 需要额外关注一下#Line35行上面的注释 <a href="/images/golang/gin/serverHandler_comments.png" data-fancybox data-caption="Server_start" class="fancy_box_trg">&nbsp;</a>。这里明确指出了GIN没有实现pipeline，理由是在HTTP1.1中pipeline并没有被（客户端/浏览器）广泛的实现，因此扔到了和HTTP2.0一起实现。
+  4. 需要额外关注一下#Line35行上面的注释 <a href="/images/golang/gin/serverHandler_comments.png" data-fancybox data-caption="Server_start" class="fancy_box_trg">&nbsp;</a>。这里明确指出了`net/http`没有实现pipeline，理由是在HTTP1.1中pipeline并没有被（客户端/浏览器）广泛的实现，因此扔到了和HTTP2.0一起实现。
 ```golang
 // Serve a new connection.
 func (c *conn) serve(ctx context.Context) {
@@ -212,6 +212,10 @@ func (c *conn) serve(ctx context.Context) {
     }
 }
 ```
+P.S. 这里再额外挖一下#Line35`serverHandler{c.server}.ServeHTTP(w, w.req)`的实现，将用户代码和`net/http`包打通。
+这里首先构造了一个serverHandler对象并调用了它的`ServeHTTP`方法。<a href="/images/golang/gin/serverHandler_ServeHTTP.png" data-fancybox data-caption="serverHandler_ServeHTTP" class="fancy_box_trg">&nbsp;</a>
+之后，调用了`sh.srv.Handler.ServeHTTP(rw, req)`，这里的`srv`就是本文步骤2中`构造server对象`的这个server对象。
+因此这里的`.Handler.ServeHTTP`最终调用的是我们的`HTTP Serve`demo中#Line4-9的代码。
 
 
 # 路由
