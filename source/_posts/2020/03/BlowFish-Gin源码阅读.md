@@ -5,6 +5,7 @@ tags:
 - Golang
 categories: 
 - 博文
+toc: true
 fancybox: true
 ---
 持续整理中，不适合阅读
