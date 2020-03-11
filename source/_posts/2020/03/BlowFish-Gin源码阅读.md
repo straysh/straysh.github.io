@@ -5,6 +5,7 @@ tags:
 - Golang
 categories: 
 - 博文
+fancybox: true
 ---
 持续整理中，不适合阅读
 # GIN版本 commithash a71af9c144f9579f6dbe945341c1df37aaf09c0d
@@ -18,6 +19,199 @@ categories:
 - 错误管理：Gin可以和很方便的收集错误信息。最后使用中间件将错误写入文件或数据库或发送到网络上。
 - 内置视图渲染：提供了易用的接口来渲染`JSON`，`XML`和`HTML`。
 - 可扩展：自定义中间件非常容易。
+
+# 源代码阅读
+## 服务启动
+### Socket Server VS HTTP Server
+HTTP是[应用层协议](/2020/02/27/网络-tcp-udp/#TCP-UDP工作在传输层)；Socket是系统提供的抽象接口，它直接操作传输层协议(如`TCP`、`UDP`等)来工作。它们不是一个层级上的概念。
+所以，只要Socket两端不主动关闭连接，就可以通过TCP连接来双向通信。
+而HTTP服务器则按照HTTP协议来通信：`建立TCP连接 🡺 客户端发送报文 🡺 服务器相应报文 🡺 客户端或服务器关闭连接`。每一个请求都要重复这个过程。虽说TCP协议是长连接的，但上层的HTTP协议会主动关闭它。
+另外HTTP中有一个`Connection: keep-alive`头信息，来重用连接，减少创建连接的消耗。它受到重用次数和超时时间的限制(服务器设置)，触发限制时仍会主动断开连接。因此这个所谓的"长连接"和Socket长连接的本质是不同的。
+
+Socket Server例子，内层的for循环读并不会主动关闭连接(不发生panic时)
+```golang
+func main() {
+    srv, err := net.Listen("tcp", ":8080") // 协议，端口
+    if err != nil {
+        panic(err)
+    }
+    defer srv.Close()
+
+    for {
+        conn, err := srv.Accept() // 监听连接
+        if err != nil {
+            fmt.Println("accept failed:", err.Error())
+            continue
+        }
+
+        go func(c net.Conn){
+            defer c.Close()
+            buf := make([]byte, 1024)
+            for {
+                n, err := c.Read(buf) // 尝试读数据
+                if err != nil {
+                    fmt.Println("read failed:", err.Error())
+                    continue
+                }
+
+                receiveData := buf[:n] // 接收到的字节buf[0:n]
+                fmt.Println("received data=", receiveData)
+            }
+        }(conn)
+    }
+}
+```
+
+HTTP Server
+```golang
+type handler struct {
+}
+
+func (h handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+    requestUrl := r.URL.String()
+    msg := fmt.Sprintf("request uri=%s\n", requestUrl)
+    fmt.Println(msg)
+    _, _ = w.Write([]byte(msg))
+}
+func main() {
+    err := http.ListenAndServe("127.0.0.1:8080", handler{}) //地址、端口，处理句柄
+    if err != nil {
+        panic(err)
+    }
+}
+```
+
+HTTP Server的底层还是TCP连接，对比上面Socket Server的代码，我们期望在HTTP Server的实现里发现
+1. 创建连接`net.Listen`
+2. 网络监听`srv.Accept()`
+3. 读取数据`c.Read(buf)`
+4. 额外的，在服务端发送完数据后，应该要关闭连接
+
+带着以上四个目标，我们来跟一下HTTP Server的启动过程。
+1. 启动HTTP Server`err := http.ListenAndServe("127.0.0.1:8080", handler{})` <a href="/images/golang/gin/Server_start.png" data-caption="Server_start" data-fancybox class="fancy_box_trg">&nbsp;</a>
+2. 构造server对象 <a href="/images/golang/gin/Server_struct.png" data-caption="Server_start" data-fancybox class="fancy_box_trg">&nbsp;</a>
+```golang
+func ListenAndServe(addr string, handler Handler) error {
+    server := &Server{Addr: addr, Handler: handler}
+    return server.ListenAndServe()
+}
+```
+3. 调用server的`ListenAndServe`方法。在#Line9我们发现了`net.Listen("tcp", addr)`，**目标1找到**。
+```golang
+func (srv *Server) ListenAndServe() error {
+	if srv.shuttingDown() {
+		return ErrServerClosed
+	}
+	addr := srv.Addr
+	if addr == "" {
+		addr = ":http"
+	}
+	ln, err := net.Listen("tcp", addr)
+	if err != nil {
+		return err
+	}
+	return srv.Serve(ln)
+}
+```
+4. 跟入#Line13行代码`srv.Serve(ln)` <a href="/images/golang/gin/srv.Serve.png" data-fancybox data-caption="srv.Serve" class="fancy_box_trg">&nbsp;</a>。这里，#Line4:`rw,err := l.Accept()`，**目标2找到**。
+这里的`rw`即是`net.Conn`，在#Line14重新包装了`rw` <a href="/images/golang/gin/srv.newConn.png" data-fancybox data-caption="Server_start" class="fancy_box_trg">&nbsp;</a>，，并在#Line14启动协程`go c.serve(connCtx)`。
+到此，服务器已经正常启动，并且给每一个新进来的Request都分配了一个协程。#Line3的for循环配合golang轻协程的特性，一个高并发的web服务器启动了。
+```golang
+func (srv *Server) Serve(l net.Listener) error {
+    ...
+    for {
+        rw, err := l.Accept()
+        ...
+        connCtx := ctx
+        if cc := srv.ConnContext; cc != nil {
+            connCtx = cc(connCtx, rw)
+            if connCtx == nil {
+                panic("ConnContext returned nil")
+            }
+        }
+        tempDelay = 0
+        c := srv.newConn(rw)
+        c.setState(c.rwc, StateNew) // before Serve can return
+        go c.serve(connCtx)
+    }
+}
+```
+5. 继续挖`go c.serve(connCtx)`看看Gin是如何处理一个Request的。先快速扫一下这个函数里面做了哪些事情：
+  1. #Line20`w, err := c.readRequest(ctx)`构建Response对象。向内追找到HTTP协议的解析过程`newTextprotoReader`。**目标3找到**。
+  2. #Line35`serverHandler{c.server}.ServeHTTP(w, w.req)` 处理业务逻辑(即用户定义的路由逻辑)。`ServeHTTP`的第一个参数`w`就是Response对象，负责向客户端响应数据，`w.req`即Request，负责解析请求参数、头信息等。
+  3. #Line40`w.finishRequest()`中有flush操作，到这里服务器已经完成了数据响应。
+  3. #Line50-64处理了`keep-alive`重用连接和`idle_timeout`空闲超时断开连接的逻辑。这里涉及到一些网络知识不具体展开。
+  若设置了`Connection: close`或者服务器保持连接直到空闲超时，都会return从而执行#Line5中的defer代码,注意源代码中的#Line1775~1777 <a href="/images/golang/gin/defer_conn_close.png" data-fancybox data-caption="Server_start" class="fancy_box_trg">&nbsp;</a>。**目标4找到**
+  4. 需要额外关注一下#Line35行上面的注释 <a href="/images/golang/gin/serverHandler_comments.png" data-fancybox data-caption="Server_start" class="fancy_box_trg">&nbsp;</a>。这里明确指出了GIN没有实现pipeline，理由是在HTTP1.1中pipeline并没有被（客户端/浏览器）广泛的实现，因此扔到了和HTTP2.0一起实现。
+```golang
+// Serve a new connection.
+func (c *conn) serve(ctx context.Context) {
+    c.remoteAddr = c.rwc.RemoteAddr().String()
+    ctx = context.WithValue(ctx, LocalAddrContextKey, c.rwc.LocalAddr())
+    defer func() {...}()
+
+    ...
+
+    // HTTP/1.x from here on.
+
+    ctx, cancelCtx := context.WithCancel(ctx)
+    c.cancelCtx = cancelCtx
+    defer cancelCtx()
+
+    c.r = &connReader{conn: c}
+    c.bufr = newBufioReader(c.r)
+    c.bufw = newBufioWriterSize(checkConnErrorWriter{c}, 4<<10)
+
+    for {
+        w, err := c.readRequest(ctx)
+        if c.r.remain != c.server.initialReadLimitSize() {
+            // If we read any bytes off the wire, we're active.
+            c.setState(c.rwc, StateActive)
+        }
+        if err != nil {...}
+
+        // Expect 100 Continue support
+        req := w.req
+        if req.expectsContinue() {...}
+
+        c.curReq.Store(w)
+
+        if requestBodyRemains(req.Body) {...}
+
+        serverHandler{c.server}.ServeHTTP(w, w.req)
+        w.cancelCtx()
+        if c.hijacked() {
+            return
+        }
+        w.finishRequest()
+        if !w.shouldReuseConnection() {
+            if w.requestBodyLimitHit || w.closedRequestBodyEarly() {
+                c.closeWriteAndWait()
+            }
+            return
+        }
+        c.setState(c.rwc, StateIdle)
+        c.curReq.Store((*response)(nil))
+
+        if !w.conn.server.doKeepAlives() {
+            // We're in shutdown mode. We might've replied
+            // to the user without "Connection: close" and
+            // they might think they can send another
+            // request, but such is life with HTTP/1.1.
+            return
+        }
+
+        if d := c.server.idleTimeout(); d != 0 {
+            c.rwc.SetReadDeadline(time.Now().Add(d))
+            if _, err := c.bufr.Peek(4); err != nil {
+                return
+            }
+        }
+        c.rwc.SetReadDeadline(time.Time{})
+    }
+}
+```
+
 
 # 路由
 ## `Trie`

@@ -35,7 +35,7 @@ $(function() {
   // $('.modal').on('shown.bs.modal', function(e) {
   //   $(this).show();
   //   var modalDialog = $(this).find(".modal-dialog");
-  //    // Applying the top margin on modal dialog to align it vertically center 
+  //    // Applying the top margin on modal dialog to align it vertically center
   //   modalDialog.css("margin-top", Math.max(0, ($(window).height() - modalDialog.height()) / 2));
   // });
 
@@ -48,7 +48,7 @@ $(function() {
     zindex: 42,
     edgeOffset: 0
   });
-  
+
   $('[data-stick-top]').keepInView({
     fixed: true,
     parentClass: "has-sticky",
@@ -101,5 +101,11 @@ $(function() {
     $overview.addClass("sidebar-panel-active").css({
       opacity: 1, display: "block"
     })
+  });
+
+  $('[data-fancybox]').fancybox({
+    afterShow :function() {
+      $('.fancybox-button--zoom').click();
+    }
   });
 });

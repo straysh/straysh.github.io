@@ -61,7 +61,7 @@
   <% if (theme.comment.type === 'gitment' && !is_home() && !is_category() && !is_tag() && !is_archive() && post.comments) { %>
     <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/gitment@0.0.3/style/default.min.css">
   <% } %>
-  <% if (theme.fancybox) { %>
+  <% if (page.fancybox) { %>
     <link href="//cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.3.5/dist/jquery.fancybox.min.css" rel="stylesheet">
   <% } %>
   <% if (theme.comment.type === 'gitalk') { %>
