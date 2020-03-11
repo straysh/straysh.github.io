@@ -215,7 +215,7 @@ func (c *conn) serve(ctx context.Context) {
 P.S. 这里再额外挖一下#Line35`serverHandler{c.server}.ServeHTTP(w, w.req)`的实现，将用户代码和`net/http`包打通。
 这里首先构造了一个serverHandler对象并调用了它的`ServeHTTP`方法。<a href="/images/golang/gin/serverHandler_ServeHTTP.png" data-fancybox data-caption="serverHandler_ServeHTTP" class="fancy_box_trg">&nbsp;</a>
 之后，调用了`sh.srv.Handler.ServeHTTP(rw, req)`，这里的`srv`就是本文步骤2中`构造server对象`的这个server对象。
-因此这里的`.Handler.ServeHTTP`最终调用的是我们的`HTTP Serve`demo中#Line4-9的代码。
+因此这里的`.Handler.ServeHTTP`最终调用的是我们的`HTTP Server`demo中#Line4-9的代码。
 
 
 # 路由
