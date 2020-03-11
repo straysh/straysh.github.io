@@ -104,8 +104,8 @@ $(function() {
   });
 
   $('[data-fancybox]').fancybox({
-    afterShow :function() {
-      $('.fancybox-button--zoom').click();
-    }
+    // afterShow :function() {
+    //   $('.fancybox-button--zoom').click();
+    // }
   });
 });
