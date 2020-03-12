@@ -317,7 +317,26 @@ func (engine *Engine) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 }
 ```
 
+5. `engine.handleHTTPRequest(c)`的细节。
+
+![engine_handleHTTPRequest](/images/golang/gin/engine_handleHTTPRequest.png)
+
+可以看到源码#Line403行调用`c.Next()`后`c.index`从-1自增到0，然后调用`c.handlers[0]`句柄，执行第一个中间件`RouteLogger`，而在中间件中我们需要再次调用`c.Next()`。非常明显的一个递归调用，然后执行第二个中间件`RecoverWithWriter`，之后调用`GET`动词注册的路由`api.Ping`，最后调用链路依次返回。
+参考下图（点击可放大）
+<a href="/images/golang/gin/gin_Route_Next.png" data-caption="gin_Route_Next" data-fancybox>
+<img src="/images/golang/gin/gin_Route_Next.png" alt="gin_Route_Next">
+</a>
+
 # 路由
+Gin的路由按HTTP动词，分9组（默认`engine.trees = make(methodTrees, 0, 9)`）分别对应`GET`组，`POST`组，`PUT`组等。`methodTrees`是`[]methodTree`的别名：`type methodTrees []methodTree`。
+`node`是一颗前缀树或`Radix trie`。
+```golang
+type methodTree struct {
+	method string // 即HTTP动词，如GET
+	root   *node  // 路由链路
+}
+```
+
 ## `Trie`
 `trie`译为字典树或单词查找树或前缀树。这是一种搜索树——存储动态集合或关联数组的有序的树形数据结构，且通常使用字符串做键。与二叉搜索树不同，其节点上并不直接存键。其在树中的位置决定了与其关联的键。所有的子节点都有相同的前缀，而根节点对应的是空字符串。键只与叶子节点关联。
 
@@ -340,7 +359,7 @@ func (engine *Engine) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 - 浮点数做`key`通常导致链路过长。
 - 有些`trie`可能比哈希表需要更多的空间，因为每一个字符都要分配内存。而哈希表只需要申请一块内存。
 
-![trie_001](/images/golang/gin/trie_example_001.png)
+<img src="/images/golang/gin/trie_example_001.png" alt="trie_001" style="width:50%" />
 
 ## `Radix Tree`
 `radix tree`也叫`radix trie`或`compact prefix trie`。在字典树中，每一个字符都要占一个节点，这样造成树过高。`radix trie`则将唯一的子节点压缩到自身来降低树的高度。
