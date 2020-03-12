@@ -359,7 +359,7 @@ type methodTree struct {
 - 浮点数做`key`通常导致链路过长。
 - 有些`trie`可能比哈希表需要更多的空间，因为每一个字符都要分配内存。而哈希表只需要申请一块内存。
 
-<img src="/images/golang/gin/trie_example_001.png" alt="trie_001" style="width:50%" />
+<img src="/images/golang/gin/trie_example_001.png" alt="trie_001" style="width:30em;" />
 
 ## `Radix Tree`
 `radix tree`也叫`radix trie`或`compact prefix trie`。在字典树中，每一个字符都要占一个节点，这样造成树过高。`radix trie`则将唯一的子节点压缩到自身来降低树的高度。
