@@ -90,7 +90,8 @@ HTTP Server的底层还是TCP连接，对比上面Socket Server的代码，我�
 
 带着以上四个目标，我们来跟一下HTTP Server的启动过程。
 1. 启动HTTP Server`err := http.ListenAndServe("127.0.0.1:8080", handler{})` <a href="/images/golang/gin/Server_start.png" data-caption="Server_start" data-fancybox class="fancy_box_trg">&nbsp;</a>
-2. 构造server对象 <a href="/images/golang/gin/Server_struct.png" data-caption="Server_start" data-fancybox class="fancy_box_trg">&nbsp;</a>
+2. 构造server对象 <a href="/images/golang/gin/Server_struct.png" data-caption="Server_struct" data-fancybox class="fancy_box_trg">&nbsp;</a>
+
 ```golang
 func ListenAndServe(addr string, handler Handler) error {
     server := &Server{Addr: addr, Handler: handler}
@@ -98,6 +99,7 @@ func ListenAndServe(addr string, handler Handler) error {
 }
 ```
 3. 调用server的`ListenAndServe`方法。在#Line9我们发现了`net.Listen("tcp", addr)`，**目标1找到**。
+
 ```golang
 func (srv *Server) ListenAndServe() error {
 	if srv.shuttingDown() {
@@ -115,8 +117,9 @@ func (srv *Server) ListenAndServe() error {
 }
 ```
 4. 跟入#Line13行代码`srv.Serve(ln)` <a href="/images/golang/gin/srv.Serve.png" data-fancybox data-caption="srv.Serve" class="fancy_box_trg">&nbsp;</a>。这里，#Line4:`rw,err := l.Accept()`，**目标2找到**。
-这里的`rw`即是`net.Conn`，在#Line14重新包装了`rw` <a href="/images/golang/gin/srv.newConn.png" data-fancybox data-caption="Server_start" class="fancy_box_trg">&nbsp;</a>，，并在#Line14启动协程`go c.serve(connCtx)`。
+这里的`rw`即是`net.Conn`，在#Line14重新包装了`rw` <a href="/images/golang/gin/srv.newConn.png" data-fancybox data-caption="srv.newConn" class="fancy_box_trg">&nbsp;</a>，，并在#Line14启动协程`go c.serve(connCtx)`。
 到此，服务器已经正常启动，并且给每一个新进来的Request都分配了一个协程。#Line3的for循环配合golang轻协程的特性，一个高并发的web服务器启动了。
+
 ```golang
 func (srv *Server) Serve(l net.Listener) error {
     ...
@@ -142,8 +145,9 @@ func (srv *Server) Serve(l net.Listener) error {
   2. #Line35`serverHandler{c.server}.ServeHTTP(w, w.req)` 处理业务逻辑(即用户定义的路由逻辑)。`ServeHTTP`的第一个参数`w`就是Response对象，负责向客户端响应数据，`w.req`即Request，负责解析请求参数、头信息等。
   3. #Line40`w.finishRequest()`中有flush操作，到这里服务器已经完成了数据响应。
   3. #Line50-64处理了`keep-alive`重用连接和`idle_timeout`空闲超时断开连接的逻辑。这里涉及到一些网络知识不具体展开。
-  若设置了`Connection: close`或者服务器保持连接直到空闲超时，都会return从而执行#Line5中的defer代码,注意源代码中的#Line1775~1777 <a href="/images/golang/gin/defer_conn_close.png" data-fancybox data-caption="Server_start" class="fancy_box_trg">&nbsp;</a>。**目标4找到**
-  4. 需要额外关注一下#Line35行上面的注释 <a href="/images/golang/gin/serverHandler_comments.png" data-fancybox data-caption="Server_start" class="fancy_box_trg">&nbsp;</a>。这里明确指出了`net/http`没有实现pipeline，理由是在HTTP1.1中pipeline并没有被（客户端/浏览器）广泛的实现，因此扔到了和HTTP2.0一起实现。
+  若设置了`Connection: close`或者服务器保持连接直到空闲超时，都会return从而执行#Line5中的defer代码,注意源代码中的#Line1775~1777 <a href="/images/golang/gin/defer_conn_close.png" data-fancybox data-caption="defer_conn_close" class="fancy_box_trg">&nbsp;</a>。**目标4找到**
+  4. 需要额外关注一下#Line35行上面的注释 <a href="/images/golang/gin/serverHandler_comments.png" data-fancybox data-caption="serverHandler_comments" class="fancy_box_trg">&nbsp;</a>。这里明确指出了`net/http`没有实现pipeline，理由是在HTTP1.1中pipeline并没有被（客户端/浏览器）广泛的实现，因此扔到了和HTTP2.0一起实现。
+  
 ```golang
 // Serve a new connection.
 func (c *conn) serve(ctx context.Context) {
@@ -220,6 +224,7 @@ P.S. 这里再额外挖一下#Line35`serverHandler{c.server}.ServeHTTP(w, w.req)
 ## Gin的启动过程
 挖完了`net/http`包，对http网络请求的过程有了一个整体的认知，接下来正式开挖Gin。
 1. 启动服务非常简便`engine := gin.New()`然后`engine.Run(":8080")` <a href="/images/golang/gin/gin_New.png" data-caption="gin_New" data-fancybox class="fancy_box_trg">&nbsp;</a>
+
 ```golang
 func main() {
     engine := gin.New()
@@ -231,11 +236,12 @@ func main() {
     engine.Run(":8080")
 }
 ```
-2. `gin.New()`的细节。其中`Engine`的结构 <a href="/images/golang/gin/gin_Engine.png" data-caption="Server_start" data-fancybox class="fancy_box_trg">&nbsp;</a>
+2. `gin.New()`的细节。其中`Engine`的结构 <a href="/images/golang/gin/gin_Engine.png" data-caption="gin_Engine" data-fancybox class="fancy_box_trg">&nbsp;</a>
 其中：
 - `RedirectTrailingSlash`若请求地址是`/foo/`且未匹配，但`/foo`可以匹配，则将客户端重定向到`/foo`，若请求是GET则状态码是301，其他动词则是307
 - `RedirectFixedPath`未匹配时尝试去除多余的`../`或`//`以修正路径(且转化为小写)，例如`/FOO`或`/..//FOO`都能匹配`/foo`
 - `HandleMethodNotAllowed`未匹配时尝试其他动词，若路由匹配则以状态码405响应，否则将请求代理到`NotFound`句柄。
+
 ```golang
 // New returns a new blank Engine instance without any middleware attached.
 // By default the configuration is:
@@ -276,6 +282,7 @@ func New() *Engine {
 
 3. `engine.Run(":8080")`中的细节。它仅仅是`http.ListenAndServe(address, engine)`的语法糖，啥也没做。
 因此可以看出来，Gin对网络底层没做任何处理，直接使用了`net/http`包。其核心代码全部在`Engine`这个结构体中。根据我们分析`net/http`包的经验，Engine中一定实现了`ServeHTTP`方法
+
 ```golang
 // Run attaches the router to a http.Server and starts listening and serving HTTP requests.
 // It is a shortcut for http.ListenAndServe(addr, router)
@@ -290,7 +297,25 @@ func (engine *Engine) Run(addr ...string) (err error) {
 }
 ```
 
-4. `engine.ServeHTTP`到底干了啥？
+4. `engine.ServeHTTP`到底干了啥？ `Engine`结构体的方法集：
+![gin_Engine_methods](/images/golang/gin/gin_Engine_methods.png)
+
+`gin.Context` <a href="/images/golang/gin/gin_Context.png" data-caption="gin_Context" data-fancybox class="fancy_box_trg">&nbsp;</a>
+```golang
+// ServeHTTP conforms to the http.Handler interface.
+func (engine *Engine) ServeHTTP(w http.ResponseWriter, req *http.Request) {
+    // 源码#Line145行定义，这里返回engine.allocateContext()的结果
+    // 是*gin.Context指针
+    c := engine.pool.Get().(*Context) // 从连接池中取出一个连接
+    c.writermem.reset(w) // 重置 http.responseWriter
+    c.Request = req
+    c.reset() // 重置Context
+
+    engine.handleHTTPRequest(c) // 核心!!! 路由处理逻辑
+
+    engine.pool.Put(c) // 执行结束，将连接放入连接池
+}
+```
 
 # 路由
 ## `Trie`
@@ -299,7 +324,7 @@ func (engine *Engine) Run(addr ...string) (err error) {
 `trie`术语的发明者念`/ˈtriː/`(tree)，而有些作者念为`/ˈtraɪ/`以便和tree区别。
 
 下图是一颗字典树，描述了键值为`A`、`to`、`tea`、`ted`、`ten`、`i`、`in`、`inn`的情况。（图中节点并不是完全有序的，虽然应该如此：如root节点与`t`节点）
-![wiki字典树](/images/gin/Trie_example.svg)
+![wiki字典树](/images/golang/gin/Trie_example.svg)
 
 不难想象，字典树典型的应用场景是单词计数。
 
@@ -315,7 +340,7 @@ func (engine *Engine) Run(addr ...string) (err error) {
 - 浮点数做`key`通常导致链路过长。
 - 有些`trie`可能比哈希表需要更多的空间，因为每一个字符都要分配内存。而哈希表只需要申请一块内存。
 
-![trie_001](/images/gin/trie_example_001.png)
+![trie_001](/images/golang/gin/trie_example_001.png)
 
 ## `Radix Tree`
 `radix tree`也叫`radix trie`或`compact prefix trie`。在字典树中，每一个字符都要占一个节点，这样造成树过高。`radix trie`则将唯一的子节点压缩到自身来降低树的高度。
