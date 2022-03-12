@@ -64,14 +64,14 @@ jobs:
 
       # 生成并部署
       - name: Build
-        run: npx hexo clean && npx hexo deploy
+        run: npx hexo clean && npx hexo generate
 
       # 发布到gh-pages
-#      - name: Deploy
-#        uses: peaceiris/actions-gh-pages@v3
-#        with:
-#          github_token: ${{ secrets.GITHUB_TOKEN }}
-#          publish_dir: ./public
+      - name: Deploy
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./public
 #      - name: Deploy
 #        run: |
 #          npx hexo deploy --generate
