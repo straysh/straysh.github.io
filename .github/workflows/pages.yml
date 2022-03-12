@@ -1,37 +1,68 @@
-name: Deploy
+name: Hexo Deploy
 
-on: [push]
+# 只监听 source 分支的改动
+on:
+  push:
+    branches:
+      - master
+
+# 自定义环境变量
+env:
+  POST_ASSET_IMAGE_CDN: true
 
 jobs:
-  build:
+  build-and-deploy:
     runs-on: ubuntu-latest
-    name: A job to deploy blog.
+
     steps:
+      # 获取博客源码和主题
       - name: Checkout
-        uses: actions/checkout@v1
-        with:
-          submodules: true # Checkout private submodules(themes or something else).
+        uses: actions/checkout@v2
 
-      # Caching dependencies to speed up workflows. (GitHub will remove any cache entries that have not been accessed in over 7 days.)
-      - name: Cache node modules
-        uses: actions/cache@v1
-        id: cache
+      - name: Checkout theme repo
+        uses: actions/checkout@v2
         with:
-          path: node_modules
-          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+          repository: prinsss/hexo-theme-murasaki
+          ref: master
+          path: themes/murasaki
+
+      # 这里用的是 Node.js 16.x
+      - name: Set up Node.js
+        uses: actions/setup-node@v1
+        with:
+          node-version: '16'
+
+      # 设置 yarn 缓存，npm 的话可以看 actions/cache@v2 的文档示例
+      - name: Get yarn cache directory path
+        id: yarn-cache-dir-path
+        run: echo "::set-output name=dir::$(yarn cache dir)"
+
+      - name: Use yarn cache
+        uses: actions/cache@v2
+        id: yarn-cache
+        with:
+          path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
+          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
           restore-keys: |
-            ${{ runner.os }}-node-
-      - name: Install Dependencies
-        if: steps.cache.outputs.cache-hit != 'true'
-        run: npm ci
+            ${{ runner.os }}-yarn-
 
-      # Deploy hexo blog website.
-      - name: Deploy
-        id: deploy
-        uses: sma11black/hexo-action@v1.0.3
-        with:
-          deploy_key: ${{ secrets.DEPLOY_KEY }}
-      # Use the output from the `deploy` step(use for test action)
-      - name: Get the output
+      # 安装依赖
+      - name: Install dependencies
         run: |
-          echo "${{ steps.deploy.outputs.notify }}"
+          yarn install --prefer-offline --frozen-lockfile
+
+      # 从之前设置的 secret 获取部署私钥
+      - name: Set up environment
+        env:
+          DEPLOY_KEY: ${{ secrets.DEPLOY_KEY }}
+        run: |
+          sudo timedatectl set-timezone "Asia/Shanghai"
+          mkdir -p ~/.ssh
+          echo "$DEPLOY_KEY" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          ssh-keyscan github.com >> ~/.ssh/known_hosts
+
+      # 生成并部署
+      - name: Deploy
+        run: |
+          npx hexo deploy --generate
