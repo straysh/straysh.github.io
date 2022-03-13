@@ -1,0 +1,28 @@
+@startuml element
+'!include https://unpkg.com/plantuml-style-c4@latest/core.puml
+' uncomment the following line and comment the first to use locally
+!include /app/straysh/2022/plantuml-style-c4/core.puml
+
+GREEN_ARROW
+
+participant "enps03\n宿主机网卡" as host
+participant "docker0\n虚拟网桥" as docker0
+box "虚拟机"
+participant "veth-pair\n虚拟机1" as container1
+participant "veth-pair\n虚拟机2" as container2
+participant "veth-pair\n虚拟机3" as container3
+end box
+
+autonumber "<b>[##]"
+->host : 接收到数据包
+host -> docker0 : 检查enps03网卡上\n是否绑定了网桥
+alt 检查数据包目标MAC地址，首位为1表示广播消息\n<b>OR</b> 检查数据包目标MAC地址是否在网桥hash表中，且未命中
+docker0 -> container1: 发送广播消息
+docker0 -> container2: 发送广播消息
+docker0 -> container3: 发送广播消息
+else 单播消息
+docker0 -> container1: 发送到命中的网桥端口
+end
+
+
+@enduml
