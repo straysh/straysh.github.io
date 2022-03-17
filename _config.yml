@@ -41,23 +41,32 @@ render_drafts: false
 post_asset_folder: false
 relative_link: false
 future: true
-hljs:
+highlight:
   enable: true #true to enable the plugin
-  line_number: frontend # add line_number in frontend or backend
-  trim_indent: backend # trim the indent of code block to prettify output. backend or front-end (recommend)
+  auto_detect: false
+  line_number: true # add line_number in frontend or backend
+  line_threshold: 0 # trim the indent of code block to prettify output. backend or front-end (recommend)
   copy_code: true # show copy code in caption.
   label:
     left: Code
     right: ':'
     copy: Copy Code
-  tab_replace: ''
+  tab_replace: '    '
   wrap: true
-  hljs: false
+  hljs: true
 prismjs:
   enable: false
   preprocess: true
   line_number: true
-  tab_replace: ''
+  line_threshold: 0
+  tab_replace: '    '
+
+codeblock:
+# Code Highlight theme
+# All available themes: https://theme-next.js.org/highlight/
+  theme:
+    light: a11y-dark
+    dark: a11y-dark
 
 # Home page setting
 # path: Root path for your blogs index page. (default = '')
