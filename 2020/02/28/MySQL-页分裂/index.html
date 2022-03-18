@@ -1,0 +1,674 @@
+<!DOCTYPE html>
+<html lang=zh>
+<head>
+  <meta charset="utf-8">
+  
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, minimal-ui">
+  <meta name="renderer" content="webkit">
+  <meta http-equiv="Cache-Control" content="no-transform" />
+  <meta http-equiv="Cache-Control" content="no-siteapp" />
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="format-detection" content="telephone=no,email=no,adress=no">
+  <!-- Color theme for statusbar -->
+  <meta name="theme-color" content="#000000" />
+  <!-- 强制页面在当前窗口以独立页面显示,防止别人在框架里调用页面 -->
+  <meta http-equiv="window-target" content="_top" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lxgw-wenkai-webfont@1.1.0/style.css" />
+  
+  
+  <title>MySQL_页分裂 | Hexo</title>
+  <meta name="description" content="文章来源：InnoDB Page Merging and Page Splitting  表结构假设有张表名为windmills，其数据文件目录结构可能如下： 1234data&#x2F;  windmills&#x2F;      wmills.ibd      wmills.frm  数据存储在一个叫wills.ibd的文件中。该文件由N个segments组成，每个segments都关联着索引。 在删除数据行是，">
+<meta property="og:type" content="article">
+<meta property="og:title" content="MySQL_页分裂">
+<meta property="og:url" content="https://straysh.github.life/2020/02/28/MySQL-%E9%A1%B5%E5%88%86%E8%A3%82/index.html">
+<meta property="og:site_name" content="Straysh的小院">
+<meta property="og:description" content="文章来源：InnoDB Page Merging and Page Splitting  表结构假设有张表名为windmills，其数据文件目录结构可能如下： 1234data&#x2F;  windmills&#x2F;      wmills.ibd      wmills.frm  数据存储在一个叫wills.ibd的文件中。该文件由N个segments组成，每个segments都关联着索引。 在删除数据行是，">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://straysh.github.life/images/mysql/segment_extent-e1491345857803.png">
+<meta property="og:image" content="https://straysh.github.life/images/mysql/Bplustree-1024x471.png">
+<meta property="og:image" content="https://straysh.github.life/images/mysql/Locality_1.png">
+<meta property="og:image" content="https://straysh.github.life/images/mysql/Locality_2.png">
+<meta property="og:image" content="https://straysh.github.life/images/mysql/Locality_3.png">
+<meta property="og:image" content="https://straysh.github.life/images/mysql/Locality_4.png">
+<meta property="og:image" content="https://straysh.github.life/images/mysql/Locality_5.png">
+<meta property="og:image" content="https://straysh.github.life/images/mysql/Locality_6.png">
+<meta property="og:image" content="https://straysh.github.life/images/mysql/Locality_7.png">
+<meta property="og:image" content="https://straysh.github.life/images/mysql/Locality_9.png">
+<meta property="og:image" content="https://straysh.github.life/images/mysql/Locality_8.png">
+<meta property="og:image" content="https://straysh.github.life/images/mysql/Locality_10.png">
+<meta property="og:image" content="https://straysh.github.life/images/mysql/split_1.png">
+<meta property="og:image" content="https://straysh.github.life/images/mysql/merges_1.png">
+<meta property="article:published_time" content="2020-02-28T06:49:54.000Z">
+<meta property="article:modified_time" content="2020-02-28T10:41:20.623Z">
+<meta property="article:author" content="Straysh">
+<meta property="article:tag" content="MySQL">
+<meta property="article:tag" content="Translation">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://straysh.github.life/images/mysql/segment_extent-e1491345857803.png">
+  <!-- Canonical links -->
+  <link rel="canonical" href="https://straysh.github.life/2020/02/28/MySQL-%E9%A1%B5%E5%88%86%E8%A3%82/index.html">
+  
+    <link rel="alternate" href="/atom.xml" title="Straysh的小院" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.ico" type="image/x-icon">
+  
+  
+<link rel="stylesheet" href="/css/style.css">
+
+  
+<link rel="stylesheet" href="/css/custom.css">
+
+  
+  
+  
+  
+  
+<meta name="generator" content="Hexo 5.4.1"></head>
+
+
+<body class="main-center theme-green" itemscope itemtype="http://schema.org/WebPage">
+  <header class="header" style="background-image: url(/images/left_images/2.jpg);" itemscope itemtype="http://schema.org/WPHeader">
+  <div class="slimContent" style="height:100%;background-color: rgba(0,0,0,0.7);">
+    <div class="navbar-header">
+      
+      
+      <div class="profile-block text-center">
+        <a id="avatar" href="https://hexo.straysh.com" target="_blank">
+          <img class="img-circle img-rotate" src="/images/avatar.jpg" width="200" height="200">
+        </a>
+        <h2 id="name" class="hidden-xs hidden-sm">Straysh</h2>
+        <h3 id="title" class="hidden-xs hidden-sm hidden-md">野生程序猿</h3>
+        <small id="location" class="text-muted hidden-xs hidden-sm"><i class="icon icon-map-marker"></i> Beijing, China</small>
+      </div>
+      
+      <div class="search" id="search-form-wrap">
+
+    <form class="search-form sidebar-form">
+        <div class="input-group">
+            <input type="text" class="search-form-input form-control" placeholder="搜索" />
+            <span class="input-group-btn">
+                <button type="submit" class="search-form-submit btn btn-flat" onclick="return false;"><i class="icon icon-search"></i></button>
+            </span>
+        </div>
+    </form>
+    <div class="ins-search">
+  <div class="ins-search-mask"></div>
+  <div class="ins-search-container">
+    <div class="ins-input-wrapper">
+      <input type="text" class="ins-search-input" placeholder="想要查找什么..." x-webkit-speech />
+      <button type="button" class="close ins-close ins-selectable" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+    </div>
+    <div class="ins-section-wrapper">
+      <div class="ins-section-container"></div>
+    </div>
+  </div>
+</div>
+
+
+</div>
+      <button class="navbar-toggle collapsed" type="button" data-toggle="collapse" data-target="#main-navbar" aria-controls="main-navbar" aria-expanded="false">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+    </div>
+    <nav id="main-navbar" class="collapse navbar-collapse" itemscope itemtype="http://schema.org/SiteNavigationElement" role="navigation">
+      <ul class="nav navbar-nav main-nav menu-highlight">
+        
+        
+        <li class="menu-item menu-item-home">
+          <a href="/.">
+            
+            <i class="icon icon-home-fill"></i>
+            
+            <span class="menu-title">首页</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives">
+            
+            <i class="icon icon-archives-fill"></i>
+            
+            <span class="menu-title">归档</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories">
+            
+            <i class="icon icon-folder"></i>
+            
+            <span class="menu-title">分类</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags">
+            
+            <i class="icon icon-tags"></i>
+            
+            <span class="menu-title">标签</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-repository">
+          <a href="/repository">
+            
+            <i class="icon icon-project"></i>
+            
+            <span class="menu-title">项目</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-books">
+          <a href="/books">
+            
+            <i class="icon icon-book-fill"></i>
+            
+            <span class="menu-title">书单</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-links">
+          <a href="/links">
+            
+            <i class="icon icon-friendship"></i>
+            
+            <span class="menu-title">友链</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about">
+            
+            <i class="icon icon-cup-fill"></i>
+            
+            <span class="menu-title">关于</span>
+          </a>
+        </li>
+        
+      </ul>
+      
+	
+    <ul class="social-links">
+    	
+        <li><a href="https://github.com/straysh" target="_blank" title="Github" data-toggle=tooltip data-placement=top><i class="icon icon-github"></i></a></li>
+        
+        <li><a href="https://weibo.com/u/1689171115" target="_blank" title="Weibo" data-toggle=tooltip data-placement=top><i class="icon icon-weibo"></i></a></li>
+        
+        <li><a href="/atom.xml" target="_blank" title="Rss" data-toggle=tooltip data-placement=top><i class="icon icon-rss"></i></a></li>
+        
+    </ul>
+
+    </nav>
+  </div>
+</header>
+
+  
+    <aside class="sidebar" itemscope itemtype="http://schema.org/WPSideBar">
+  <div class="slimContent">
+
+    
+      <ul class="sidebar-nav motion-element" style="text-align:center; opacity: 1; display: block; transform: translateX(0px);">
+        <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+          系统目录
+        </li>
+      </ul>
+      <section class="site-overview-wrap sidebar-panel" style="opacity: 0; display: none;">
+        
+          <div class="widget">
+    <h3 class="widget-title">公告</h3>
+    <div class="widget-body">
+        <div id="board">
+            <div class="content">
+                <p>妳是风中的叶，风起而走，我想去追，怎么抓的住？</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+        
+          
+  <div class="widget">
+    <h3 class="widget-title">分类</h3>
+    <div class="widget-body">
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%8D%9A%E6%96%87/">博文</a><span class="category-list-count">102</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%8D%9A%E6%96%87/%E7%AC%94%E8%AE%B0/">笔记</a><span class="category-list-count">2</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E6%9D%82%E8%AE%B0/">杂记</a><span class="category-list-count">6</span></li></ul>
+    </div>
+  </div>
+
+
+        
+          
+  <div class="widget">
+    <h3 class="widget-title">标签</h3>
+    <div class="widget-body">
+      <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/Algorithm/" rel="tag">Algorithm</a><span class="tag-list-count">13</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Apache/" rel="tag">Apache</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Banbrick/" rel="tag">Banbrick</a><span class="tag-list-count">5</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Docker/" rel="tag">Docker</a><span class="tag-list-count">4</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Golang/" rel="tag">Golang</a><span class="tag-list-count">25</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Javascript/" rel="tag">Javascript</a><span class="tag-list-count">10</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Linux/" rel="tag">Linux</a><span class="tag-list-count">13</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/MySQL/" rel="tag">MySQL</a><span class="tag-list-count">13</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Mysql/" rel="tag">Mysql</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Nginx/" rel="tag">Nginx</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Nodejs/" rel="tag">Nodejs</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/PHP/" rel="tag">PHP</a><span class="tag-list-count">19</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/R/" rel="tag">R</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Redis/" rel="tag">Redis</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/SVN/" rel="tag">SVN</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Sphinx/" rel="tag">Sphinx</a><span class="tag-list-count">5</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Translation/" rel="tag">Translation</a><span class="tag-list-count">18</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Yii/" rel="tag">Yii</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%9D%82/" rel="tag">杂</a><span class="tag-list-count">6</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%B1%87%E7%BC%96/" rel="tag">汇编</a><span class="tag-list-count">1</span></li></ul>
+    </div>
+  </div>
+
+
+        
+          
+  <div class="widget">
+    <h3 class="widget-title">标签云</h3>
+    <div class="widget-body tagcloud">
+      <a href="/tags/Algorithm/" style="font-size: 13.67px;">Algorithm</a> <a href="/tags/Apache/" style="font-size: 13px;">Apache</a> <a href="/tags/Banbrick/" style="font-size: 13.33px;">Banbrick</a> <a href="/tags/Docker/" style="font-size: 13.22px;">Docker</a> <a href="/tags/Golang/" style="font-size: 14px;">Golang</a> <a href="/tags/Javascript/" style="font-size: 13.56px;">Javascript</a> <a href="/tags/Linux/" style="font-size: 13.67px;">Linux</a> <a href="/tags/MySQL/" style="font-size: 13.67px;">MySQL</a> <a href="/tags/Mysql/" style="font-size: 13px;">Mysql</a> <a href="/tags/Nginx/" style="font-size: 13.11px;">Nginx</a> <a href="/tags/Nodejs/" style="font-size: 13px;">Nodejs</a> <a href="/tags/PHP/" style="font-size: 13.89px;">PHP</a> <a href="/tags/R/" style="font-size: 13.11px;">R</a> <a href="/tags/Redis/" style="font-size: 13.11px;">Redis</a> <a href="/tags/SVN/" style="font-size: 13px;">SVN</a> <a href="/tags/Sphinx/" style="font-size: 13.33px;">Sphinx</a> <a href="/tags/Translation/" style="font-size: 13.78px;">Translation</a> <a href="/tags/Yii/" style="font-size: 13.11px;">Yii</a> <a href="/tags/%E6%9D%82/" style="font-size: 13.44px;">杂</a> <a href="/tags/%E6%B1%87%E7%BC%96/" style="font-size: 13px;">汇编</a>
+    </div>
+  </div>
+
+        
+          
+  <div class="widget">
+    <h3 class="widget-title">归档</h3>
+    <div class="widget-body">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/03/">三月 2022</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/03/">三月 2021</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/03/">三月 2020</a><span class="archive-list-count">5</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/02/">二月 2020</a><span class="archive-list-count">26</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/12/">十二月 2019</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/04/">四月 2019</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/09/">九月 2018</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/07/">七月 2016</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/06/">六月 2016</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/11/">十一月 2015</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/10/">十月 2015</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/09/">九月 2015</a><span class="archive-list-count">5</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/08/">八月 2015</a><span class="archive-list-count">13</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/07/">七月 2015</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/11/">十一月 2014</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/03/">三月 2014</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/12/">十二月 2013</a><span class="archive-list-count">8</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/10/">十月 2013</a><span class="archive-list-count">8</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/09/">九月 2013</a><span class="archive-list-count">2</span></li></ul>
+    </div>
+  </div>
+
+
+        
+          
+  <div class="widget">
+    <h3 class="widget-title">最新文章</h3>
+    <div class="widget-body">
+      <ul class="recent-post-list list-unstyled no-thumbnail">
+        
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/%E5%8D%9A%E6%96%87/">博文</a><i class="icon icon-angle-right"></i><a class="category-link" href="/categories/%E5%8D%9A%E6%96%87/%E7%AC%94%E8%AE%B0/">笔记</a>
+              </p>
+              <p class="item-title">
+                <a href="/2022/03/14/%E4%BD%BF%E7%94%A8Go%E6%93%8D%E4%BD%9C%E6%96%87%E4%BB%B6/" class="title">使用Go操作文件</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2022-03-14T12:11:25.000Z" itemprop="datePublished">2022-03-14</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/%E5%8D%9A%E6%96%87/">博文</a>
+              </p>
+              <p class="item-title">
+                <a href="/2022/03/13/Docker%E5%AE%B9%E5%99%A8%E7%BD%91%E7%BB%9C/" class="title">Docker容器网络</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2022-03-13T04:10:09.000Z" itemprop="datePublished">2022-03-13</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/%E5%8D%9A%E6%96%87/">博文</a><i class="icon icon-angle-right"></i><a class="category-link" href="/categories/%E5%8D%9A%E6%96%87/%E7%AC%94%E8%AE%B0/">笔记</a>
+              </p>
+              <p class="item-title">
+                <a href="/2022/03/13/Iptables%E5%92%8C%E5%AE%B9%E5%99%A8/" class="title">Iptables和容器</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2022-03-13T03:01:46.000Z" itemprop="datePublished">2022-03-13</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/%E5%8D%9A%E6%96%87/">博文</a>
+              </p>
+              <p class="item-title">
+                <a href="/2022/03/12/Linux%E7%BD%91%E6%A1%A5%E5%B7%A5%E4%BD%9C%E5%8E%9F%E7%90%86/" class="title">Linux网桥工作原理</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2022-03-12T10:02:29.000Z" itemprop="datePublished">2022-03-12</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/%E5%8D%9A%E6%96%87/">博文</a>
+              </p>
+              <p class="item-title">
+                <a href="/2021/03/16/%E5%B9%B6%E5%8F%91%E5%92%8C%E8%B0%83%E5%BA%A6%E7%9A%84%E5%85%B3%E7%B3%BB/" class="title">并发和调度的关系</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2021-03-16T05:54:13.000Z" itemprop="datePublished">2021-03-16</time>
+              </p>
+            </div>
+          </li>
+          
+      </ul>
+    </div>
+  </div>
+  
+
+        
+      </section>
+
+      <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active" style="opacity: 1; display: block;">
+        <nav id="toc" class="article-toc">
+          <h3 class="toc-title">文章目录</h3>
+          <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E8%A1%A8%E7%BB%93%E6%9E%84"><span class="toc-number">1.</span> <span class="toc-text">表结构</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Roots-Branches-and-Leaves"><span class="toc-number">2.</span> <span class="toc-text">Roots,Branches,and Leaves</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Page-Internals"><span class="toc-number">3.</span> <span class="toc-text">Page Internals</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Page-Mergeing"><span class="toc-number">4.</span> <span class="toc-text">Page Mergeing</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Page-Splits"><span class="toc-number">5.</span> <span class="toc-text">Page Splits</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E4%B8%8D%E5%90%8C%E4%B8%BB%E9%94%AE%E7%9A%84%E6%AF%94%E8%BE%83"><span class="toc-number">6.</span> <span class="toc-text">不同主键的比较</span></a></li></ol>
+        </nav>
+      </section>
+    
+  </div>
+</aside>
+
+  
+  
+<aside class="sidebar sidebar-toc collapse" id="collapseToc" itemscope itemtype="http://schema.org/WPSideBar">
+  <div class="slimContent">
+    <nav id="toc" class="article-toc">
+      <h3 class="toc-title">文章目录</h3>
+      <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E8%A1%A8%E7%BB%93%E6%9E%84"><span class="toc-number">1.</span> <span class="toc-text">表结构</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Roots-Branches-and-Leaves"><span class="toc-number">2.</span> <span class="toc-text">Roots,Branches,and Leaves</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Page-Internals"><span class="toc-number">3.</span> <span class="toc-text">Page Internals</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Page-Mergeing"><span class="toc-number">4.</span> <span class="toc-text">Page Mergeing</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Page-Splits"><span class="toc-number">5.</span> <span class="toc-text">Page Splits</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E4%B8%8D%E5%90%8C%E4%B8%BB%E9%94%AE%E7%9A%84%E6%AF%94%E8%BE%83"><span class="toc-number">6.</span> <span class="toc-text">不同主键的比较</span></a></li></ol>
+    </nav>
+  </div>
+</aside>
+
+<main class="main" role="main">
+  <div class="content">
+  <article id="post-MySQL-页分裂" class="article article-type-post" itemscope itemtype="http://schema.org/BlogPosting">
+    
+    <div class="article-header">
+      
+        
+  
+    <h1 class="article-title" itemprop="name">
+      <span style="color:#008e59;">[译]</span>MySQL_页分裂
+    </h1>
+  
+
+
+      
+      <div class="article-meta">
+        
+        <span class="article-date">
+    <i class="icon icon-calendar-check"></i>
+	<a href="/2020/02/28/MySQL-%E9%A1%B5%E5%88%86%E8%A3%82/" class="article-date">
+	  <time datetime="2020-02-28T06:49:54.000Z" itemprop="datePublished">2020-02-28</time>
+	</a>
+</span>
+        
+  <span class="article-category">
+    <i class="icon icon-folder"></i>
+    <a class="article-category-link" href="/categories/%E5%8D%9A%E6%96%87/">博文</a>
+  </span>
+
+        
+  <span class="article-tag">
+    <i class="icon icon-tags"></i>
+	<a class="article-tag-link-link" href="/tags/MySQL/" rel="tag">MySQL</a>, <a class="article-tag-link-link" href="/tags/Translation/" rel="tag">Translation</a>
+  </span>
+
+
+        
+
+        <span class="post-comment"><i class="icon icon-comment"></i> <a href="/2020/02/28/MySQL-%E9%A1%B5%E5%88%86%E8%A3%82/#comments" class="article-comment-link">评论</a></span>
+        
+      </div>
+    </div>
+    <div class="article-entry marked-body" itemprop="articleBody">
+      
+        <p>文章来源：<a target="_blank" rel="noopener" href="https://www.percona.com/blog/2017/04/10/innodb-page-merging-and-page-splitting/">InnoDB Page Merging and Page Splitting</a></p>
+<hr>
+<h1 id="表结构"><a href="#表结构" class="headerlink" title="表结构"></a>表结构</h1><p>假设有张表名为<code>windmills</code>，其数据文件目录结构可能如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">data/<br>  windmills/<br>      wmills.ibd<br>      wmills.frm<br></code></pre></td></tr></table></figure>
+
+<p>数据存储在一个叫<code>wills.ibd</code>的文件中。该文件由N个<code>segments</code>组成，每个<code>segments</code>都关联着索引。</p>
+<p>在删除数据行是，该文件的尺寸不会改变，<code>segment</code>自身会增大或缩小取决于其名为<code>extent</code>的子元素。一个<code>extent</code>只能存在于<code>segment</code>中并且固定大小为1MB（若page是默认页大小时）。一个<code>page</code>是<code>extent</code>的子元素且有默认16KB的大小。</p>
+<p>因此，<code>extent</code>最多有64<code>pages</code>。一个页可以包含2~N的数据行。具体的行数取决于行的大小（在表结构中定义了）。Innodb中有一个强制规定，即一个页至少要包含两个数据行，由此有了另一个规定：数据行不能超过8000字节。<br><img class="re-small" alt="segment-extent-page" src="/images/mysql/segment_extent-e1491345857803.png" /><br><span class="img-subtitle">InnoDB uses B-trees to organize your data inside pages across extents, within segments.</span></p>
+<h1 id="Roots-Branches-and-Leaves"><a href="#Roots-Branches-and-Leaves" class="headerlink" title="Roots,Branches,and Leaves"></a>Roots,Branches,and Leaves</h1><p>每个页(leaf)包含2~N的数据行，由主键索引来组织其结构。该树形结构有一些特殊的页来管理树枝(branches)，即所谓的<code>internal nodes</code>(INodes)。<br><img src="/images/mysql/Bplustree-1024x471.png" alt="b+树"><br><span class="img-subtitle">This image is just an example, and is not indicative of the real-world output below.</span><br>上图对应的具体细节如下：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs bash">ROOT NODE <span class="hljs-comment">#3: 4 records, 68 bytes</span><br> NODE POINTER RECORD ≥ (<span class="hljs-built_in">id</span>=2) → <span class="hljs-comment">#197</span><br> INTERNAL NODE <span class="hljs-comment">#197: 464 records, 7888 bytes</span><br> NODE POINTER RECORD ≥ (<span class="hljs-built_in">id</span>=2) → <span class="hljs-comment">#5</span><br> LEAF NODE <span class="hljs-comment">#5: 57 records, 7524 bytes</span><br> RECORD: (<span class="hljs-built_in">id</span>=2) → (uuid=<span class="hljs-string">&quot;884e471c-0e82-11e7-8bf6-08002734ed50&quot;</span>, millid=139, kwatts_s=1956, <span class="hljs-built_in">date</span>=<span class="hljs-string">&quot;2017-05-01&quot;</span>, location=<span class="hljs-string">&quot;For beauty&#x27;s pattern to succeeding men.Yet do thy&quot;</span>, active=1, time=<span class="hljs-string">&quot;2017-03-21 22:05:45&quot;</span>, strrecordtype=<span class="hljs-string">&quot;Wit&quot;</span>)<br></code></pre></td></tr></table></figure>
+
+<p>表结构:</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-keyword">CREATE</span> <span class="hljs-keyword">TABLE</span> `wmills` (<br>  `id` <span class="hljs-type">bigint</span>(<span class="hljs-number">11</span>) <span class="hljs-keyword">NOT</span> <span class="hljs-keyword">NULL</span> AUTO_INCREMENT,<br>  `uuid` <span class="hljs-type">char</span>(<span class="hljs-number">36</span>) <span class="hljs-keyword">COLLATE</span> utf8_bin <span class="hljs-keyword">NOT</span> <span class="hljs-keyword">NULL</span>,<br>  `millid` <span class="hljs-type">smallint</span>(<span class="hljs-number">6</span>) <span class="hljs-keyword">NOT</span> <span class="hljs-keyword">NULL</span>,<br>  `kwatts_s` <span class="hljs-type">int</span>(<span class="hljs-number">11</span>) <span class="hljs-keyword">NOT</span> <span class="hljs-keyword">NULL</span>,<br>  `<span class="hljs-type">date</span>` <span class="hljs-type">date</span> <span class="hljs-keyword">NOT</span> <span class="hljs-keyword">NULL</span>,<br>  `location` <span class="hljs-type">varchar</span>(<span class="hljs-number">50</span>) <span class="hljs-keyword">COLLATE</span> utf8_bin <span class="hljs-keyword">DEFAULT</span> <span class="hljs-keyword">NULL</span>,<br>  `active` tinyint(<span class="hljs-number">2</span>) <span class="hljs-keyword">NOT</span> <span class="hljs-keyword">NULL</span> <span class="hljs-keyword">DEFAULT</span> <span class="hljs-string">&#x27;1&#x27;</span>,<br>  `<span class="hljs-type">time</span>` <span class="hljs-type">timestamp</span> <span class="hljs-keyword">NOT</span> <span class="hljs-keyword">NULL</span> <span class="hljs-keyword">DEFAULT</span> <span class="hljs-built_in">CURRENT_TIMESTAMP</span> <span class="hljs-keyword">ON</span> <span class="hljs-keyword">UPDATE</span> <span class="hljs-built_in">CURRENT_TIMESTAMP</span>,<br>  `strrecordtype` <span class="hljs-type">char</span>(<span class="hljs-number">3</span>) <span class="hljs-keyword">COLLATE</span> utf8_bin <span class="hljs-keyword">NOT</span> <span class="hljs-keyword">NULL</span>,<br>  <span class="hljs-keyword">PRIMARY</span> KEY (`id`),<br>  KEY `IDX_millid` (`millid`)<br>) ENGINE<span class="hljs-operator">=</span>InnoDB;<br></code></pre></td></tr></table></figure>
+
+<p>B-Tree都有一个根节点，本例子中根节点是#3。root页（即根节点）包含有索引的ID值，其INodes数量等信息。INodes页包含自身的属性，取值范围等信息。最后，是叶子节点(leaf nodes)，这里我们能获取到数据行。在这个例子中，我们可以看出来，#5号叶子节点包含57行数据，总共7524字节。</p>
+<p>我们使用表和行来维护数据，而Innodb使用branches，pages，和records来维护数据。必须牢记一点，Innodb并不直接操作数据行，而是操作pages。当从磁盘上加载一页后，他会扫描改页来确定数据行(row/record)。</p>
+<h1 id="Page-Internals"><a href="#Page-Internals" class="headerlink" title="Page Internals"></a>Page Internals</h1><p><code>page</code>可以是空的也可以是装满的。数据行由主键组织，若你的表有<code>AUTO_INCREMENT</code>属性，那么主键就是顺序的，如ID=1,2,3,4等等。<br><img src="/images/mysql/Locality_1.png" alt="页"></p>
+<p><code>page</code>有另一个重要的属性：<code>MERGE_THRESHOLD</code>。其默认值是页大小的50%，它在Innodb的合并过程中很重要。<br><img src="/images/mysql/Locality_2.png" alt="页2"></p>
+<p>插入数据时，页顺序填充（若装得下）。当页满了，下一行数据会填充到下一页中。</p>
+<p>我们不仅能自上而下的遍历branches，也能水平遍历叶子节点。因为叶子节点含有指向下一叶子节点的指针。</p>
+<p>例如，page#5有指向下一节点页#6的指针。而页#6含有一个指回页#5的指针，同时有一个指向下一节点页#7的指针。</p>
+<p>该结构能加速顺序扫描的速度（如范围检索）。上述是对<code>AUTO_INCREMENT</code>的插入场景的描述。但若我们执行删除操作呢？</p>
+<h1 id="Page-Mergeing"><a href="#Page-Mergeing" class="headerlink" title="Page Mergeing"></a>Page Mergeing</h1><p>当删除一行时，它并不会物理上删除该数据。而是标记为已删除，其占用的空间是可申领的状态。(Instead, it flags the record as deleted and the space it used becomes reclaimable.)<br><img src="/images/mysql/Locality_3.png" alt="页3"></p>
+<p>当执行了足够多的删除操作，达到<code>MERGE_THRESHOLD</code>（默认是页大小的50%）时，Innodb开始检查附近的页（前一页和后一页），看看是否能通过合并两页来优化空间。<br><img src="/images/mysql/Locality_4.png" alt="页4"></p>
+<p>本例中，页#6使用的空间不足其50%，页#5因为多次删除操作也有&lt;50%的使用率，从Innodb的角度看，他们是可以合并的。<br><img src="/images/mysql/Locality_5.png" alt="页5"></p>
+<p>合并之后，页#5包含自身旧数据和页#6的数据，而页#6则为空留待使用。<br><img src="/images/mysql/Locality_6.png" alt="页6"></p>
+<h1 id="Page-Splits"><a href="#Page-Splits" class="headerlink" title="Page Splits"></a>Page Splits</h1><p>上面提到过，但页使用满了，下一行数据会被写入下一页中。<br>但若我们遇到如下情景呢？<br><img src="/images/mysql/Locality_7.png" alt="页7"></p>
+<p>页#10剩余空间不足以存放新的数据行(或更新操作)，按照上面的下一页逻辑，该行数据应插入到下一页，但实际上：<br><img src="/images/mysql/Locality_9.png" alt="页9"></p>
+<p>页#11也满了，此时数据无法按既定的书序插入，该怎么办？<br>还记得上面提到的链表结构吗？此时，页#10含有前一页#9和后一页#11的指针。<br>Innodb只需要简单的如下操作：</p>
+<ol>
+<li>创建一个新的页</li>
+<li>找到数据源页（页#10）中应该从哪开始分裂(按数据行级别)。</li>
+<li>移动数据。</li>
+<li>重新定义页之间的指向。<br><img src="/images/mysql/Locality_8.png" alt="页8"></li>
+</ol>
+<p>创建一个新页#12。<br><img src="/images/mysql/Locality_10.png" alt="页10"></p>
+<p>页#11保持不变，改变的是页之间的指向关系：</p>
+<ol>
+<li>页#10将指向前一页#9和后一页#12。</li>
+<li>页#12将指向前一页#10和后一页#11。</li>
+<li>页#11将指向前一页#12和后一页#13。</li>
+</ol>
+<p>此时，B+树的路径在逻辑上仍然是连续的，但物理上，页之间是无序的，通常都在不同的<code>extent</code>中。</p>
+<p>Innodb使用<code>INFORMATION_SCHEMA.INNODB_METRICS</code>跟踪页分裂的次数。</p>
+<p>一旦页分裂发生，只能通过删除新页数据达到&lt;50%使用率来触发也合并来恢复。</p>
+<p>或者通过<code>OPTIMIZE</code>优化表结构，这通常很消耗资源且需要很长时间。但有时也是唯一的办法（比如使用了uuid做主键）。</p>
+<p>另外需要记住一点，当发生页分类或也合并时，Innodb会在索引上获取<code>x-latch</code>，在一个繁忙的系统中，这会是一个性能障碍。在Innodb中称为”悲观”更新，此时加的是悲观锁。这会造成索引上的锁竞争。若合并或分裂只操作了一页，被称为”乐观”更新，锁是乐观锁。</p>
+<h1 id="不同主键的比较"><a href="#不同主键的比较" class="headerlink" title="不同主键的比较"></a>不同主键的比较</h1><p>良好的主键不但对读数据重要，也能在写数据时正确的分布数据。</p>
+<p>一例中我们使用简单的自增ID做主键。二例中主键使用了ID（取值范围1-200）且自增。三例中我们使用了同样的ID做主键，但该主键关联到UUID上。</p>
+<p>插入数据时，页分裂的情况如下：<br><img src="/images/mysql/split_1.png" alt="页分裂的对比"></p>
+<p>前两例的数据分布更紧凑。也意味着它们有更好的空间利用率。例三有着大量空闲的页，意味着有大量的页分裂操作。</p>
+<p>而在也合并的情况：<br><img src="/images/mysql/merges_1.png" alt="页合并的对比"></p>
+<p>在<code>插入-更新-删除</code>操作下，自增ID的例子中合并操作更少，更低的合并成功率9.45%。而使用UUID为主键的例子中，合并操作更多且合并成功率更高22.34%</p>
+
+      
+    </div>
+    <div class="article-footer">
+      <blockquote class="mt-2x">
+  <ul class="post-copyright list-unstyled">
+    
+    <li class="post-copyright-link hidden-xs">
+      <strong>本文链接：</strong>
+      <a href="https://straysh.github.life/2020/02/28/MySQL-%E9%A1%B5%E5%88%86%E8%A3%82/" title="MySQL_页分裂" target="_blank" rel="external">https://straysh.github.life/2020/02/28/MySQL-%E9%A1%B5%E5%88%86%E8%A3%82/</a>
+    </li>
+    
+    <li class="post-copyright-license">
+      <strong>版权声明： </strong> 本博客所有文章除特别声明外，均采用 <a href="http://creativecommons.org/licenses/by/4.0/deed.zh" target="_blank" rel="external">CC BY 4.0 CN协议</a> 许可协议。转载请注明出处！
+    </li>
+  </ul>
+</blockquote>
+
+
+<div class="panel panel-default panel-badger">
+  <div class="panel-body">
+    <figure class="media">
+      <div class="media-left">
+        <a href="https://hexo.straysh.com" target="_blank" class="img-burn thumb-sm visible-lg">
+          <img src="/images/avatar.jpg" class="img-rounded w-full" alt="">
+        </a>
+      </div>
+      <div class="media-body">
+        <h3 class="media-heading"><a href="https://hexo.straysh.com" target="_blank"><span class="text-dark">Straysh</span><small class="ml-1x">野生程序猿</small></a></h3>
+        <div>野生程序猿 &amp; 猫奴。</div>
+      </div>
+    </figure>
+  </div>
+</div>
+
+
+    </div>
+  </article>
+  
+    
+  <section id="comments">
+  	
+      <div id="disqus_thread">
+        <noscript>Please enable JavaScript to view the <a target="_blank" rel="noopener" href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+      </div>
+    
+  </section>
+
+
+  
+</div>
+
+  <nav class="bar bar-footer clearfix" data-stick-bottom>
+  <div class="bar-inner">
+  
+  <ul class="pager pull-left">
+    
+    <li class="prev">
+      <a href="/2020/02/28/%E6%9D%82%E8%AE%B0-%E8%B4%9F%E8%B4%A3%E4%BB%BB%E5%9C%B0%E8%AF%B4%EF%BC%8C%E8%BF%99%E6%AC%A1%E7%96%AB%E6%83%85%E5%B7%B2%E7%BB%8F%E6%88%90%E4%B8%BA%E5%8E%8B%E5%9E%AE%E5%85%A8%E7%90%83%E5%8C%96%E7%9A%84%E6%9C%80%E5%90%8E%E4%B8%80%E6%A0%B9%E7%A8%BB%E8%8D%89/" title="杂记_负责任地说，这次疫情已经成为压垮全球化的最后一根稻草"><i class="icon icon-angle-left" aria-hidden="true"></i><span>&nbsp;&nbsp;上一篇</span></a>
+    </li>
+    
+    
+    <li class="next">
+      <a href="/2020/02/27/MySQL-B-Tree%E7%B4%A2%E5%BC%95/" title="MySQL_B+Tree索引"><span>下一篇&nbsp;&nbsp;</span><i class="icon icon-angle-right" aria-hidden="true"></i></a>
+    </li>
+    
+    
+    <li class="toggle-toc">
+      <a class="toggle-btn collapsed" data-toggle="collapse" href="#collapseToc" aria-expanded="false" title="文章目录" role="button">
+        <span>[&nbsp;</span><span>文章目录</span>
+        <i class="text-collapsed icon icon-anchor"></i>
+        <i class="text-in icon icon-close"></i>
+        <span>]</span>
+      </a>
+    </li>
+    
+  </ul>
+  
+  
+  
+  <div class="bar-right">
+    
+    <div class="share-component" data-sites="weibo,qq,wechat,facebook,twitter" data-mobile-sites="weibo,qq,qzone"></div>
+    
+  </div>
+  </div>
+</nav>
+  
+
+
+
+</main>
+
+  <footer class="footer" itemscope itemtype="http://schema.org/WPFooter">
+	
+	
+    <ul class="social-links">
+    	
+        <li><a href="https://github.com/straysh" target="_blank" title="Github" data-toggle=tooltip data-placement=top><i class="icon icon-github"></i></a></li>
+        
+        <li><a href="https://weibo.com/u/1689171115" target="_blank" title="Weibo" data-toggle=tooltip data-placement=top><i class="icon icon-weibo"></i></a></li>
+        
+        <li><a href="/atom.xml" target="_blank" title="Rss" data-toggle=tooltip data-placement=top><i class="icon icon-rss"></i></a></li>
+        
+    </ul>
+
+    <div class="copyright">
+    	
+        &copy; 2022 straysh.com 版权所有。ICP证：鄂ICP备2021016952号-1<!--Straysh-->
+        
+        <div class="publishby">
+        	Theme by <a href="https://github.com/cofess" target="_blank"> cofess </a>base on <a href="https://github.com/cofess/hexo-theme-pure" target="_blank">pure</a>.
+        </div>
+    </div>
+</footer>
+
+  <script src="//cdn.jsdelivr.net/npm/jquery@1.12.4/dist/jquery.min.js"></script>
+<script>
+window.jQuery || document.write('<script src="js/jquery.min.js"><\/script>')
+</script>
+
+<script src="/js/plugin.min.js"></script>
+
+
+<script src="/js/application.js"></script>
+
+
+    <script>
+(function (window) {
+    var INSIGHT_CONFIG = {
+        TRANSLATION: {
+            POSTS: '文章',
+            PAGES: '页面',
+            CATEGORIES: '分类',
+            TAGS: '标签',
+            UNTITLED: '(未命名)',
+        },
+        ROOT_URL: '/',
+        CONTENT_URL: '/content.json',
+    };
+    window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+})(window);
+</script>
+
+<script src="/js/insight.js"></script>
+
+
+
+
+
+
+   
+
+
+
+
+<!--   
+    
+    <script defer>
+    var disqus_config = function () {
+        
+            this.page.url = 'https://straysh.github.life/2020/02/28/MySQL-%E9%A1%B5%E5%88%86%E8%A3%82/';
+        
+        this.page.identifier = 'MySQL-页分裂';
+    };
+    (function() { 
+        var d = document, s = d.createElement('script');  
+        s.src = '//' + 'straysh' + '.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+</script>
+
+-->
+
+
+
+
+
+
+
+</body>
+</html>

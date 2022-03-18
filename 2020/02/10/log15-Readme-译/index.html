@@ -1,0 +1,667 @@
+<!DOCTYPE html>
+<html lang=zh>
+<head>
+  <meta charset="utf-8">
+  
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, minimal-ui">
+  <meta name="renderer" content="webkit">
+  <meta http-equiv="Cache-Control" content="no-transform" />
+  <meta http-equiv="Cache-Control" content="no-siteapp" />
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="format-detection" content="telephone=no,email=no,adress=no">
+  <!-- Color theme for statusbar -->
+  <meta name="theme-color" content="#000000" />
+  <!-- 强制页面在当前窗口以独立页面显示,防止别人在框架里调用页面 -->
+  <meta http-equiv="window-target" content="_top" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lxgw-wenkai-webfont@1.1.0/style.css" />
+  
+  
+  <title>log15_Readme[译] | Hexo</title>
+  <meta name="description" content="log15包提供了一种固执且简洁的最佳实践工具包(both human and machine readable)。它是仿造标准库io和net&#x2F;http构建的。 这个包强制仅记录key&#x2F;value对。键必须是字符串。值可以是任何类型。默认的输出格式是logfmt，也可以选择使用JSON格式。例如:log.Info(&quot;page accessed&quot;， &quot;path&amp;quot">
+<meta property="og:type" content="article">
+<meta property="og:title" content="log15_Readme[译]">
+<meta property="og:url" content="https://straysh.github.life/2020/02/10/log15-Readme-%E8%AF%91/index.html">
+<meta property="og:site_name" content="Straysh的小院">
+<meta property="og:description" content="log15包提供了一种固执且简洁的最佳实践工具包(both human and machine readable)。它是仿造标准库io和net&#x2F;http构建的。 这个包强制仅记录key&#x2F;value对。键必须是字符串。值可以是任何类型。默认的输出格式是logfmt，也可以选择使用JSON格式。例如:log.Info(&quot;page accessed&quot;， &quot;path&amp;quot">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2020-02-10T07:41:45.000Z">
+<meta property="article:modified_time" content="2020-02-10T10:01:21.410Z">
+<meta property="article:author" content="Straysh">
+<meta property="article:tag" content="Translation">
+<meta property="article:tag" content="Golang">
+<meta name="twitter:card" content="summary">
+  <!-- Canonical links -->
+  <link rel="canonical" href="https://straysh.github.life/2020/02/10/log15-Readme-%E8%AF%91/index.html">
+  
+    <link rel="alternate" href="/atom.xml" title="Straysh的小院" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.ico" type="image/x-icon">
+  
+  
+<link rel="stylesheet" href="/css/style.css">
+
+  
+<link rel="stylesheet" href="/css/custom.css">
+
+  
+  
+  
+  
+  
+<meta name="generator" content="Hexo 5.4.1"></head>
+
+
+<body class="main-center theme-green" itemscope itemtype="http://schema.org/WebPage">
+  <header class="header" style="background-image: url(/images/left_images/2.jpg);" itemscope itemtype="http://schema.org/WPHeader">
+  <div class="slimContent" style="height:100%;background-color: rgba(0,0,0,0.7);">
+    <div class="navbar-header">
+      
+      
+      <div class="profile-block text-center">
+        <a id="avatar" href="https://hexo.straysh.com" target="_blank">
+          <img class="img-circle img-rotate" src="/images/avatar.jpg" width="200" height="200">
+        </a>
+        <h2 id="name" class="hidden-xs hidden-sm">Straysh</h2>
+        <h3 id="title" class="hidden-xs hidden-sm hidden-md">野生程序猿</h3>
+        <small id="location" class="text-muted hidden-xs hidden-sm"><i class="icon icon-map-marker"></i> Beijing, China</small>
+      </div>
+      
+      <div class="search" id="search-form-wrap">
+
+    <form class="search-form sidebar-form">
+        <div class="input-group">
+            <input type="text" class="search-form-input form-control" placeholder="搜索" />
+            <span class="input-group-btn">
+                <button type="submit" class="search-form-submit btn btn-flat" onclick="return false;"><i class="icon icon-search"></i></button>
+            </span>
+        </div>
+    </form>
+    <div class="ins-search">
+  <div class="ins-search-mask"></div>
+  <div class="ins-search-container">
+    <div class="ins-input-wrapper">
+      <input type="text" class="ins-search-input" placeholder="想要查找什么..." x-webkit-speech />
+      <button type="button" class="close ins-close ins-selectable" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+    </div>
+    <div class="ins-section-wrapper">
+      <div class="ins-section-container"></div>
+    </div>
+  </div>
+</div>
+
+
+</div>
+      <button class="navbar-toggle collapsed" type="button" data-toggle="collapse" data-target="#main-navbar" aria-controls="main-navbar" aria-expanded="false">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+    </div>
+    <nav id="main-navbar" class="collapse navbar-collapse" itemscope itemtype="http://schema.org/SiteNavigationElement" role="navigation">
+      <ul class="nav navbar-nav main-nav menu-highlight">
+        
+        
+        <li class="menu-item menu-item-home">
+          <a href="/.">
+            
+            <i class="icon icon-home-fill"></i>
+            
+            <span class="menu-title">首页</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives">
+            
+            <i class="icon icon-archives-fill"></i>
+            
+            <span class="menu-title">归档</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories">
+            
+            <i class="icon icon-folder"></i>
+            
+            <span class="menu-title">分类</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags">
+            
+            <i class="icon icon-tags"></i>
+            
+            <span class="menu-title">标签</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-repository">
+          <a href="/repository">
+            
+            <i class="icon icon-project"></i>
+            
+            <span class="menu-title">项目</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-books">
+          <a href="/books">
+            
+            <i class="icon icon-book-fill"></i>
+            
+            <span class="menu-title">书单</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-links">
+          <a href="/links">
+            
+            <i class="icon icon-friendship"></i>
+            
+            <span class="menu-title">友链</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about">
+            
+            <i class="icon icon-cup-fill"></i>
+            
+            <span class="menu-title">关于</span>
+          </a>
+        </li>
+        
+      </ul>
+      
+	
+    <ul class="social-links">
+    	
+        <li><a href="https://github.com/straysh" target="_blank" title="Github" data-toggle=tooltip data-placement=top><i class="icon icon-github"></i></a></li>
+        
+        <li><a href="https://weibo.com/u/1689171115" target="_blank" title="Weibo" data-toggle=tooltip data-placement=top><i class="icon icon-weibo"></i></a></li>
+        
+        <li><a href="/atom.xml" target="_blank" title="Rss" data-toggle=tooltip data-placement=top><i class="icon icon-rss"></i></a></li>
+        
+    </ul>
+
+    </nav>
+  </div>
+</header>
+
+  
+    <aside class="sidebar" itemscope itemtype="http://schema.org/WPSideBar">
+  <div class="slimContent">
+
+    
+      <ul class="sidebar-nav motion-element" style="text-align:center; opacity: 1; display: block; transform: translateX(0px);">
+        <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+          系统目录
+        </li>
+      </ul>
+      <section class="site-overview-wrap sidebar-panel" style="opacity: 0; display: none;">
+        
+          <div class="widget">
+    <h3 class="widget-title">公告</h3>
+    <div class="widget-body">
+        <div id="board">
+            <div class="content">
+                <p>妳是风中的叶，风起而走，我想去追，怎么抓的住？</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+        
+          
+  <div class="widget">
+    <h3 class="widget-title">分类</h3>
+    <div class="widget-body">
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%8D%9A%E6%96%87/">博文</a><span class="category-list-count">102</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%8D%9A%E6%96%87/%E7%AC%94%E8%AE%B0/">笔记</a><span class="category-list-count">2</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E6%9D%82%E8%AE%B0/">杂记</a><span class="category-list-count">6</span></li></ul>
+    </div>
+  </div>
+
+
+        
+          
+  <div class="widget">
+    <h3 class="widget-title">标签</h3>
+    <div class="widget-body">
+      <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/Algorithm/" rel="tag">Algorithm</a><span class="tag-list-count">13</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Apache/" rel="tag">Apache</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Banbrick/" rel="tag">Banbrick</a><span class="tag-list-count">5</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Docker/" rel="tag">Docker</a><span class="tag-list-count">4</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Golang/" rel="tag">Golang</a><span class="tag-list-count">25</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Javascript/" rel="tag">Javascript</a><span class="tag-list-count">10</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Linux/" rel="tag">Linux</a><span class="tag-list-count">13</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/MySQL/" rel="tag">MySQL</a><span class="tag-list-count">13</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Mysql/" rel="tag">Mysql</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Nginx/" rel="tag">Nginx</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Nodejs/" rel="tag">Nodejs</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/PHP/" rel="tag">PHP</a><span class="tag-list-count">19</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/R/" rel="tag">R</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Redis/" rel="tag">Redis</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/SVN/" rel="tag">SVN</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Sphinx/" rel="tag">Sphinx</a><span class="tag-list-count">5</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Translation/" rel="tag">Translation</a><span class="tag-list-count">18</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Yii/" rel="tag">Yii</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%9D%82/" rel="tag">杂</a><span class="tag-list-count">6</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%B1%87%E7%BC%96/" rel="tag">汇编</a><span class="tag-list-count">1</span></li></ul>
+    </div>
+  </div>
+
+
+        
+          
+  <div class="widget">
+    <h3 class="widget-title">标签云</h3>
+    <div class="widget-body tagcloud">
+      <a href="/tags/Algorithm/" style="font-size: 13.67px;">Algorithm</a> <a href="/tags/Apache/" style="font-size: 13px;">Apache</a> <a href="/tags/Banbrick/" style="font-size: 13.33px;">Banbrick</a> <a href="/tags/Docker/" style="font-size: 13.22px;">Docker</a> <a href="/tags/Golang/" style="font-size: 14px;">Golang</a> <a href="/tags/Javascript/" style="font-size: 13.56px;">Javascript</a> <a href="/tags/Linux/" style="font-size: 13.67px;">Linux</a> <a href="/tags/MySQL/" style="font-size: 13.67px;">MySQL</a> <a href="/tags/Mysql/" style="font-size: 13px;">Mysql</a> <a href="/tags/Nginx/" style="font-size: 13.11px;">Nginx</a> <a href="/tags/Nodejs/" style="font-size: 13px;">Nodejs</a> <a href="/tags/PHP/" style="font-size: 13.89px;">PHP</a> <a href="/tags/R/" style="font-size: 13.11px;">R</a> <a href="/tags/Redis/" style="font-size: 13.11px;">Redis</a> <a href="/tags/SVN/" style="font-size: 13px;">SVN</a> <a href="/tags/Sphinx/" style="font-size: 13.33px;">Sphinx</a> <a href="/tags/Translation/" style="font-size: 13.78px;">Translation</a> <a href="/tags/Yii/" style="font-size: 13.11px;">Yii</a> <a href="/tags/%E6%9D%82/" style="font-size: 13.44px;">杂</a> <a href="/tags/%E6%B1%87%E7%BC%96/" style="font-size: 13px;">汇编</a>
+    </div>
+  </div>
+
+        
+          
+  <div class="widget">
+    <h3 class="widget-title">归档</h3>
+    <div class="widget-body">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/03/">三月 2022</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/03/">三月 2021</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/03/">三月 2020</a><span class="archive-list-count">5</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/02/">二月 2020</a><span class="archive-list-count">26</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/12/">十二月 2019</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/04/">四月 2019</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/09/">九月 2018</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/07/">七月 2016</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/06/">六月 2016</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/11/">十一月 2015</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/10/">十月 2015</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/09/">九月 2015</a><span class="archive-list-count">5</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/08/">八月 2015</a><span class="archive-list-count">13</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/07/">七月 2015</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/11/">十一月 2014</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/03/">三月 2014</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/12/">十二月 2013</a><span class="archive-list-count">8</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/10/">十月 2013</a><span class="archive-list-count">8</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/09/">九月 2013</a><span class="archive-list-count">2</span></li></ul>
+    </div>
+  </div>
+
+
+        
+          
+  <div class="widget">
+    <h3 class="widget-title">最新文章</h3>
+    <div class="widget-body">
+      <ul class="recent-post-list list-unstyled no-thumbnail">
+        
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/%E5%8D%9A%E6%96%87/">博文</a><i class="icon icon-angle-right"></i><a class="category-link" href="/categories/%E5%8D%9A%E6%96%87/%E7%AC%94%E8%AE%B0/">笔记</a>
+              </p>
+              <p class="item-title">
+                <a href="/2022/03/14/%E4%BD%BF%E7%94%A8Go%E6%93%8D%E4%BD%9C%E6%96%87%E4%BB%B6/" class="title">使用Go操作文件</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2022-03-14T12:11:25.000Z" itemprop="datePublished">2022-03-14</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/%E5%8D%9A%E6%96%87/">博文</a>
+              </p>
+              <p class="item-title">
+                <a href="/2022/03/13/Docker%E5%AE%B9%E5%99%A8%E7%BD%91%E7%BB%9C/" class="title">Docker容器网络</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2022-03-13T04:10:09.000Z" itemprop="datePublished">2022-03-13</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/%E5%8D%9A%E6%96%87/">博文</a><i class="icon icon-angle-right"></i><a class="category-link" href="/categories/%E5%8D%9A%E6%96%87/%E7%AC%94%E8%AE%B0/">笔记</a>
+              </p>
+              <p class="item-title">
+                <a href="/2022/03/13/Iptables%E5%92%8C%E5%AE%B9%E5%99%A8/" class="title">Iptables和容器</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2022-03-13T03:01:46.000Z" itemprop="datePublished">2022-03-13</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/%E5%8D%9A%E6%96%87/">博文</a>
+              </p>
+              <p class="item-title">
+                <a href="/2022/03/12/Linux%E7%BD%91%E6%A1%A5%E5%B7%A5%E4%BD%9C%E5%8E%9F%E7%90%86/" class="title">Linux网桥工作原理</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2022-03-12T10:02:29.000Z" itemprop="datePublished">2022-03-12</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/%E5%8D%9A%E6%96%87/">博文</a>
+              </p>
+              <p class="item-title">
+                <a href="/2021/03/16/%E5%B9%B6%E5%8F%91%E5%92%8C%E8%B0%83%E5%BA%A6%E7%9A%84%E5%85%B3%E7%B3%BB/" class="title">并发和调度的关系</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2021-03-16T05:54:13.000Z" itemprop="datePublished">2021-03-16</time>
+              </p>
+            </div>
+          </li>
+          
+      </ul>
+    </div>
+  </div>
+  
+
+        
+      </section>
+
+      <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active" style="opacity: 1; display: block;">
+        <nav id="toc" class="article-toc">
+          <h3 class="toc-title">文章目录</h3>
+          <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%BF%AB%E9%80%9F%E5%85%A5%E9%97%A8"><span class="toc-number">1.</span> <span class="toc-text">快速入门</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%83%AF%E4%BE%8B"><span class="toc-number">2.</span> <span class="toc-text">惯例</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%8A%E4%B8%8B%E6%96%87logger"><span class="toc-number">3.</span> <span class="toc-text">上下文logger</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Handlers"><span class="toc-number">4.</span> <span class="toc-text">Handlers</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%AE%B0%E5%BD%95%E6%96%87%E4%BB%B6%E5%90%8D%E5%92%8C%E8%A1%8C%E5%8F%B7"><span class="toc-number">5.</span> <span class="toc-text">记录文件名和行号</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%87%AA%E5%AE%9A%E4%B9%89Handlers"><span class="toc-number">6.</span> <span class="toc-text">自定义Handlers</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%AE%B0%E5%BD%95%E9%87%8D%E5%BC%80%E9%94%80%E7%9A%84%E6%93%8D%E4%BD%9C"><span class="toc-number">7.</span> <span class="toc-text">记录重开销的操作</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%8A%A8%E6%80%81%E7%9A%84context%E5%80%BC"><span class="toc-number">8.</span> <span class="toc-text">动态的context值</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%BB%88%E7%AB%AF%E6%A0%BC%E5%BC%8F"><span class="toc-number">9.</span> <span class="toc-text">终端格式</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Error-Handling"><span class="toc-number">10.</span> <span class="toc-text">Error Handling</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BD%9C%E4%B8%BAlibrary%E4%BD%BF%E7%94%A8"><span class="toc-number">11.</span> <span class="toc-text">作为library使用</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%BB%91%E5%AE%9A%E4%B8%8A%E4%B8%8B%E6%96%87%E7%9A%84%E6%9C%80%E4%BD%B3%E5%AE%9E%E8%B7%B5"><span class="toc-number">12.</span> <span class="toc-text">绑定上下文的最佳实践</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Must"><span class="toc-number">13.</span> <span class="toc-text">Must</span></a></li></ol>
+        </nav>
+      </section>
+    
+  </div>
+</aside>
+
+  
+  
+<aside class="sidebar sidebar-toc collapse" id="collapseToc" itemscope itemtype="http://schema.org/WPSideBar">
+  <div class="slimContent">
+    <nav id="toc" class="article-toc">
+      <h3 class="toc-title">文章目录</h3>
+      <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%BF%AB%E9%80%9F%E5%85%A5%E9%97%A8"><span class="toc-number">1.</span> <span class="toc-text">快速入门</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%83%AF%E4%BE%8B"><span class="toc-number">2.</span> <span class="toc-text">惯例</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%8A%E4%B8%8B%E6%96%87logger"><span class="toc-number">3.</span> <span class="toc-text">上下文logger</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Handlers"><span class="toc-number">4.</span> <span class="toc-text">Handlers</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%AE%B0%E5%BD%95%E6%96%87%E4%BB%B6%E5%90%8D%E5%92%8C%E8%A1%8C%E5%8F%B7"><span class="toc-number">5.</span> <span class="toc-text">记录文件名和行号</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%87%AA%E5%AE%9A%E4%B9%89Handlers"><span class="toc-number">6.</span> <span class="toc-text">自定义Handlers</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%AE%B0%E5%BD%95%E9%87%8D%E5%BC%80%E9%94%80%E7%9A%84%E6%93%8D%E4%BD%9C"><span class="toc-number">7.</span> <span class="toc-text">记录重开销的操作</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%8A%A8%E6%80%81%E7%9A%84context%E5%80%BC"><span class="toc-number">8.</span> <span class="toc-text">动态的context值</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%BB%88%E7%AB%AF%E6%A0%BC%E5%BC%8F"><span class="toc-number">9.</span> <span class="toc-text">终端格式</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Error-Handling"><span class="toc-number">10.</span> <span class="toc-text">Error Handling</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BD%9C%E4%B8%BAlibrary%E4%BD%BF%E7%94%A8"><span class="toc-number">11.</span> <span class="toc-text">作为library使用</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%BB%91%E5%AE%9A%E4%B8%8A%E4%B8%8B%E6%96%87%E7%9A%84%E6%9C%80%E4%BD%B3%E5%AE%9E%E8%B7%B5"><span class="toc-number">12.</span> <span class="toc-text">绑定上下文的最佳实践</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Must"><span class="toc-number">13.</span> <span class="toc-text">Must</span></a></li></ol>
+    </nav>
+  </div>
+</aside>
+
+<main class="main" role="main">
+  <div class="content">
+  <article id="post-log15-Readme-译" class="article article-type-post" itemscope itemtype="http://schema.org/BlogPosting">
+    
+    <div class="article-header">
+      
+        
+  
+    <h1 class="article-title" itemprop="name">
+      <span style="color:#008e59;">[译]</span>log15_Readme[译]
+    </h1>
+  
+
+
+      
+      <div class="article-meta">
+        
+        <span class="article-date">
+    <i class="icon icon-calendar-check"></i>
+	<a href="/2020/02/10/log15-Readme-%E8%AF%91/" class="article-date">
+	  <time datetime="2020-02-10T07:41:45.000Z" itemprop="datePublished">2020-02-10</time>
+	</a>
+</span>
+        
+  <span class="article-category">
+    <i class="icon icon-folder"></i>
+    <a class="article-category-link" href="/categories/%E5%8D%9A%E6%96%87/">博文</a>
+  </span>
+
+        
+  <span class="article-tag">
+    <i class="icon icon-tags"></i>
+	<a class="article-tag-link-link" href="/tags/Golang/" rel="tag">Golang</a>, <a class="article-tag-link-link" href="/tags/Translation/" rel="tag">Translation</a>
+  </span>
+
+
+        
+
+        <span class="post-comment"><i class="icon icon-comment"></i> <a href="/2020/02/10/log15-Readme-%E8%AF%91/#comments" class="article-comment-link">评论</a></span>
+        
+      </div>
+    </div>
+    <div class="article-entry marked-body" itemprop="articleBody">
+      
+        <p><code>log15</code>包提供了一种固执且简洁的最佳实践工具包(both human and machine readable)。它是仿造标准库<code>io</code>和<code>net/http</code>构建的。</p>
+<p>这个包强制仅记录<code>key/value</code>对。键必须是字符串。值可以是任何类型。默认的输出格式是<code>logfmt</code>，也可以选择使用<code>JSON</code>格式。例如:<br><code>log.Info(&quot;page accessed&quot;， &quot;path&quot;， r.URL。Path， &quot;user_id&quot;， user.id)</code><br>输出一行记录如下:<br><code>lvl=info t=2014-05-02T16:07:23-0700 msg=&quot;page accessed&quot; path=/org/71/profile user_id=9</code></p>
+<span id="more"></span>
+
+<h3 id="快速入门"><a href="#快速入门" class="headerlink" title="快速入门"></a>快速入门</h3><p>首先需要引入库文件：<br><code>import log &quot;github.com/inconshreveable/log15&quot;</code><br>然后可以开始使用了：</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs golang"><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span> &#123;<br>    log.Info(<span class="hljs-string">&quot;Program starting&quot;</span>, <span class="hljs-string">&quot;args&quot;</span>, os.Args)<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<h3 id="惯例"><a href="#惯例" class="headerlink" title="惯例"></a>惯例</h3><p>记录对人有意义的信息是常见且良好的实践，传递给日志函数的第一个参数<em>隐式</em>的对应键<code>msg</code>。</p>
+<p>另外，消息的<code>level</code>值会自动使用键<code>lvl</code>，而当前时间戳会使用键<code>t</code>。</p>
+<p>可以使用任何额外的键值对作为上下文提供给日志函数。<code>log15</code> allows you to favor terseness， ordering， and speed over safety。这种折中对日志函数是合理的。不需要显示的指明键值对，<code>log15</code>理解它们在变长参数列表中的含义:<br><code>log.Warn(&quot;size out of bounds&quot;， &quot;low&quot;， lowBound， &quot;high&quot;， highBound， &quot;val&quot;， val)</code><br>若你非常关注类型的安全性，你可以传入一个<code>log.Ctx</code>:<br><code>log.Warn(&quot;size out of bounds&quot;， log.Ctx&#123;&quot;low&quot;: lowBound， &quot;high&quot;: highBound， &quot;val&quot;: val&#125;)</code></p>
+<h3 id="上下文logger"><a href="#上下文logger" class="headerlink" title="上下文logger"></a>上下文<code>logger</code></h3><p>常常需要添加一个上下文到日志中以便跟踪其操作。例如网络请求。能够很容易的创建一个携带上下文的日志，输出的每行日志都将自动包含该上下文信息：</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs golang">requestlogger := log.New(<span class="hljs-string">&quot;path&quot;</span>, r.URL.Path)<br><br><span class="hljs-comment">// later</span><br>requestlogger.Debug(<span class="hljs-string">&quot;db txn commit&quot;</span>, <span class="hljs-string">&quot;duration&quot;</span>, txnTimer.Finish())<br></code></pre></td></tr></table></figure>
+<p>该日志输出如下：<br><code>lvl=dbug t=2014-05-02T16:07:23-0700 path=/repo/12/add_hook msg=&quot;db txn commit&quot; duration=0.12</code></p>
+<h3 id="Handlers"><a href="#Handlers" class="headerlink" title="Handlers"></a><code>Handlers</code></h3><p><code>Handler</code>接口定义的日志输出到哪，以及如何格式化。<code>Handler</code>接口受<code>net/http</code>句柄接口启发：</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs golang"><span class="hljs-keyword">type</span> Handler <span class="hljs-keyword">interface</span> &#123;<br>    Log(r *Record) <span class="hljs-type">error</span><br>&#125;<br></code></pre></td></tr></table></figure>
+<p><code>Handlers</code>会过滤并格式化日志记录行，或转发到其他<code>Handlers</code>。该包<code>ethereum/go-ethereum/log</code>实现了几个常用的日志模式，用以创建可扩展、自定义的日志结构。</p>
+<p>以下例子展示了打印<code>logfmt</code>格式到标准输出的句柄:<br><code>handler := log.StreamHandler(os.Stdout, log.LogfmtFormat())</code></p>
+<p>这是一个指向其他两个句柄的句柄。一个句柄仅仅将rpc包的记录以<code>logfmt</code>格式打印到标准输出上。另一个以<code>JSON</code>格式打印<code>Error</code>级别（及以上）记录到文件<code>/var/log/service.json</code>：</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs golang">handler := log.MultiHandler(<br>    log.LvlFilterHandler(log.LvlError, log.Must.FileHandler(<span class="hljs-string">&quot;/var/log/service.json&quot;</span>, log.JSONFormat())),<br>    log.MatchFilterHandler(<span class="hljs-string">&quot;pkg&quot;</span>, <span class="hljs-string">&quot;app/rpc&quot;</span> log.StdoutHandler())<br>)<br></code></pre></td></tr></table></figure>
+
+<h3 id="记录文件名和行号"><a href="#记录文件名和行号" class="headerlink" title="记录文件名和行号"></a>记录文件名和行号</h3><p>该包（<code>ethereum/go-ethereum/log</code>）实现了三种句柄，用以记录<code>debugging</code>信息到上下文。<code>CallerFileHandler</code>，<code>CallerFuncHandler</code>，<code>CallerStackHandler</code>。下例记录了文件和行号：</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs golang">h := log.CallerFileHandler(log.StdoutHandler)<br>log.Root().SetHandler(h)<br>...<br>log.Error(<span class="hljs-string">&quot;open file&quot;</span>, <span class="hljs-string">&quot;err&quot;</span>, err)<br></code></pre></td></tr></table></figure>
+<p>输出如下：<br><code>lvl=eror t=2014-05-02T16:07:23-0700 msg=&quot;open file&quot; err=&quot;file not found&quot; caller=data.go:42</code></p>
+<p>下例记录了调用栈信息：</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs golang">h := log.CallerStackHandler(<span class="hljs-string">&quot;%+v&quot;</span>, log.StdoutHandler)<br>log.Root().SetHandler(h)<br>...<br>log.Error(<span class="hljs-string">&quot;open file&quot;</span>, <span class="hljs-string">&quot;err&quot;</span>, err)<br></code></pre></td></tr></table></figure>
+<p>输出如下：<br><code>lvl=eror t=2014-05-02T16:07:23-0700 msg=&quot;open file&quot; err=&quot;file not found&quot; stack=&quot;[pkg/data.go:42 pkg/cmd/main.go]&quot;</code><br><code>%+v</code>参数指示句柄记录源文件相对编译时GOPATH的路径。详细参考<code>github.com/go-stack/stack</code>包的实现。</p>
+<h3 id="自定义Handlers"><a href="#自定义Handlers" class="headerlink" title="自定义Handlers"></a>自定义<code>Handlers</code></h3><p><code>Hnalder</code>句柄如此的简单，通常不需要自定义句柄。接下里，我们创建一个写入句柄A的句柄，但它写入失败时，会携带写入失败的错误信息重新写入另一个句柄B。在依靠网络socket记录日志，但失败时希望将之写入磁盘时这很有用。</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><code class="hljs golang"><span class="hljs-keyword">type</span> BackupHandler <span class="hljs-keyword">struct</span> &#123;<br>    Primary Handler<br>    Secondary Handler<br>&#125;<br><br><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-params">(h *BackupHandler)</span></span> Log (r *Record) <span class="hljs-type">error</span> &#123;<br>    err := h.Primary.Log(r)<br>    <span class="hljs-keyword">if</span> err != <span class="hljs-literal">nil</span> &#123;<br>        r.Ctx = <span class="hljs-built_in">append</span>(ctx, <span class="hljs-string">&quot;primary_err&quot;</span>, err)<br>        <span class="hljs-keyword">return</span> h.Secondary.Log(r)<br>    &#125;<br>    <span class="hljs-keyword">return</span> <span class="hljs-literal">nil</span><br>&#125;<br></code></pre></td></tr></table></figure>
+<p>该模式非常有用，因此该包实现了一个经典的版本<code>FailoverHandler</code>。</p>
+<h3 id="记录重开销的操作"><a href="#记录重开销的操作" class="headerlink" title="记录重开销的操作"></a>记录重开销的操作</h3><p>有时，需要记录一些需要非常重的计算才能得到的值，但当你的日志级别不够时，你不希望做这个计算。</p>
+<p>该包提供了一个简单的模式来标记一个希望惰性计算的操作，仅在当它即将被写入时计算，因此在其他上级句柄中不会触发计算。你需要使用<code>log.Lazy</code>包装一个无参的函数。例如：</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs golang"><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">factorRSAKey</span><span class="hljs-params">()</span></span> (factors []<span class="hljs-type">int</span>) &#123;<br>    <span class="hljs-comment">// return the factors of a very large number</span><br>&#125;<br><br>log.Debug(<span class="hljs-string">&quot;factors&quot;</span>, log.Lazy&#123;factorRSAKey&#125;)<br></code></pre></td></tr></table></figure>
+<p>若该信息未被打印（如错误的日志级别），factorRSAKey不会被计算。</p>
+<h3 id="动态的context值"><a href="#动态的context值" class="headerlink" title="动态的context值"></a>动态的<code>context</code>值</h3><p><code>log.Lazy</code>模式也可用于上下文参数中，假设一个游戏中含有<code>Player</code>对象：</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs golang"><span class="hljs-keyword">type</span> Player <span class="hljs-keyword">struct</span> &#123;<br>  name <span class="hljs-type">string</span><br>  alive <span class="hljs-type">bool</span><br>  log.Logger<br>&#125;<br></code></pre></td></tr></table></figure>
+<p>你总希望打印出玩家的名字自己它是否活着，因此你会这样创建player对象：</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs golang">p := &amp;Player&#123;name: <span class="hljs-string">&quot;straysh&quot;</span>, alive: <span class="hljs-literal">true</span>&#125;<br>p.Logger = log.New(<span class="hljs-string">&quot;name&quot;</span>, p.name, <span class="hljs-string">&quot;alive&quot;</span>, p.alive)<br></code></pre></td></tr></table></figure>
+<p>此时，即时玩家已经死了，日志句柄仍然会打印活着，因为日志上下文是在创建时被初始化的。使用<code>log.Lazy</code>包装，我们可以<code>defer</code>计算玩家是否活着的函数，因此日志行会反射出玩家当前的状态而无论何时调用日志函数。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">p := &amp;Player&#123;name: &quot;straysh&quot;, alive: true&#125;<br>isAlive := func bool &#123;return p.alive&#125;<br>player.Logger = log.New(&quot;name&quot;, p.name, &quot;alive&quot;: log.Lazy(isAlive))<br></code></pre></td></tr></table></figure>
+
+<h3 id="终端格式"><a href="#终端格式" class="headerlink" title="终端格式"></a>终端格式</h3><p>若<code>log15</code>检测到输出是终端，会配置默认句柄（即log.StdoutHanlder）并使用<code>TerminalFormat</code>格式。该格式更好的适配了终端输出，包括不同级别的颜色。</p>
+<h3 id="Error-Handling"><a href="#Error-Handling" class="headerlink" title="Error Handling"></a>Error Handling</h3><p>因为<code>log15</code>允许你绕过类型系统，有几种方法可以使你指定无效参数到日志函数中。例如，给无参函数<code>log.Lazy</code>传一个参数，或给键传一个非字符串的值。由于日志库是一个典型的报告错误的技术，日志函数返回错误将会非常麻烦。相反，<code>log15</code>在处理错误时保证：</p>
+<ul>
+<li>任何包含<code>error</code>的日志行，在打印正常日志信息时，也会打印出错误信息</li>
+<li>任何包含<code>error</code>的日志行，会包含一个键<code>LOG15_ERROR</code>，可以方便的检测是否传递了一个无效的值。</li>
+</ul>
+<p>理解了这一点，你可能会有这样的疑惑：为什么<code>Handler</code>接口在它的<code>Log</code>函数里会返回一个<code>error</code>。<code>Handlers</code>只有在尝试写入外部源失败时，被鼓励返回<code>errors</code>，如<code>syslog</code>无响应。这样能允许诸如<code>FailoverHandler</code>在这些失败后能协作。</p>
+<h3 id="作为library使用"><a href="#作为library使用" class="headerlink" title="作为library使用"></a>作为<code>library</code>使用</h3><p><code>log15</code>更适合被包装成自己的日志库。其最佳实践是默认关闭所有的输出方式，而使用一个公用用的<code>Logger</code>实例，并提供配置方法。如：</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs golang"><span class="hljs-keyword">package</span> yourlib<br><br><span class="hljs-keyword">import</span> <span class="hljs-string">&quot;github.com/inconshreveable/log15&quot;</span><br><br><span class="hljs-keyword">var</span> Log = log.New()<br><br><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">init</span><span class="hljs-params">()</span></span>&#123;<br>  Log.SetHanlder(log.DiscardHandler())<br>&#125;<br></code></pre></td></tr></table></figure>
+<p>库的使用者，可能这样使用它：</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs golang"><span class="hljs-keyword">import</span> <span class="hljs-string">&quot;github.com/inconshreveable/log15&quot;</span><br><span class="hljs-keyword">import</span> <span class="hljs-string">&quot;example.com/yourlib&quot;</span><br><br><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span>&#123;<br>  handler := <span class="hljs-comment">// custom handler setup</span><br>  yourlib.Log.Sethandler(handler)<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<h3 id="绑定上下文的最佳实践"><a href="#绑定上下文的最佳实践" class="headerlink" title="绑定上下文的最佳实践"></a>绑定上下文的最佳实践</h3><p>假设我在开发一个浏览器：</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><code class="hljs golang"><span class="hljs-keyword">type</span> Tab <span class="hljs-keyword">struct</span> &#123;<br>    url <span class="hljs-type">string</span><br>    render *RenderingContext<br>    <span class="hljs-comment">// ...</span><br><br>    Logger<br>&#125;<br><br><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">NewTab</span><span class="hljs-params">(url <span class="hljs-type">string</span>)</span></span> *Tab &#123;<br>    <span class="hljs-keyword">return</span> &amp;Tab &#123;<br>        <span class="hljs-comment">// ...</span><br>        url: url,<br><br>        Logger: log.New(<span class="hljs-string">&quot;url&quot;</span>, url),<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+<p>当常见一个tab页时，我将url作为上下文绑定到logger上，这样可以很容易在日志中跟踪它。此时，不管我对该tab进行何操作，都会使用合成的logger自动记录tab标题：<br><code>tab.Debug(&quot;moved position&quot;, &quot;idx&quot;, tab.idx)</code></p>
+<p>这有一个问题，若tab的url值改变了？我们可以使用<code>log.Lazy</code>确保总是记录了当前的url，但如此就无法记录该tab完整的生命周期。</p>
+<p>我们可以使用一个随机的十六进制数来，这叫做<code>surrogate keys</code>:</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs golang"><span class="hljs-keyword">import</span> logext <span class="hljs-string">&quot;github.com/inconshreveable/log15/ext&quot;</span><br><br>t := &amp;Tab &#123;<br>    <span class="hljs-comment">// ...</span><br>    url: url,<br>&#125;<br><br>t.Logger = log.New(<span class="hljs-string">&quot;id&quot;</span>, logext.RandId(<span class="hljs-number">8</span>), <span class="hljs-string">&quot;url&quot;</span>, log.Lazy&#123;t.getUrl&#125;)<br><span class="hljs-keyword">return</span> t<br></code></pre></td></tr></table></figure>
+<p>这样，我们就有了对应该tab的唯一的标识，同时我们记录下了日志函数调用时的url值。</p>
+<h3 id="Must"><a href="#Must" class="headerlink" title="Must"></a><code>Must</code></h3><p>有一组<code>Must</code>句柄，它们在发生错误时并不返回错误信息而是直接<code>panic</code>。例如：</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs golang">log.Must.FileHandler(<span class="hljs-string">&quot;/path&quot;</span>, log.JSONFormat)<br>log.Must.NetHandler(<span class="hljs-string">&quot;tcp&quot;</span>, <span class="hljs-string">&quot;:1234&quot;</span>, log.JSONFormat)<br></code></pre></td></tr></table></figure>
+
+      
+    </div>
+    <div class="article-footer">
+      <blockquote class="mt-2x">
+  <ul class="post-copyright list-unstyled">
+    
+    <li class="post-copyright-link hidden-xs">
+      <strong>本文链接：</strong>
+      <a href="https://straysh.github.life/2020/02/10/log15-Readme-%E8%AF%91/" title="log15_Readme[译]" target="_blank" rel="external">https://straysh.github.life/2020/02/10/log15-Readme-%E8%AF%91/</a>
+    </li>
+    
+    <li class="post-copyright-license">
+      <strong>版权声明： </strong> 本博客所有文章除特别声明外，均采用 <a href="http://creativecommons.org/licenses/by/4.0/deed.zh" target="_blank" rel="external">CC BY 4.0 CN协议</a> 许可协议。转载请注明出处！
+    </li>
+  </ul>
+</blockquote>
+
+
+<div class="panel panel-default panel-badger">
+  <div class="panel-body">
+    <figure class="media">
+      <div class="media-left">
+        <a href="https://hexo.straysh.com" target="_blank" class="img-burn thumb-sm visible-lg">
+          <img src="/images/avatar.jpg" class="img-rounded w-full" alt="">
+        </a>
+      </div>
+      <div class="media-body">
+        <h3 class="media-heading"><a href="https://hexo.straysh.com" target="_blank"><span class="text-dark">Straysh</span><small class="ml-1x">野生程序猿</small></a></h3>
+        <div>野生程序猿 &amp; 猫奴。</div>
+      </div>
+    </figure>
+  </div>
+</div>
+
+
+    </div>
+  </article>
+  
+    
+  <section id="comments">
+  	
+      <div id="disqus_thread">
+        <noscript>Please enable JavaScript to view the <a target="_blank" rel="noopener" href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+      </div>
+    
+  </section>
+
+
+  
+</div>
+
+  <nav class="bar bar-footer clearfix" data-stick-bottom>
+  <div class="bar-inner">
+  
+  <ul class="pager pull-left">
+    
+    <li class="prev">
+      <a href="/2020/02/10/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84-%E9%93%BE%E8%A1%A8/" title="数据结构_链表"><i class="icon icon-angle-left" aria-hidden="true"></i><span>&nbsp;&nbsp;上一篇</span></a>
+    </li>
+    
+    
+    <li class="next">
+      <a href="/2019/12/04/2019-gorm-FAQs/" title="gorm FAQs"><span>下一篇&nbsp;&nbsp;</span><i class="icon icon-angle-right" aria-hidden="true"></i></a>
+    </li>
+    
+    
+    <li class="toggle-toc">
+      <a class="toggle-btn collapsed" data-toggle="collapse" href="#collapseToc" aria-expanded="false" title="文章目录" role="button">
+        <span>[&nbsp;</span><span>文章目录</span>
+        <i class="text-collapsed icon icon-anchor"></i>
+        <i class="text-in icon icon-close"></i>
+        <span>]</span>
+      </a>
+    </li>
+    
+  </ul>
+  
+  
+  
+  <div class="bar-right">
+    
+    <div class="share-component" data-sites="weibo,qq,wechat,facebook,twitter" data-mobile-sites="weibo,qq,qzone"></div>
+    
+  </div>
+  </div>
+</nav>
+  
+
+
+
+</main>
+
+  <footer class="footer" itemscope itemtype="http://schema.org/WPFooter">
+	
+	
+    <ul class="social-links">
+    	
+        <li><a href="https://github.com/straysh" target="_blank" title="Github" data-toggle=tooltip data-placement=top><i class="icon icon-github"></i></a></li>
+        
+        <li><a href="https://weibo.com/u/1689171115" target="_blank" title="Weibo" data-toggle=tooltip data-placement=top><i class="icon icon-weibo"></i></a></li>
+        
+        <li><a href="/atom.xml" target="_blank" title="Rss" data-toggle=tooltip data-placement=top><i class="icon icon-rss"></i></a></li>
+        
+    </ul>
+
+    <div class="copyright">
+    	
+        &copy; 2022 straysh.com 版权所有。ICP证：鄂ICP备2021016952号-1<!--Straysh-->
+        
+        <div class="publishby">
+        	Theme by <a href="https://github.com/cofess" target="_blank"> cofess </a>base on <a href="https://github.com/cofess/hexo-theme-pure" target="_blank">pure</a>.
+        </div>
+    </div>
+</footer>
+
+  <script src="//cdn.jsdelivr.net/npm/jquery@1.12.4/dist/jquery.min.js"></script>
+<script>
+window.jQuery || document.write('<script src="js/jquery.min.js"><\/script>')
+</script>
+
+<script src="/js/plugin.min.js"></script>
+
+
+<script src="/js/application.js"></script>
+
+
+    <script>
+(function (window) {
+    var INSIGHT_CONFIG = {
+        TRANSLATION: {
+            POSTS: '文章',
+            PAGES: '页面',
+            CATEGORIES: '分类',
+            TAGS: '标签',
+            UNTITLED: '(未命名)',
+        },
+        ROOT_URL: '/',
+        CONTENT_URL: '/content.json',
+    };
+    window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+})(window);
+</script>
+
+<script src="/js/insight.js"></script>
+
+
+
+
+
+
+   
+
+
+
+
+<!--   
+    
+    <script defer>
+    var disqus_config = function () {
+        
+            this.page.url = 'https://straysh.github.life/2020/02/10/log15-Readme-%E8%AF%91/';
+        
+        this.page.identifier = 'log15-Readme-译';
+    };
+    (function() { 
+        var d = document, s = d.createElement('script');  
+        s.src = '//' + 'straysh' + '.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+</script>
+
+-->
+
+
+
+
+
+
+
+</body>
+</html>

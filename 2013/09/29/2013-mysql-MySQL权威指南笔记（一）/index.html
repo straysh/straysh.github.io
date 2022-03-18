@@ -1,0 +1,620 @@
+<!DOCTYPE html>
+<html lang=zh>
+<head>
+  <meta charset="utf-8">
+  
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, minimal-ui">
+  <meta name="renderer" content="webkit">
+  <meta http-equiv="Cache-Control" content="no-transform" />
+  <meta http-equiv="Cache-Control" content="no-siteapp" />
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="format-detection" content="telephone=no,email=no,adress=no">
+  <!-- Color theme for statusbar -->
+  <meta name="theme-color" content="#000000" />
+  <!-- 强制页面在当前窗口以独立页面显示,防止别人在框架里调用页面 -->
+  <meta http-equiv="window-target" content="_top" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lxgw-wenkai-webfont@1.1.0/style.css" />
+  
+  
+  <title>mysql_MySQL权威指南笔记（一） | Hexo</title>
+  <meta name="description" content="SELECT语句的常用元素 Literal Expression Column specification User variable System variable Case expression Scalar function Null value Cast expression Compaund expression Row expression Table expression Aggre">
+<meta property="og:type" content="article">
+<meta property="og:title" content="mysql_MySQL权威指南笔记（一）">
+<meta property="og:url" content="https://straysh.github.life/2013/09/29/2013-mysql-MySQL%E6%9D%83%E5%A8%81%E6%8C%87%E5%8D%97%E7%AC%94%E8%AE%B0%EF%BC%88%E4%B8%80%EF%BC%89/index.html">
+<meta property="og:site_name" content="Straysh的小院">
+<meta property="og:description" content="SELECT语句的常用元素 Literal Expression Column specification User variable System variable Case expression Scalar function Null value Cast expression Compaund expression Row expression Table expression Aggre">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://straysh.github.life/images/mysql_join.jpg">
+<meta property="article:published_time" content="2013-09-29T02:44:10.000Z">
+<meta property="article:modified_time" content="2019-12-01T10:13:40.452Z">
+<meta property="article:author" content="Straysh">
+<meta property="article:tag" content="MySQL">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://straysh.github.life/images/mysql_join.jpg">
+  <!-- Canonical links -->
+  <link rel="canonical" href="https://straysh.github.life/2013/09/29/2013-mysql-MySQL%E6%9D%83%E5%A8%81%E6%8C%87%E5%8D%97%E7%AC%94%E8%AE%B0%EF%BC%88%E4%B8%80%EF%BC%89/index.html">
+  
+    <link rel="alternate" href="/atom.xml" title="Straysh的小院" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.ico" type="image/x-icon">
+  
+  
+<link rel="stylesheet" href="/css/style.css">
+
+  
+<link rel="stylesheet" href="/css/custom.css">
+
+  
+  
+  
+  
+  
+<meta name="generator" content="Hexo 5.4.1"></head>
+
+
+<body class="main-center theme-green" itemscope itemtype="http://schema.org/WebPage">
+  <header class="header" style="background-image: url(/images/left_images/2.jpg);" itemscope itemtype="http://schema.org/WPHeader">
+  <div class="slimContent" style="height:100%;background-color: rgba(0,0,0,0.7);">
+    <div class="navbar-header">
+      
+      
+      <div class="profile-block text-center">
+        <a id="avatar" href="https://hexo.straysh.com" target="_blank">
+          <img class="img-circle img-rotate" src="/images/avatar.jpg" width="200" height="200">
+        </a>
+        <h2 id="name" class="hidden-xs hidden-sm">Straysh</h2>
+        <h3 id="title" class="hidden-xs hidden-sm hidden-md">野生程序猿</h3>
+        <small id="location" class="text-muted hidden-xs hidden-sm"><i class="icon icon-map-marker"></i> Beijing, China</small>
+      </div>
+      
+      <div class="search" id="search-form-wrap">
+
+    <form class="search-form sidebar-form">
+        <div class="input-group">
+            <input type="text" class="search-form-input form-control" placeholder="搜索" />
+            <span class="input-group-btn">
+                <button type="submit" class="search-form-submit btn btn-flat" onclick="return false;"><i class="icon icon-search"></i></button>
+            </span>
+        </div>
+    </form>
+    <div class="ins-search">
+  <div class="ins-search-mask"></div>
+  <div class="ins-search-container">
+    <div class="ins-input-wrapper">
+      <input type="text" class="ins-search-input" placeholder="想要查找什么..." x-webkit-speech />
+      <button type="button" class="close ins-close ins-selectable" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+    </div>
+    <div class="ins-section-wrapper">
+      <div class="ins-section-container"></div>
+    </div>
+  </div>
+</div>
+
+
+</div>
+      <button class="navbar-toggle collapsed" type="button" data-toggle="collapse" data-target="#main-navbar" aria-controls="main-navbar" aria-expanded="false">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+    </div>
+    <nav id="main-navbar" class="collapse navbar-collapse" itemscope itemtype="http://schema.org/SiteNavigationElement" role="navigation">
+      <ul class="nav navbar-nav main-nav menu-highlight">
+        
+        
+        <li class="menu-item menu-item-home">
+          <a href="/.">
+            
+            <i class="icon icon-home-fill"></i>
+            
+            <span class="menu-title">首页</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives">
+            
+            <i class="icon icon-archives-fill"></i>
+            
+            <span class="menu-title">归档</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories">
+            
+            <i class="icon icon-folder"></i>
+            
+            <span class="menu-title">分类</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags">
+            
+            <i class="icon icon-tags"></i>
+            
+            <span class="menu-title">标签</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-repository">
+          <a href="/repository">
+            
+            <i class="icon icon-project"></i>
+            
+            <span class="menu-title">项目</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-books">
+          <a href="/books">
+            
+            <i class="icon icon-book-fill"></i>
+            
+            <span class="menu-title">书单</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-links">
+          <a href="/links">
+            
+            <i class="icon icon-friendship"></i>
+            
+            <span class="menu-title">友链</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about">
+            
+            <i class="icon icon-cup-fill"></i>
+            
+            <span class="menu-title">关于</span>
+          </a>
+        </li>
+        
+      </ul>
+      
+	
+    <ul class="social-links">
+    	
+        <li><a href="https://github.com/straysh" target="_blank" title="Github" data-toggle=tooltip data-placement=top><i class="icon icon-github"></i></a></li>
+        
+        <li><a href="https://weibo.com/u/1689171115" target="_blank" title="Weibo" data-toggle=tooltip data-placement=top><i class="icon icon-weibo"></i></a></li>
+        
+        <li><a href="/atom.xml" target="_blank" title="Rss" data-toggle=tooltip data-placement=top><i class="icon icon-rss"></i></a></li>
+        
+    </ul>
+
+    </nav>
+  </div>
+</header>
+
+  
+    <aside class="sidebar" itemscope itemtype="http://schema.org/WPSideBar">
+  <div class="slimContent">
+
+    
+      <ul class="sidebar-nav motion-element" style="text-align:center; opacity: 1; display: block; transform: translateX(0px);">
+        <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+          系统目录
+        </li>
+      </ul>
+      <section class="site-overview-wrap sidebar-panel" style="opacity: 0; display: none;">
+        
+          <div class="widget">
+    <h3 class="widget-title">公告</h3>
+    <div class="widget-body">
+        <div id="board">
+            <div class="content">
+                <p>妳是风中的叶，风起而走，我想去追，怎么抓的住？</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+        
+          
+  <div class="widget">
+    <h3 class="widget-title">分类</h3>
+    <div class="widget-body">
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%8D%9A%E6%96%87/">博文</a><span class="category-list-count">102</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%8D%9A%E6%96%87/%E7%AC%94%E8%AE%B0/">笔记</a><span class="category-list-count">2</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E6%9D%82%E8%AE%B0/">杂记</a><span class="category-list-count">6</span></li></ul>
+    </div>
+  </div>
+
+
+        
+          
+  <div class="widget">
+    <h3 class="widget-title">标签</h3>
+    <div class="widget-body">
+      <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/Algorithm/" rel="tag">Algorithm</a><span class="tag-list-count">13</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Apache/" rel="tag">Apache</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Banbrick/" rel="tag">Banbrick</a><span class="tag-list-count">5</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Docker/" rel="tag">Docker</a><span class="tag-list-count">4</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Golang/" rel="tag">Golang</a><span class="tag-list-count">25</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Javascript/" rel="tag">Javascript</a><span class="tag-list-count">10</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Linux/" rel="tag">Linux</a><span class="tag-list-count">13</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/MySQL/" rel="tag">MySQL</a><span class="tag-list-count">13</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Mysql/" rel="tag">Mysql</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Nginx/" rel="tag">Nginx</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Nodejs/" rel="tag">Nodejs</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/PHP/" rel="tag">PHP</a><span class="tag-list-count">19</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/R/" rel="tag">R</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Redis/" rel="tag">Redis</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/SVN/" rel="tag">SVN</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Sphinx/" rel="tag">Sphinx</a><span class="tag-list-count">5</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Translation/" rel="tag">Translation</a><span class="tag-list-count">18</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Yii/" rel="tag">Yii</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%9D%82/" rel="tag">杂</a><span class="tag-list-count">6</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%B1%87%E7%BC%96/" rel="tag">汇编</a><span class="tag-list-count">1</span></li></ul>
+    </div>
+  </div>
+
+
+        
+          
+  <div class="widget">
+    <h3 class="widget-title">标签云</h3>
+    <div class="widget-body tagcloud">
+      <a href="/tags/Algorithm/" style="font-size: 13.67px;">Algorithm</a> <a href="/tags/Apache/" style="font-size: 13px;">Apache</a> <a href="/tags/Banbrick/" style="font-size: 13.33px;">Banbrick</a> <a href="/tags/Docker/" style="font-size: 13.22px;">Docker</a> <a href="/tags/Golang/" style="font-size: 14px;">Golang</a> <a href="/tags/Javascript/" style="font-size: 13.56px;">Javascript</a> <a href="/tags/Linux/" style="font-size: 13.67px;">Linux</a> <a href="/tags/MySQL/" style="font-size: 13.67px;">MySQL</a> <a href="/tags/Mysql/" style="font-size: 13px;">Mysql</a> <a href="/tags/Nginx/" style="font-size: 13.11px;">Nginx</a> <a href="/tags/Nodejs/" style="font-size: 13px;">Nodejs</a> <a href="/tags/PHP/" style="font-size: 13.89px;">PHP</a> <a href="/tags/R/" style="font-size: 13.11px;">R</a> <a href="/tags/Redis/" style="font-size: 13.11px;">Redis</a> <a href="/tags/SVN/" style="font-size: 13px;">SVN</a> <a href="/tags/Sphinx/" style="font-size: 13.33px;">Sphinx</a> <a href="/tags/Translation/" style="font-size: 13.78px;">Translation</a> <a href="/tags/Yii/" style="font-size: 13.11px;">Yii</a> <a href="/tags/%E6%9D%82/" style="font-size: 13.44px;">杂</a> <a href="/tags/%E6%B1%87%E7%BC%96/" style="font-size: 13px;">汇编</a>
+    </div>
+  </div>
+
+        
+          
+  <div class="widget">
+    <h3 class="widget-title">归档</h3>
+    <div class="widget-body">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/03/">三月 2022</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/03/">三月 2021</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/03/">三月 2020</a><span class="archive-list-count">5</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/02/">二月 2020</a><span class="archive-list-count">26</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/12/">十二月 2019</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/04/">四月 2019</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/09/">九月 2018</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/07/">七月 2016</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/06/">六月 2016</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/11/">十一月 2015</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/10/">十月 2015</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/09/">九月 2015</a><span class="archive-list-count">5</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/08/">八月 2015</a><span class="archive-list-count">13</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/07/">七月 2015</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/11/">十一月 2014</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/03/">三月 2014</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/12/">十二月 2013</a><span class="archive-list-count">8</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/10/">十月 2013</a><span class="archive-list-count">8</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/09/">九月 2013</a><span class="archive-list-count">2</span></li></ul>
+    </div>
+  </div>
+
+
+        
+          
+  <div class="widget">
+    <h3 class="widget-title">最新文章</h3>
+    <div class="widget-body">
+      <ul class="recent-post-list list-unstyled no-thumbnail">
+        
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/%E5%8D%9A%E6%96%87/">博文</a><i class="icon icon-angle-right"></i><a class="category-link" href="/categories/%E5%8D%9A%E6%96%87/%E7%AC%94%E8%AE%B0/">笔记</a>
+              </p>
+              <p class="item-title">
+                <a href="/2022/03/14/%E4%BD%BF%E7%94%A8Go%E6%93%8D%E4%BD%9C%E6%96%87%E4%BB%B6/" class="title">使用Go操作文件</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2022-03-14T12:11:25.000Z" itemprop="datePublished">2022-03-14</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/%E5%8D%9A%E6%96%87/">博文</a>
+              </p>
+              <p class="item-title">
+                <a href="/2022/03/13/Docker%E5%AE%B9%E5%99%A8%E7%BD%91%E7%BB%9C/" class="title">Docker容器网络</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2022-03-13T04:10:09.000Z" itemprop="datePublished">2022-03-13</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/%E5%8D%9A%E6%96%87/">博文</a><i class="icon icon-angle-right"></i><a class="category-link" href="/categories/%E5%8D%9A%E6%96%87/%E7%AC%94%E8%AE%B0/">笔记</a>
+              </p>
+              <p class="item-title">
+                <a href="/2022/03/13/Iptables%E5%92%8C%E5%AE%B9%E5%99%A8/" class="title">Iptables和容器</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2022-03-13T03:01:46.000Z" itemprop="datePublished">2022-03-13</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/%E5%8D%9A%E6%96%87/">博文</a>
+              </p>
+              <p class="item-title">
+                <a href="/2022/03/12/Linux%E7%BD%91%E6%A1%A5%E5%B7%A5%E4%BD%9C%E5%8E%9F%E7%90%86/" class="title">Linux网桥工作原理</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2022-03-12T10:02:29.000Z" itemprop="datePublished">2022-03-12</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/%E5%8D%9A%E6%96%87/">博文</a>
+              </p>
+              <p class="item-title">
+                <a href="/2021/03/16/%E5%B9%B6%E5%8F%91%E5%92%8C%E8%B0%83%E5%BA%A6%E7%9A%84%E5%85%B3%E7%B3%BB/" class="title">并发和调度的关系</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2021-03-16T05:54:13.000Z" itemprop="datePublished">2021-03-16</time>
+              </p>
+            </div>
+          </li>
+          
+      </ul>
+    </div>
+  </div>
+  
+
+        
+      </section>
+
+      <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active" style="opacity: 1; display: block;">
+        <nav id="toc" class="article-toc">
+          <h3 class="toc-title">文章目录</h3>
+          <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#SELECT%E8%AF%AD%E5%8F%A5%E7%9A%84%E5%B8%B8%E7%94%A8%E5%85%83%E7%B4%A0"><span class="toc-number">1.</span> <span class="toc-text">SELECT语句的常用元素</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#SELECT%E8%AF%AD%E5%8F%A5%E7%9A%84%E5%AE%9A%E4%B9%89"><span class="toc-number">2.</span> <span class="toc-text">SELECT语句的定义</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#SELECT%E8%AF%AD%E5%8F%A5%EF%BC%9AFROM%E5%AD%90%E5%8F%A5"><span class="toc-number">3.</span> <span class="toc-text">SELECT语句：FROM子句</span></a></li></ol>
+        </nav>
+      </section>
+    
+  </div>
+</aside>
+
+  
+  
+<main class="main" role="main">
+  <div class="content">
+  <article id="post-2013-mysql-MySQL权威指南笔记（一）" class="article article-type-post" itemscope itemtype="http://schema.org/BlogPosting">
+    
+    <div class="article-header">
+      
+        
+  
+    <h1 class="article-title" itemprop="name">
+      mysql_MySQL权威指南笔记（一）
+    </h1>
+  
+
+
+      
+      <div class="article-meta">
+        
+        <span class="article-date">
+    <i class="icon icon-calendar-check"></i>
+	<a href="/2013/09/29/2013-mysql-MySQL%E6%9D%83%E5%A8%81%E6%8C%87%E5%8D%97%E7%AC%94%E8%AE%B0%EF%BC%88%E4%B8%80%EF%BC%89/" class="article-date">
+	  <time datetime="2013-09-29T02:44:10.000Z" itemprop="datePublished">2013-09-29</time>
+	</a>
+</span>
+        
+  <span class="article-category">
+    <i class="icon icon-folder"></i>
+    <a class="article-category-link" href="/categories/%E5%8D%9A%E6%96%87/">博文</a>
+  </span>
+
+        
+  <span class="article-tag">
+    <i class="icon icon-tags"></i>
+	<a class="article-tag-link-link" href="/tags/MySQL/" rel="tag">MySQL</a>
+  </span>
+
+
+        
+
+        <span class="post-comment"><i class="icon icon-comment"></i> <a href="/2013/09/29/2013-mysql-MySQL%E6%9D%83%E5%A8%81%E6%8C%87%E5%8D%97%E7%AC%94%E8%AE%B0%EF%BC%88%E4%B8%80%EF%BC%89/#comments" class="article-comment-link">评论</a></span>
+        
+      </div>
+    </div>
+    <div class="article-entry marked-body" itemprop="articleBody">
+      
+        <h3 id="SELECT语句的常用元素"><a href="#SELECT语句的常用元素" class="headerlink" title="SELECT语句的常用元素"></a>SELECT语句的常用元素</h3><ul>
+<li>Literal</li>
+<li>Expression</li>
+<li>Column specification</li>
+<li>User variable</li>
+<li>System variable</li>
+<li>Case expression</li>
+<li>Scalar function</li>
+<li>Null value</li>
+<li>Cast expression</li>
+<li>Compaund expression</li>
+<li>Row expression</li>
+<li><a href='#table-expression' />Table expression</a></li>
+<li>Aggregation function<br><a name='table-expression'></a></li>
+</ul>
+<p>一个table expression通常得到一个值，该表达式用在SELECT中以及SELECT语句的WHERE子句中。</p>
+<p>我们通常按照表达式的数据类型或其值的复杂性或其形式来给表达式分类。表达式的数据类型和MySQL的数据类型是一致的，也包含数值型、字符型、时间型、十六进制和布尔类型。这时，表达式有一个确定的值，我们称其为标量scalar value。在按复杂性分类时，这些scalar value所表示的表达式被成为scalar expression。除此之外，还有row expression和table expression。需要注意的是，row expression是列表(有序)，而table expression是集合(无序)</p>
+<p>表达式的第三种划分方式是以上面两种为基础的。通常来说，带有运算符的表达式就是compaund expression。与之对应的是单一表达式singular expression。在MySQL中table expression是可复合的(如只用UNION关键字)，而row expression是不可复合的。</p>
+<h3 id="SELECT语句的定义"><a href="#SELECT语句的定义" class="headerlink" title="SELECT语句的定义"></a>SELECT语句的定义</h3><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-operator">&lt;</span><span class="hljs-keyword">select</span> statement<span class="hljs-operator">&gt;</span> ::<span class="hljs-operator">=</span><br>    <span class="hljs-operator">&lt;</span><span class="hljs-keyword">table</span> expression<span class="hljs-operator">&gt;</span><br><br><span class="hljs-operator">&lt;</span><span class="hljs-keyword">table</span> expression<span class="hljs-operator">&gt;</span> ::<span class="hljs-operator">=</span><br>    <span class="hljs-operator">&lt;</span><span class="hljs-keyword">select</span> block head<span class="hljs-operator">&gt;</span> [<span class="hljs-operator">&lt;</span><span class="hljs-keyword">select</span> block tail<span class="hljs-operator">&gt;</span>]<br><br><span class="hljs-operator">&lt;</span><span class="hljs-keyword">select</span> block head<span class="hljs-operator">&gt;</span> ::<span class="hljs-operator">=</span><br>    <span class="hljs-operator">&lt;</span><span class="hljs-keyword">select</span> clause<span class="hljs-operator">&gt;</span><br>    [<span class="hljs-operator">&lt;</span><span class="hljs-keyword">from</span> clause<span class="hljs-operator">&gt;</span><br>        [<span class="hljs-operator">&lt;</span><span class="hljs-keyword">where</span> clause<span class="hljs-operator">&gt;</span>][<span class="hljs-operator">&lt;</span><span class="hljs-keyword">group</span> <span class="hljs-keyword">by</span> clause<span class="hljs-operator">&gt;</span>][<span class="hljs-operator">&lt;</span><span class="hljs-keyword">having</span> clause<span class="hljs-operator">&gt;</span>]]<br><br><span class="hljs-operator">&lt;</span><span class="hljs-keyword">select</span> block tail<span class="hljs-operator">&gt;</span> ::<span class="hljs-operator">=</span><br>    [<span class="hljs-operator">&lt;</span><span class="hljs-keyword">order</span> <span class="hljs-keyword">by</span> clause<span class="hljs-operator">&gt;</span>][limit clause]<br></code></pre></td></tr></table></figure>
+
+<p>下面我们来分析一下SQL语句的执行过程。</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-keyword">SELECT</span> `id`,`name`<span class="hljs-operator">/</span><span class="hljs-operator">/</span>最后一步，<span class="hljs-keyword">select</span>子句从结果集中抽取指定的列，形成最终的结果集并返回<br><span class="hljs-keyword">FROM</span> `stu`<span class="hljs-operator">/</span><span class="hljs-operator">/</span>第一步，<span class="hljs-keyword">from</span>子句指定了查询范围，并<span class="hljs-keyword">copy</span>出一张临时表<br><span class="hljs-keyword">WHERE</span> `age`<span class="hljs-operator">&gt;</span><span class="hljs-number">18</span><span class="hljs-operator">/</span><span class="hljs-operator">/</span>第二步，<span class="hljs-keyword">where</span>子句过滤出符合条件的<span class="hljs-type">row</span>，缩小的临时表<br><span class="hljs-keyword">GROUP</span> <span class="hljs-keyword">BY</span> `classid`<span class="hljs-operator">/</span><span class="hljs-operator">/</span>第三步，<span class="hljs-keyword">group</span> <span class="hljs-keyword">by</span>子句按指定的字段分组，这些字段在临时表中是唯一的，其他字段会形成列表<br><span class="hljs-keyword">HAVING</span> <span class="hljs-built_in">count</span>(<span class="hljs-operator">*</span>)<span class="hljs-operator">&gt;</span><span class="hljs-number">1</span><span class="hljs-operator">/</span><span class="hljs-operator">/</span>第四步，<span class="hljs-keyword">having</span>子句再次过滤出符合条件的<span class="hljs-type">row</span>，缩小了临时表<br><span class="hljs-keyword">ORDER</span> <span class="hljs-keyword">BY</span> `id`<span class="hljs-operator">/</span><span class="hljs-operator">/</span>第五步，<span class="hljs-keyword">order</span> <span class="hljs-keyword">by</span>子句把临时表按指定的字段排序，只改变了临时表的<span class="hljs-type">row</span>顺序，不改变最终的结果集<br>LIMIT <span class="hljs-number">10</span><span class="hljs-operator">/</span><span class="hljs-operator">/</span>第六步，limit子句从结果集中抽取指定的<span class="hljs-keyword">rows</span><br></code></pre></td></tr></table></figure>
+
+<p>上面的SQL语句最终的结果集就是一个table expression，就像之前说的，a table expression is a collection of rows。table expression的定义如下：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-operator">&lt;</span><span class="hljs-keyword">table</span> expression<span class="hljs-operator">&gt;</span> ::<span class="hljs-operator">=</span><br>    &#123;<span class="hljs-operator">&lt;</span><span class="hljs-keyword">select</span> block head<span class="hljs-operator">&gt;</span><span class="hljs-operator">|</span>(<span class="hljs-operator">&lt;</span><span class="hljs-keyword">table</span> expression<span class="hljs-operator">&gt;</span>)<span class="hljs-operator">|</span><span class="hljs-operator">&lt;</span>compaund <span class="hljs-keyword">table</span> expression<span class="hljs-operator">&gt;</span>&#125;[<span class="hljs-keyword">select</span> block tail]<br><br><span class="hljs-operator">&lt;</span>compaund <span class="hljs-keyword">table</span> expression<span class="hljs-operator">&gt;</span> ::<span class="hljs-operator">=</span><br>    <span class="hljs-operator">&lt;</span><span class="hljs-keyword">table</span> expression<span class="hljs-operator">&gt;</span><span class="hljs-operator">&lt;</span><span class="hljs-keyword">set</span> operator<span class="hljs-operator">&gt;</span><span class="hljs-operator">&lt;</span><span class="hljs-keyword">table</span> expression<span class="hljs-operator">&gt;</span><br><br><span class="hljs-operator">&lt;</span><span class="hljs-keyword">set</span> operator<span class="hljs-operator">&gt;</span> ::<span class="hljs-operator">=</span> <span class="hljs-keyword">UNION</span><br></code></pre></td></tr></table></figure>
+<p>一个table expression可以是一条SELECT语句(singular expression)或者使用()括号将自身包起来，再或者是多个table expression使用一些关键字来复合(eg:UNION)，也就是所谓的compaund expression。而在使用UNION时，必须保证两个表表达式的度是相同的(列数相同)。</p>
+<p>一个table expression可以调用另一个table expression(subquery或subselect)。理论上讲，table expression的嵌套可以是无限的。</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-keyword">SELECT</span> <span class="hljs-operator">*</span><br>    <span class="hljs-keyword">FROM</span> (<span class="hljs-keyword">SELECT</span> <span class="hljs-operator">*</span><br>        <span class="hljs-keyword">FROM</span> (<span class="hljs-keyword">SELECT</span> <span class="hljs-operator">*</span><br>            <span class="hljs-keyword">FROM</span> (<span class="hljs-keyword">SELECT</span> <span class="hljs-operator">*</span><br>                <span class="hljs-keyword">FROM</span> `stu`) <span class="hljs-keyword">AS</span> tmp1) <span class="hljs-keyword">AS</span> tmp2) <span class="hljs-keyword">AS</span> tmp3<br></code></pre></td></tr></table></figure>
+<p>根据子查询返回的结果集的类型，子查询又被分为table subquery(返回的是table expression)、row subquery(返回的row expression)、column subquery(返回的是只有一列的row expression)、scalar subquery(返回值是一行一列，即一个标量)</p>
+<h3 id="SELECT语句：FROM子句"><a href="#SELECT语句：FROM子句" class="headerlink" title="SELECT语句：FROM子句"></a>SELECT语句：FROM子句</h3><p>一个table expression通常是从FROM子句开始执行的。除非它没有FROM子句，例如：select 1+2。FROM子句的定义如下：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-operator">&lt;</span><span class="hljs-keyword">from</span> clause<span class="hljs-operator">&gt;</span> ::<span class="hljs-operator">=</span><br>    <span class="hljs-keyword">FROM</span> <span class="hljs-operator">&lt;</span><span class="hljs-keyword">table</span> reference<span class="hljs-operator">&gt;</span>[,<span class="hljs-operator">&lt;</span><span class="hljs-keyword">table</span> reference<span class="hljs-operator">&gt;</span>]...<br><br><span class="hljs-operator">&lt;</span><span class="hljs-keyword">table</span> reference<span class="hljs-operator">&gt;</span> ::<span class="hljs-operator">=</span><br>    <span class="hljs-operator">&lt;</span><span class="hljs-keyword">table</span> specification<span class="hljs-operator">&gt;</span>[[<span class="hljs-keyword">AS</span>] <span class="hljs-operator">&lt;</span>pseudonym<span class="hljs-operator">&gt;</span>]<br><span class="hljs-operator">&lt;</span><span class="hljs-keyword">table</span> specification<span class="hljs-operator">&gt;</span> ::<span class="hljs-operator">=</span>[<span class="hljs-operator">&lt;</span>database name<span class="hljs-operator">&gt;</span> . ]<span class="hljs-operator">&lt;</span><span class="hljs-keyword">table</span> name<span class="hljs-operator">&gt;</span><br><span class="hljs-operator">&lt;</span>pseudonym<span class="hljs-operator">&gt;</span> ::<span class="hljs-operator">=</span><span class="hljs-operator">&lt;</span>alias name<span class="hljs-operator">&gt;</span><br></code></pre></td></tr></table></figure>
+<p>定义看起来很复杂，用过MySQL的同学都知道这是很简单的。上面这段相当于：FROM 数据库名.表明 [AS] 别名。AS关键字可以省略。</p>
+<p>上面这些规则同样适用于SELECT子句中的列。例如：SELECT 数据库名.表名.列名。需要注意的是，这些限定词都是可以使用别名替代的。例如：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-keyword">SELECT</span> `testdb`.`stu`.`id` <span class="hljs-keyword">FROM</span> `testdb`.`stu` <span class="hljs-keyword">WHERE</span> `id`<span class="hljs-operator">=</span><span class="hljs-number">1</span><br><span class="hljs-keyword">SELECT</span> s.`id` <span class="hljs-keyword">FROM</span> `testdb`.`stu` <span class="hljs-string">&#x27;s&#x27;</span> <span class="hljs-keyword">WHERE</span> `id`<span class="hljs-operator">=</span><span class="hljs-number">1</span><br><span class="hljs-keyword">SELECT</span> s.`id` <span class="hljs-keyword">FROM</span> `testdb`.`stu` <span class="hljs-keyword">AS</span> <span class="hljs-string">&#x27;s&#x27;</span> <span class="hljs-keyword">WHERE</span> `id`<span class="hljs-operator">=</span><span class="hljs-number">1</span><br>错误：<span class="hljs-keyword">SELECT</span> s.`id` <span class="hljs-string">&#x27;sid&#x27;</span> <span class="hljs-keyword">FROM</span> `testdb`.`stu` <span class="hljs-keyword">AS</span> <span class="hljs-string">&#x27;s&#x27;</span> <span class="hljs-keyword">WHERE</span> sid<span class="hljs-operator">=</span><span class="hljs-number">1</span><br><span class="hljs-operator">/</span><span class="hljs-operator">/</span>在同一个<span class="hljs-keyword">select</span> block head中列别名是不可用的<br></code></pre></td></tr></table></figure>
+<p>最后，剩下FROM子句的一个难点，JOIN。具体看下图的分析，应该比较明了了。页面太长了 - -、，换下一章。<br><img src="/images/mysql_join.jpg" alt="join详解"></p>
+
+      
+    </div>
+    <div class="article-footer">
+      <blockquote class="mt-2x">
+  <ul class="post-copyright list-unstyled">
+    
+    <li class="post-copyright-link hidden-xs">
+      <strong>本文链接：</strong>
+      <a href="https://straysh.github.life/2013/09/29/2013-mysql-MySQL%E6%9D%83%E5%A8%81%E6%8C%87%E5%8D%97%E7%AC%94%E8%AE%B0%EF%BC%88%E4%B8%80%EF%BC%89/" title="mysql_MySQL权威指南笔记（一）" target="_blank" rel="external">https://straysh.github.life/2013/09/29/2013-mysql-MySQL%E6%9D%83%E5%A8%81%E6%8C%87%E5%8D%97%E7%AC%94%E8%AE%B0%EF%BC%88%E4%B8%80%EF%BC%89/</a>
+    </li>
+    
+    <li class="post-copyright-license">
+      <strong>版权声明： </strong> 本博客所有文章除特别声明外，均采用 <a href="http://creativecommons.org/licenses/by/4.0/deed.zh" target="_blank" rel="external">CC BY 4.0 CN协议</a> 许可协议。转载请注明出处！
+    </li>
+  </ul>
+</blockquote>
+
+
+<div class="panel panel-default panel-badger">
+  <div class="panel-body">
+    <figure class="media">
+      <div class="media-left">
+        <a href="https://hexo.straysh.com" target="_blank" class="img-burn thumb-sm visible-lg">
+          <img src="/images/avatar.jpg" class="img-rounded w-full" alt="">
+        </a>
+      </div>
+      <div class="media-body">
+        <h3 class="media-heading"><a href="https://hexo.straysh.com" target="_blank"><span class="text-dark">Straysh</span><small class="ml-1x">野生程序猿</small></a></h3>
+        <div>野生程序猿 &amp; 猫奴。</div>
+      </div>
+    </figure>
+  </div>
+</div>
+
+
+    </div>
+  </article>
+  
+    
+  <section id="comments">
+  	
+      <div id="disqus_thread">
+        <noscript>Please enable JavaScript to view the <a target="_blank" rel="noopener" href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+      </div>
+    
+  </section>
+
+
+  
+</div>
+
+  <nav class="bar bar-footer clearfix" data-stick-bottom>
+  <div class="bar-inner">
+  
+  <ul class="pager pull-left">
+    
+    <li class="prev">
+      <a href="/2013/09/29/2013-demo-blog%E5%85%A5%E5%8F%A3%E5%88%86%E6%9E%90/" title="demo blog入口分析"><i class="icon icon-angle-left" aria-hidden="true"></i><span>&nbsp;&nbsp;上一篇</span></a>
+    </li>
+    
+    
+    
+  </ul>
+  
+  
+  
+  <div class="bar-right">
+    
+    <div class="share-component" data-sites="weibo,qq,wechat,facebook,twitter" data-mobile-sites="weibo,qq,qzone"></div>
+    
+  </div>
+  </div>
+</nav>
+  
+
+
+
+</main>
+
+  <footer class="footer" itemscope itemtype="http://schema.org/WPFooter">
+	
+	
+    <ul class="social-links">
+    	
+        <li><a href="https://github.com/straysh" target="_blank" title="Github" data-toggle=tooltip data-placement=top><i class="icon icon-github"></i></a></li>
+        
+        <li><a href="https://weibo.com/u/1689171115" target="_blank" title="Weibo" data-toggle=tooltip data-placement=top><i class="icon icon-weibo"></i></a></li>
+        
+        <li><a href="/atom.xml" target="_blank" title="Rss" data-toggle=tooltip data-placement=top><i class="icon icon-rss"></i></a></li>
+        
+    </ul>
+
+    <div class="copyright">
+    	
+        &copy; 2022 straysh.com 版权所有。ICP证：鄂ICP备2021016952号-1<!--Straysh-->
+        
+        <div class="publishby">
+        	Theme by <a href="https://github.com/cofess" target="_blank"> cofess </a>base on <a href="https://github.com/cofess/hexo-theme-pure" target="_blank">pure</a>.
+        </div>
+    </div>
+</footer>
+
+  <script src="//cdn.jsdelivr.net/npm/jquery@1.12.4/dist/jquery.min.js"></script>
+<script>
+window.jQuery || document.write('<script src="js/jquery.min.js"><\/script>')
+</script>
+
+<script src="/js/plugin.min.js"></script>
+
+
+<script src="/js/application.js"></script>
+
+
+    <script>
+(function (window) {
+    var INSIGHT_CONFIG = {
+        TRANSLATION: {
+            POSTS: '文章',
+            PAGES: '页面',
+            CATEGORIES: '分类',
+            TAGS: '标签',
+            UNTITLED: '(未命名)',
+        },
+        ROOT_URL: '/',
+        CONTENT_URL: '/content.json',
+    };
+    window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+})(window);
+</script>
+
+<script src="/js/insight.js"></script>
+
+
+
+
+
+
+   
+
+
+
+
+<!--   
+    
+    <script defer>
+    var disqus_config = function () {
+        
+            this.page.url = 'https://straysh.github.life/2013/09/29/2013-mysql-MySQL%E6%9D%83%E5%A8%81%E6%8C%87%E5%8D%97%E7%AC%94%E8%AE%B0%EF%BC%88%E4%B8%80%EF%BC%89/';
+        
+        this.page.identifier = '2013-mysql-MySQL权威指南笔记（一）';
+    };
+    (function() { 
+        var d = document, s = d.createElement('script');  
+        s.src = '//' + 'straysh' + '.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+</script>
+
+-->
+
+
+
+
+
+
+
+</body>
+</html>

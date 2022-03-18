@@ -1,0 +1,752 @@
+<!DOCTYPE html>
+<html lang=zh>
+<head>
+  <meta charset="utf-8">
+  
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, minimal-ui">
+  <meta name="renderer" content="webkit">
+  <meta http-equiv="Cache-Control" content="no-transform" />
+  <meta http-equiv="Cache-Control" content="no-siteapp" />
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="format-detection" content="telephone=no,email=no,adress=no">
+  <!-- Color theme for statusbar -->
+  <meta name="theme-color" content="#000000" />
+  <!-- 强制页面在当前窗口以独立页面显示,防止别人在框架里调用页面 -->
+  <meta http-equiv="window-target" content="_top" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lxgw-wenkai-webfont@1.1.0/style.css" />
+  
+  
+  <title>算法_排序_基于比较的排序 | Hexo</title>
+  <meta name="description" content="基于比较的算法 复杂度O(N²)我们讨论三种基于比较的算法：  冒泡 选择 插入  因为这些算法需要比较两个元素以决定是否交换位置，故称基于比较的算法。 这三种算法最容易实现，但不是最高效的。其时间复杂度是O(N²)。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="算法_排序_基于比较的排序">
+<meta property="og:url" content="https://straysh.github.life/2020/02/12/%E7%AE%97%E6%B3%95-%E6%8E%92%E5%BA%8F-%E5%9F%BA%E4%BA%8E%E6%AF%94%E8%BE%83%E7%9A%84%E6%8E%92%E5%BA%8F/index.html">
+<meta property="og:site_name" content="Straysh的小院">
+<meta property="og:description" content="基于比较的算法 复杂度O(N²)我们讨论三种基于比较的算法：  冒泡 选择 插入  因为这些算法需要比较两个元素以决定是否交换位置，故称基于比较的算法。 这三种算法最容易实现，但不是最高效的。其时间复杂度是O(N²)。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://straysh.github.life/images/ds/Sorting_BUB.gif">
+<meta property="og:image" content="https://straysh.github.life/images/ds/Sorting_SEL.gif">
+<meta property="og:image" content="https://straysh.github.life/images/ds/inserting_sort_example.png">
+<meta property="og:image" content="https://straysh.github.life/images/ds/Sorting_INS.gif">
+<meta property="og:image" content="https://straysh.github.life/images/ds/Sorting_MER.gif">
+<meta property="og:image" content="https://straysh.github.life/images/ds/merge.png">
+<meta property="og:image" content="https://straysh.github.life/images/ds/partition1.png">
+<meta property="og:image" content="https://straysh.github.life/images/ds/partition2.png">
+<meta property="og:image" content="https://straysh.github.life/images/ds/qsort_worstcase.png">
+<meta property="article:published_time" content="2020-02-12T09:53:18.000Z">
+<meta property="article:modified_time" content="2020-02-27T05:05:46.055Z">
+<meta property="article:author" content="Straysh">
+<meta property="article:tag" content="Translation">
+<meta property="article:tag" content="Golang">
+<meta property="article:tag" content="Algorithm">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://straysh.github.life/images/ds/Sorting_BUB.gif">
+  <!-- Canonical links -->
+  <link rel="canonical" href="https://straysh.github.life/2020/02/12/%E7%AE%97%E6%B3%95-%E6%8E%92%E5%BA%8F-%E5%9F%BA%E4%BA%8E%E6%AF%94%E8%BE%83%E7%9A%84%E6%8E%92%E5%BA%8F/index.html">
+  
+    <link rel="alternate" href="/atom.xml" title="Straysh的小院" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.ico" type="image/x-icon">
+  
+  
+<link rel="stylesheet" href="/css/style.css">
+
+  
+<link rel="stylesheet" href="/css/custom.css">
+
+  
+  
+  
+  
+  
+<meta name="generator" content="Hexo 5.4.1"></head>
+
+
+<body class="main-center theme-green" itemscope itemtype="http://schema.org/WebPage">
+  <header class="header" style="background-image: url(/images/left_images/2.jpg);" itemscope itemtype="http://schema.org/WPHeader">
+  <div class="slimContent" style="height:100%;background-color: rgba(0,0,0,0.7);">
+    <div class="navbar-header">
+      
+      
+      <div class="profile-block text-center">
+        <a id="avatar" href="https://hexo.straysh.com" target="_blank">
+          <img class="img-circle img-rotate" src="/images/avatar.jpg" width="200" height="200">
+        </a>
+        <h2 id="name" class="hidden-xs hidden-sm">Straysh</h2>
+        <h3 id="title" class="hidden-xs hidden-sm hidden-md">野生程序猿</h3>
+        <small id="location" class="text-muted hidden-xs hidden-sm"><i class="icon icon-map-marker"></i> Beijing, China</small>
+      </div>
+      
+      <div class="search" id="search-form-wrap">
+
+    <form class="search-form sidebar-form">
+        <div class="input-group">
+            <input type="text" class="search-form-input form-control" placeholder="搜索" />
+            <span class="input-group-btn">
+                <button type="submit" class="search-form-submit btn btn-flat" onclick="return false;"><i class="icon icon-search"></i></button>
+            </span>
+        </div>
+    </form>
+    <div class="ins-search">
+  <div class="ins-search-mask"></div>
+  <div class="ins-search-container">
+    <div class="ins-input-wrapper">
+      <input type="text" class="ins-search-input" placeholder="想要查找什么..." x-webkit-speech />
+      <button type="button" class="close ins-close ins-selectable" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+    </div>
+    <div class="ins-section-wrapper">
+      <div class="ins-section-container"></div>
+    </div>
+  </div>
+</div>
+
+
+</div>
+      <button class="navbar-toggle collapsed" type="button" data-toggle="collapse" data-target="#main-navbar" aria-controls="main-navbar" aria-expanded="false">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+    </div>
+    <nav id="main-navbar" class="collapse navbar-collapse" itemscope itemtype="http://schema.org/SiteNavigationElement" role="navigation">
+      <ul class="nav navbar-nav main-nav menu-highlight">
+        
+        
+        <li class="menu-item menu-item-home">
+          <a href="/.">
+            
+            <i class="icon icon-home-fill"></i>
+            
+            <span class="menu-title">首页</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives">
+            
+            <i class="icon icon-archives-fill"></i>
+            
+            <span class="menu-title">归档</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories">
+            
+            <i class="icon icon-folder"></i>
+            
+            <span class="menu-title">分类</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags">
+            
+            <i class="icon icon-tags"></i>
+            
+            <span class="menu-title">标签</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-repository">
+          <a href="/repository">
+            
+            <i class="icon icon-project"></i>
+            
+            <span class="menu-title">项目</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-books">
+          <a href="/books">
+            
+            <i class="icon icon-book-fill"></i>
+            
+            <span class="menu-title">书单</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-links">
+          <a href="/links">
+            
+            <i class="icon icon-friendship"></i>
+            
+            <span class="menu-title">友链</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about">
+            
+            <i class="icon icon-cup-fill"></i>
+            
+            <span class="menu-title">关于</span>
+          </a>
+        </li>
+        
+      </ul>
+      
+	
+    <ul class="social-links">
+    	
+        <li><a href="https://github.com/straysh" target="_blank" title="Github" data-toggle=tooltip data-placement=top><i class="icon icon-github"></i></a></li>
+        
+        <li><a href="https://weibo.com/u/1689171115" target="_blank" title="Weibo" data-toggle=tooltip data-placement=top><i class="icon icon-weibo"></i></a></li>
+        
+        <li><a href="/atom.xml" target="_blank" title="Rss" data-toggle=tooltip data-placement=top><i class="icon icon-rss"></i></a></li>
+        
+    </ul>
+
+    </nav>
+  </div>
+</header>
+
+  
+    <aside class="sidebar" itemscope itemtype="http://schema.org/WPSideBar">
+  <div class="slimContent">
+
+    
+      <ul class="sidebar-nav motion-element" style="text-align:center; opacity: 1; display: block; transform: translateX(0px);">
+        <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+          系统目录
+        </li>
+      </ul>
+      <section class="site-overview-wrap sidebar-panel" style="opacity: 0; display: none;">
+        
+          <div class="widget">
+    <h3 class="widget-title">公告</h3>
+    <div class="widget-body">
+        <div id="board">
+            <div class="content">
+                <p>妳是风中的叶，风起而走，我想去追，怎么抓的住？</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+        
+          
+  <div class="widget">
+    <h3 class="widget-title">分类</h3>
+    <div class="widget-body">
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%8D%9A%E6%96%87/">博文</a><span class="category-list-count">102</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%8D%9A%E6%96%87/%E7%AC%94%E8%AE%B0/">笔记</a><span class="category-list-count">2</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E6%9D%82%E8%AE%B0/">杂记</a><span class="category-list-count">6</span></li></ul>
+    </div>
+  </div>
+
+
+        
+          
+  <div class="widget">
+    <h3 class="widget-title">标签</h3>
+    <div class="widget-body">
+      <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/Algorithm/" rel="tag">Algorithm</a><span class="tag-list-count">13</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Apache/" rel="tag">Apache</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Banbrick/" rel="tag">Banbrick</a><span class="tag-list-count">5</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Docker/" rel="tag">Docker</a><span class="tag-list-count">4</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Golang/" rel="tag">Golang</a><span class="tag-list-count">25</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Javascript/" rel="tag">Javascript</a><span class="tag-list-count">10</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Linux/" rel="tag">Linux</a><span class="tag-list-count">13</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/MySQL/" rel="tag">MySQL</a><span class="tag-list-count">13</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Mysql/" rel="tag">Mysql</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Nginx/" rel="tag">Nginx</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Nodejs/" rel="tag">Nodejs</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/PHP/" rel="tag">PHP</a><span class="tag-list-count">19</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/R/" rel="tag">R</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Redis/" rel="tag">Redis</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/SVN/" rel="tag">SVN</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Sphinx/" rel="tag">Sphinx</a><span class="tag-list-count">5</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Translation/" rel="tag">Translation</a><span class="tag-list-count">18</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Yii/" rel="tag">Yii</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%9D%82/" rel="tag">杂</a><span class="tag-list-count">6</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%B1%87%E7%BC%96/" rel="tag">汇编</a><span class="tag-list-count">1</span></li></ul>
+    </div>
+  </div>
+
+
+        
+          
+  <div class="widget">
+    <h3 class="widget-title">标签云</h3>
+    <div class="widget-body tagcloud">
+      <a href="/tags/Algorithm/" style="font-size: 13.67px;">Algorithm</a> <a href="/tags/Apache/" style="font-size: 13px;">Apache</a> <a href="/tags/Banbrick/" style="font-size: 13.33px;">Banbrick</a> <a href="/tags/Docker/" style="font-size: 13.22px;">Docker</a> <a href="/tags/Golang/" style="font-size: 14px;">Golang</a> <a href="/tags/Javascript/" style="font-size: 13.56px;">Javascript</a> <a href="/tags/Linux/" style="font-size: 13.67px;">Linux</a> <a href="/tags/MySQL/" style="font-size: 13.67px;">MySQL</a> <a href="/tags/Mysql/" style="font-size: 13px;">Mysql</a> <a href="/tags/Nginx/" style="font-size: 13.11px;">Nginx</a> <a href="/tags/Nodejs/" style="font-size: 13px;">Nodejs</a> <a href="/tags/PHP/" style="font-size: 13.89px;">PHP</a> <a href="/tags/R/" style="font-size: 13.11px;">R</a> <a href="/tags/Redis/" style="font-size: 13.11px;">Redis</a> <a href="/tags/SVN/" style="font-size: 13px;">SVN</a> <a href="/tags/Sphinx/" style="font-size: 13.33px;">Sphinx</a> <a href="/tags/Translation/" style="font-size: 13.78px;">Translation</a> <a href="/tags/Yii/" style="font-size: 13.11px;">Yii</a> <a href="/tags/%E6%9D%82/" style="font-size: 13.44px;">杂</a> <a href="/tags/%E6%B1%87%E7%BC%96/" style="font-size: 13px;">汇编</a>
+    </div>
+  </div>
+
+        
+          
+  <div class="widget">
+    <h3 class="widget-title">归档</h3>
+    <div class="widget-body">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/03/">三月 2022</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/03/">三月 2021</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/03/">三月 2020</a><span class="archive-list-count">5</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/02/">二月 2020</a><span class="archive-list-count">26</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/12/">十二月 2019</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/04/">四月 2019</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/09/">九月 2018</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/07/">七月 2016</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/06/">六月 2016</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/11/">十一月 2015</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/10/">十月 2015</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/09/">九月 2015</a><span class="archive-list-count">5</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/08/">八月 2015</a><span class="archive-list-count">13</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/07/">七月 2015</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/11/">十一月 2014</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/03/">三月 2014</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/12/">十二月 2013</a><span class="archive-list-count">8</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/10/">十月 2013</a><span class="archive-list-count">8</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/09/">九月 2013</a><span class="archive-list-count">2</span></li></ul>
+    </div>
+  </div>
+
+
+        
+          
+  <div class="widget">
+    <h3 class="widget-title">最新文章</h3>
+    <div class="widget-body">
+      <ul class="recent-post-list list-unstyled no-thumbnail">
+        
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/%E5%8D%9A%E6%96%87/">博文</a><i class="icon icon-angle-right"></i><a class="category-link" href="/categories/%E5%8D%9A%E6%96%87/%E7%AC%94%E8%AE%B0/">笔记</a>
+              </p>
+              <p class="item-title">
+                <a href="/2022/03/14/%E4%BD%BF%E7%94%A8Go%E6%93%8D%E4%BD%9C%E6%96%87%E4%BB%B6/" class="title">使用Go操作文件</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2022-03-14T12:11:25.000Z" itemprop="datePublished">2022-03-14</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/%E5%8D%9A%E6%96%87/">博文</a>
+              </p>
+              <p class="item-title">
+                <a href="/2022/03/13/Docker%E5%AE%B9%E5%99%A8%E7%BD%91%E7%BB%9C/" class="title">Docker容器网络</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2022-03-13T04:10:09.000Z" itemprop="datePublished">2022-03-13</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/%E5%8D%9A%E6%96%87/">博文</a><i class="icon icon-angle-right"></i><a class="category-link" href="/categories/%E5%8D%9A%E6%96%87/%E7%AC%94%E8%AE%B0/">笔记</a>
+              </p>
+              <p class="item-title">
+                <a href="/2022/03/13/Iptables%E5%92%8C%E5%AE%B9%E5%99%A8/" class="title">Iptables和容器</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2022-03-13T03:01:46.000Z" itemprop="datePublished">2022-03-13</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/%E5%8D%9A%E6%96%87/">博文</a>
+              </p>
+              <p class="item-title">
+                <a href="/2022/03/12/Linux%E7%BD%91%E6%A1%A5%E5%B7%A5%E4%BD%9C%E5%8E%9F%E7%90%86/" class="title">Linux网桥工作原理</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2022-03-12T10:02:29.000Z" itemprop="datePublished">2022-03-12</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/%E5%8D%9A%E6%96%87/">博文</a>
+              </p>
+              <p class="item-title">
+                <a href="/2021/03/16/%E5%B9%B6%E5%8F%91%E5%92%8C%E8%B0%83%E5%BA%A6%E7%9A%84%E5%85%B3%E7%B3%BB/" class="title">并发和调度的关系</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2021-03-16T05:54:13.000Z" itemprop="datePublished">2021-03-16</time>
+              </p>
+            </div>
+          </li>
+          
+      </ul>
+    </div>
+  </div>
+  
+
+        
+      </section>
+
+      <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active" style="opacity: 1; display: block;">
+        <nav id="toc" class="article-toc">
+          <h3 class="toc-title">文章目录</h3>
+          <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%9F%BA%E4%BA%8E%E6%AF%94%E8%BE%83%E7%9A%84%E7%AE%97%E6%B3%95-%E5%A4%8D%E6%9D%82%E5%BA%A6O-N%C2%B2"><span class="toc-number">1.</span> <span class="toc-text">基于比较的算法 复杂度O(N²)</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%86%92%E6%B3%A1%E7%AE%97%E6%B3%95"><span class="toc-number">2.</span> <span class="toc-text">冒泡算法</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%86%92%E6%B3%A1%E6%8E%92%E5%BA%8F%E7%9A%84%E5%88%86%E6%9E%90"><span class="toc-number">3.</span> <span class="toc-text">冒泡排序的分析</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%86%92%E6%B3%A1%E6%94%B9%E8%BF%9B-%E6%8F%90%E5%89%8D%E7%BB%88%E6%AD%A2"><span class="toc-number">4.</span> <span class="toc-text">冒泡改进 - 提前终止</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%80%89%E6%8B%A9%E6%8E%92%E5%BA%8F"><span class="toc-number">5.</span> <span class="toc-text">选择排序</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%8F%92%E5%85%A5%E6%8E%92%E5%BA%8F"><span class="toc-number">6.</span> <span class="toc-text">插入排序</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%88%86%E6%9E%90%E6%8F%92%E5%85%A5%E6%8E%92%E5%BA%8F"><span class="toc-number">7.</span> <span class="toc-text">分析插入排序</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%9F%BA%E4%BA%8E%E6%AF%94%E8%BE%83%E7%9A%84-O-N-log-N-%E7%9A%84%E6%8E%92%E5%BA%8F"><span class="toc-number">8.</span> <span class="toc-text">基于比较的 O(N log N) 的排序</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%BD%92%E5%B9%B6%E6%8E%92%E5%BA%8F"><span class="toc-number">9.</span> <span class="toc-text">归并排序</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%BD%92%E5%B9%B6%E6%8E%92%E5%BA%8F%E4%B8%AD%E5%A4%8D%E6%9D%82%E5%BA%A6O-N-%E7%9A%84%E5%AD%90%E6%AD%A5%E9%AA%A4"><span class="toc-number">10.</span> <span class="toc-text">归并排序中复杂度O(N)的子步骤</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%88%86%E6%B2%BB%E6%80%9D%E6%83%B3"><span class="toc-number">11.</span> <span class="toc-text">分治思想</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%BD%92%E5%B9%B6%E7%AE%97%E6%B3%95%E7%9A%84%E5%88%86%E6%B2%BB%E6%80%9D%E6%83%B3"><span class="toc-number">12.</span> <span class="toc-text">归并算法的分治思想</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%BD%92%E5%B9%B6%E6%8E%92%E5%BA%8F%E6%97%B6%E9%97%B4%E5%A4%8D%E6%9D%82%E5%BA%A6%E5%88%86%E6%9E%90"><span class="toc-number">13.</span> <span class="toc-text">归并排序时间复杂度分析</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%BD%92%E5%B9%B6%E6%8E%92%E5%BA%8F%E7%9A%84%E4%BC%98%E7%BC%BA%E7%82%B9"><span class="toc-number">14.</span> <span class="toc-text">归并排序的优缺点</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%BF%AB%E9%80%9F%E6%8E%92%E5%BA%8F%E7%AE%97%E6%B3%95"><span class="toc-number">15.</span> <span class="toc-text">快速排序算法</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%88%86%E6%9E%90%E5%BF%AB%E9%80%9F%E6%8E%92%E5%BA%8F"><span class="toc-number">16.</span> <span class="toc-text">分析快速排序</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%BF%AB%E9%80%9F%E6%8E%92%E5%BA%8F%E7%9A%84%E6%97%B6%E9%97%B4%E5%A4%8D%E6%9D%82%E5%BA%A6%E5%88%86%E6%9E%90"><span class="toc-number">17.</span> <span class="toc-text">快速排序的时间复杂度分析</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%9A%8F%E6%9C%BA%E5%BF%AB%E9%80%9F%E6%8E%92%E5%BA%8F-O-N-log-N"><span class="toc-number">18.</span> <span class="toc-text">随机快速排序 - O(N log N)</span></a></li></ol>
+        </nav>
+      </section>
+    
+  </div>
+</aside>
+
+  
+  
+<aside class="sidebar sidebar-toc collapse" id="collapseToc" itemscope itemtype="http://schema.org/WPSideBar">
+  <div class="slimContent">
+    <nav id="toc" class="article-toc">
+      <h3 class="toc-title">文章目录</h3>
+      <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%9F%BA%E4%BA%8E%E6%AF%94%E8%BE%83%E7%9A%84%E7%AE%97%E6%B3%95-%E5%A4%8D%E6%9D%82%E5%BA%A6O-N%C2%B2"><span class="toc-number">1.</span> <span class="toc-text">基于比较的算法 复杂度O(N²)</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%86%92%E6%B3%A1%E7%AE%97%E6%B3%95"><span class="toc-number">2.</span> <span class="toc-text">冒泡算法</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%86%92%E6%B3%A1%E6%8E%92%E5%BA%8F%E7%9A%84%E5%88%86%E6%9E%90"><span class="toc-number">3.</span> <span class="toc-text">冒泡排序的分析</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%86%92%E6%B3%A1%E6%94%B9%E8%BF%9B-%E6%8F%90%E5%89%8D%E7%BB%88%E6%AD%A2"><span class="toc-number">4.</span> <span class="toc-text">冒泡改进 - 提前终止</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%80%89%E6%8B%A9%E6%8E%92%E5%BA%8F"><span class="toc-number">5.</span> <span class="toc-text">选择排序</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%8F%92%E5%85%A5%E6%8E%92%E5%BA%8F"><span class="toc-number">6.</span> <span class="toc-text">插入排序</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%88%86%E6%9E%90%E6%8F%92%E5%85%A5%E6%8E%92%E5%BA%8F"><span class="toc-number">7.</span> <span class="toc-text">分析插入排序</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%9F%BA%E4%BA%8E%E6%AF%94%E8%BE%83%E7%9A%84-O-N-log-N-%E7%9A%84%E6%8E%92%E5%BA%8F"><span class="toc-number">8.</span> <span class="toc-text">基于比较的 O(N log N) 的排序</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%BD%92%E5%B9%B6%E6%8E%92%E5%BA%8F"><span class="toc-number">9.</span> <span class="toc-text">归并排序</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%BD%92%E5%B9%B6%E6%8E%92%E5%BA%8F%E4%B8%AD%E5%A4%8D%E6%9D%82%E5%BA%A6O-N-%E7%9A%84%E5%AD%90%E6%AD%A5%E9%AA%A4"><span class="toc-number">10.</span> <span class="toc-text">归并排序中复杂度O(N)的子步骤</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%88%86%E6%B2%BB%E6%80%9D%E6%83%B3"><span class="toc-number">11.</span> <span class="toc-text">分治思想</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%BD%92%E5%B9%B6%E7%AE%97%E6%B3%95%E7%9A%84%E5%88%86%E6%B2%BB%E6%80%9D%E6%83%B3"><span class="toc-number">12.</span> <span class="toc-text">归并算法的分治思想</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%BD%92%E5%B9%B6%E6%8E%92%E5%BA%8F%E6%97%B6%E9%97%B4%E5%A4%8D%E6%9D%82%E5%BA%A6%E5%88%86%E6%9E%90"><span class="toc-number">13.</span> <span class="toc-text">归并排序时间复杂度分析</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%BD%92%E5%B9%B6%E6%8E%92%E5%BA%8F%E7%9A%84%E4%BC%98%E7%BC%BA%E7%82%B9"><span class="toc-number">14.</span> <span class="toc-text">归并排序的优缺点</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%BF%AB%E9%80%9F%E6%8E%92%E5%BA%8F%E7%AE%97%E6%B3%95"><span class="toc-number">15.</span> <span class="toc-text">快速排序算法</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%88%86%E6%9E%90%E5%BF%AB%E9%80%9F%E6%8E%92%E5%BA%8F"><span class="toc-number">16.</span> <span class="toc-text">分析快速排序</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%BF%AB%E9%80%9F%E6%8E%92%E5%BA%8F%E7%9A%84%E6%97%B6%E9%97%B4%E5%A4%8D%E6%9D%82%E5%BA%A6%E5%88%86%E6%9E%90"><span class="toc-number">17.</span> <span class="toc-text">快速排序的时间复杂度分析</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%9A%8F%E6%9C%BA%E5%BF%AB%E9%80%9F%E6%8E%92%E5%BA%8F-O-N-log-N"><span class="toc-number">18.</span> <span class="toc-text">随机快速排序 - O(N log N)</span></a></li></ol>
+    </nav>
+  </div>
+</aside>
+
+<main class="main" role="main">
+  <div class="content">
+  <article id="post-算法-排序-基于比较的排序" class="article article-type-post" itemscope itemtype="http://schema.org/BlogPosting">
+    
+    <div class="article-header">
+      
+        
+  
+    <h1 class="article-title" itemprop="name">
+      <span style="color:#008e59;">[译]</span>算法_排序_基于比较的排序
+    </h1>
+  
+
+
+      
+      <div class="article-meta">
+        
+        <span class="article-date">
+    <i class="icon icon-calendar-check"></i>
+	<a href="/2020/02/12/%E7%AE%97%E6%B3%95-%E6%8E%92%E5%BA%8F-%E5%9F%BA%E4%BA%8E%E6%AF%94%E8%BE%83%E7%9A%84%E6%8E%92%E5%BA%8F/" class="article-date">
+	  <time datetime="2020-02-12T09:53:18.000Z" itemprop="datePublished">2020-02-12</time>
+	</a>
+</span>
+        
+  <span class="article-category">
+    <i class="icon icon-folder"></i>
+    <a class="article-category-link" href="/categories/%E5%8D%9A%E6%96%87/">博文</a>
+  </span>
+
+        
+  <span class="article-tag">
+    <i class="icon icon-tags"></i>
+	<a class="article-tag-link-link" href="/tags/Algorithm/" rel="tag">Algorithm</a>, <a class="article-tag-link-link" href="/tags/Golang/" rel="tag">Golang</a>, <a class="article-tag-link-link" href="/tags/Translation/" rel="tag">Translation</a>
+  </span>
+
+
+        
+
+        <span class="post-comment"><i class="icon icon-comment"></i> <a href="/2020/02/12/%E7%AE%97%E6%B3%95-%E6%8E%92%E5%BA%8F-%E5%9F%BA%E4%BA%8E%E6%AF%94%E8%BE%83%E7%9A%84%E6%8E%92%E5%BA%8F/#comments" class="article-comment-link">评论</a></span>
+        
+      </div>
+    </div>
+    <div class="article-entry marked-body" itemprop="articleBody">
+      
+        <h3 id="基于比较的算法-复杂度O-N²"><a href="#基于比较的算法-复杂度O-N²" class="headerlink" title="基于比较的算法 复杂度O(N²)"></a>基于比较的算法 复杂度<code>O(N²)</code></h3><p>我们讨论三种基于比较的算法：</p>
+<ol>
+<li>冒泡</li>
+<li>选择</li>
+<li>插入</li>
+</ol>
+<p>因为这些算法需要比较两个元素以决定是否交换位置，故称基于比较的算法。</p>
+<p>这三种算法最容易实现，但不是最高效的。其时间复杂度是<code>O(N²)</code>。</p>
+<span id="more"></span>
+<h3 id="冒泡算法"><a href="#冒泡算法" class="headerlink" title="冒泡算法"></a>冒泡算法</h3><p>给定数组N个元素，冒泡算法会：</p>
+<ol>
+<li>比较一对邻近的元素(a,b)。</li>
+<li>当这对元素无序时，交换他们。（此是当a&gt;b时）。</li>
+<li>重复步骤1，步骤2直到数组尾。</li>
+<li>此时，最大元素会是最后一个元素。然后令N=N-1，并重复步骤1直到N=1。</li>
+</ol>
+<p><code>[29, 10, 14, 37, 14]</code>，冒泡的动画示意如下：<br><img src="/images/ds/Sorting_BUB.gif" alt="Sorting_BUB"></p>
+<h3 id="冒泡排序的分析"><a href="#冒泡排序的分析" class="headerlink" title="冒泡排序的分析"></a>冒泡排序的分析</h3><p><code>比较</code>和<code>交换</code>需要常量时间，我们取<code>c</code>。</p>
+<p>标准冒泡算法中有两层循环。<br>外层循环需要迭代N次。<br>但内层循环迭代的次数会越来越少：</p>
+<ol>
+<li>当i=0, N-1次迭代 - 比较和(可能的)交换 </li>
+<li>当i=1，N-2次迭代</li>
+<li>当i=2，N-3次迭代<br>…</li>
+<li>当N=N-2，1次迭代</li>
+<li>当N=N-1，0次迭代</li>
+</ol>
+<p>因此总共需要的迭代次数= <code>(N-1) + (N-2) + ... + 1 + 0 = N*(N-1)/2</code>。</p>
+<p>总共花费的时间 = <code>c * N*(N-1)/2 = O(N²)</code>。</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><code class="hljs golang"><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">BUB</span><span class="hljs-params">(a []<span class="hljs-type">int</span>)</span></span> &#123;<br>    N := <span class="hljs-built_in">len</span>(a)<br><br>    <span class="hljs-keyword">for</span> i := <span class="hljs-number">0</span>; i &lt; N; i++ &#123;<br>        allSorted := <span class="hljs-literal">true</span><br>        <span class="hljs-keyword">for</span> j := <span class="hljs-number">0</span>; j &lt; N-i<span class="hljs-number">-1</span>; j++ &#123;<br>            <span class="hljs-keyword">if</span> a[j] &gt; a[j+<span class="hljs-number">1</span>] &#123;<br>                a[j],a[j+<span class="hljs-number">1</span>] = a[j+<span class="hljs-number">1</span>],a[j]<br>                allSorted = <span class="hljs-literal">false</span><br>            &#125;<br>        &#125;<br>        <span class="hljs-keyword">if</span> allSorted &#123;<br>            <span class="hljs-keyword">return</span><br>        &#125;<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<h3 id="冒泡改进-提前终止"><a href="#冒泡改进-提前终止" class="headerlink" title="冒泡改进 - 提前终止"></a>冒泡改进 - 提前终止</h3><p>冒泡排序并不高效，因为它是<code>O(N²)</code>的时间复杂度。</p>
+<p>但若能提前终止(多余的)冒泡进程，时间复杂度可以提高到<code>O(1)</code>。</p>
+<p>例：<code>[3, 6, 11, 25, 39]</code>。改进方法很简单：若内层循环没有发生交换，那么整个序列已经是正序的，此时可以终止冒泡进程。</p>
+<p>讨论：这个改进让冒泡排序在一般情况下更快了，但无法改变其时间复杂度<code>O(N²)</code>的时间，为啥？</p>
+<h3 id="选择排序"><a href="#选择排序" class="headerlink" title="选择排序"></a>选择排序</h3><p>令数组大小为N，L=0，选择排序步骤如下：</p>
+<ol>
+<li>找到元素[L .. N-1]中最小元素X的位置。</li>
+<li>将X元素和位置L的元素交换。</li>
+<li>L++，并重复步骤1。</li>
+</ol>
+<p><img src="/images/ds/Sorting_SEL.gif" alt="Sorting_SEL"></p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><code class="hljs golang"><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">SEL</span><span class="hljs-params">(a []<span class="hljs-type">int</span>)</span></span> &#123;<br>    N := <span class="hljs-built_in">len</span>(a)<br><br>    <span class="hljs-keyword">for</span> L := <span class="hljs-number">0</span>; L &lt; N<span class="hljs-number">-1</span>; L++ &#123;<br>        X := minElements(a, L)<br>        a[X],a[L] = a[L],a[X]<br>    &#125;<br>&#125;<br><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">minElements</span><span class="hljs-params">(a []<span class="hljs-type">int</span>, offset <span class="hljs-type">int</span>)</span></span> <span class="hljs-type">int</span> &#123;<br>    min := offset<br>    <span class="hljs-keyword">for</span> i:=offset;i&lt;<span class="hljs-built_in">len</span>(a);i++&#123;<br>        <span class="hljs-keyword">if</span> a[i] &lt; a[min] &#123;<br>            min = i<br>        &#125;<br>    &#125;<br><br>    <span class="hljs-keyword">return</span> min<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>当然，也可以更改算法为找最大数并交换。</p>
+<p>时间复杂度和冒泡是一样的<code>O(N²)</code>。</p>
+<h3 id="插入排序"><a href="#插入排序" class="headerlink" title="插入排序"></a>插入排序</h3><p>插入排序有点像给手上的扑克牌排序的过程。<br><img src="/images/ds/inserting_sort_example.png" alt="inserting_sort_example"></p>
+<ol>
+<li>手上拿第一张牌。</li>
+<li>拿到下一张牌，在目前有序的牌中找到正确的位置并插入新牌。</li>
+<li>重复上述步骤直到所有牌结束。<br><img src="/images/ds/Sorting_INS.gif" alt="Sorting_INS"></li>
+</ol>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs golang"><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">INS</span><span class="hljs-params">(a []<span class="hljs-type">int</span>)</span></span> &#123;<br>    N := <span class="hljs-built_in">len</span>(a)<br><br>    <span class="hljs-keyword">for</span> i := <span class="hljs-number">1</span>; i &lt; N; i++ &#123;<br>        <span class="hljs-keyword">for</span> j := i; j &gt; <span class="hljs-number">0</span>; j-- &#123;<br>            <span class="hljs-keyword">if</span> a[j] &lt; a[j<span class="hljs-number">-1</span>] &#123;<br>                a[j],a[j<span class="hljs-number">-1</span>] = a[j<span class="hljs-number">-1</span>],a[j]<br>            &#125;<br>        &#125;<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><code class="hljs golang"><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">INS</span><span class="hljs-params">(a []<span class="hljs-type">int</span>)</span></span> &#123;<br>    N := <span class="hljs-built_in">len</span>(a)<br><br>    <span class="hljs-keyword">for</span> i := <span class="hljs-number">1</span>; i &lt; N; i++ &#123; <span class="hljs-comment">// O(N)</span><br>        x := a[i]   <span class="hljs-comment">// 带插入的牌</span><br>        j := i - <span class="hljs-number">1</span>  <span class="hljs-comment">// 正序部分的最高索引</span><br>        <span class="hljs-keyword">for</span> ; j &gt;= <span class="hljs-number">0</span> &amp;&amp; a[j] &gt; x; j-- &#123;  <span class="hljs-comment">//最好O(1)，最坏O(N)</span><br>            a[j+<span class="hljs-number">1</span>] = a[j]  <span class="hljs-comment">// 给x腾出空间</span><br>        &#125;<br>        a[j+<span class="hljs-number">1</span>] = x <span class="hljs-comment">// j+1是要插入的位置</span><br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<h3 id="分析插入排序"><a href="#分析插入排序" class="headerlink" title="分析插入排序"></a>分析插入排序</h3><p>外层循坏需要N-1次迭代。</p>
+<p>但内层循环的次数：</p>
+<ol>
+<li>最好的情况下，只需要一次比较<code>a[j] &gt; x</code>就能确定是正序的，因此是<code>O(1)</code>。</li>
+<li>最坏的情况下，数组是逆序的，这样每次迭代<code>a[j] &gt; x</code>都是true，每次都需要迭代整个内层循环，时间复杂度是<code>O(N)</code>。</li>
+</ol>
+<p>因此，最好情况是<code>O(1)</code>，最坏情况是<code>O(N²)</code>。</p>
+<h3 id="基于比较的-O-N-log-N-的排序"><a href="#基于比较的-O-N-log-N-的排序" class="headerlink" title="基于比较的 O(N log N) 的排序"></a>基于比较的 <code>O(N log N)</code> 的排序</h3><ol>
+<li>归并排序</li>
+<li>快速排序 和 随机快速排序</li>
+</ol>
+<p>这些算法通常使用递归实现，采用分治思想， 归并排序和随机快速排序都是<code>O(N log N)</code>。</p>
+<p>快速排序的非随机版本是<code>O(N²)</code>的。</p>
+<h3 id="归并排序"><a href="#归并排序" class="headerlink" title="归并排序"></a>归并排序</h3><p>令数组大小为N，归并排序步骤如下：</p>
+<ol>
+<li>将两个元素合并到一个正序的（仅含这两个元素）数组中。</li>
+<li>将两个上述数组合并到一个正序的（现在含有四个元素）数组中。</li>
+<li>最终：将两个各含有N/2的数组合并到一个数组中，则数组正序。</li>
+</ol>
+<p>这仅是一个概要，我们还需要讨论更多细节才能应用归并排序</p>
+<h3 id="归并排序中复杂度O-N-的子步骤"><a href="#归并排序中复杂度O-N-的子步骤" class="headerlink" title="归并排序中复杂度O(N)的子步骤"></a>归并排序中复杂度<code>O(N)</code>的子步骤</h3><p>我们将归并排序拆开讨论，先讨论复杂度为<code>O(N)</code>的子步骤。</p>
+<p>令数组A大小为N<sub>1</sub>，数组B大小为N<sub>2</sub>，我们很容易将之合并为一个正序的大小N=N<sub>1</sub>+N<sub>2</sub>的数组</p>
+<p>只需要比较数组的第一个元素，将较小的数组元素全部放到另一个数组之前。这个<code>O(N)</code>的操作需要额外的数组来存储数据。</p>
+<p><img src="/images/ds/Sorting_MER.gif" alt="Sorting_MER"></p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs c++"><span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">merge</span><span class="hljs-params">(<span class="hljs-type">int</span> a[], <span class="hljs-type">int</span> low, <span class="hljs-type">int</span> mid, <span class="hljs-type">int</span> high)</span> </span>&#123;<br>  <span class="hljs-comment">// subarray1 = a[low..mid], subarray2 = a[mid+1..high], both sorted</span><br>  <span class="hljs-type">int</span> N = high-low+<span class="hljs-number">1</span>;<br>  <span class="hljs-type">int</span> b[N]; <span class="hljs-comment">// discuss: why do we need a temporary array b?</span><br>  <span class="hljs-type">int</span> left = low, right = mid+<span class="hljs-number">1</span>, bIdx = <span class="hljs-number">0</span>;<br>  <span class="hljs-keyword">while</span> (left &lt;= mid &amp;&amp; right &lt;= high) <span class="hljs-comment">// the merging</span><br>    b[bIdx++] = (a[left] &lt;= a[right]) ? a[left++] : a[right++];<br>  <span class="hljs-keyword">while</span> (left &lt;= mid) b[bIdx++] = a[left++]; <span class="hljs-comment">// leftover, if any</span><br>  <span class="hljs-keyword">while</span> (right &lt;= high) b[bIdx++] = a[right++]; <span class="hljs-comment">// leftover, if any</span><br>  <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> k = <span class="hljs-number">0</span>; k &lt; N; k++) a[low+k] = b[k]; <span class="hljs-comment">// copy back</span><br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>Golang实现：</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><code class="hljs golang"><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">merge</span><span class="hljs-params">(a []<span class="hljs-type">int</span>, low, mid, high <span class="hljs-type">int</span>)</span></span> &#123;<br>    N := high - low + <span class="hljs-number">1</span><br>    left := low<br>    right := mid + <span class="hljs-number">1</span><br>    idx := <span class="hljs-number">0</span><br>    b := <span class="hljs-built_in">make</span>([]<span class="hljs-type">int</span>, N, N)<br>    <span class="hljs-keyword">for</span> ; left &lt;= mid &amp;&amp; right &lt;= high; &#123;<br>        <span class="hljs-keyword">if</span> a[left] &lt;= a[right] &#123;<br>            b[idx] = a[left]<br>            left = left + <span class="hljs-number">1</span><br>        &#125; <span class="hljs-keyword">else</span> &#123;<br>            b[idx] = a[right]<br>            right = right + <span class="hljs-number">1</span><br>        &#125;<br>        idx = idx + <span class="hljs-number">1</span><br>    &#125;<br>    <span class="hljs-keyword">if</span> left &lt;= mid &#123;<br>        b[idx] = a[left]<br>        left = left + <span class="hljs-number">1</span><br>        idx = idx + <span class="hljs-number">1</span><br>    &#125;<br>    <span class="hljs-keyword">if</span> right &lt;= high &#123;<br>        b[idx] = a[right]<br>        right = right + <span class="hljs-number">1</span><br>        idx = idx + <span class="hljs-number">1</span><br>    &#125;<br><br>    <span class="hljs-keyword">for</span> i := <span class="hljs-number">0</span>; i &lt; N; i++ &#123;<br>        a[low+i] = b[i]<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<h3 id="分治思想"><a href="#分治思想" class="headerlink" title="分治思想"></a>分治思想</h3><p>分治法 - Divide and Conquer简写作<code>D&amp;C</code>。</p>
+<ol>
+<li>Divide step：将一个问题分解成小的问题，然后递归的解决小的问题。</li>
+<li>Conquer step：将解决了的小问题合并起来，还原为原始问题的解。</li>
+</ol>
+<h3 id="归并算法的分治思想"><a href="#归并算法的分治思想" class="headerlink" title="归并算法的分治思想"></a>归并算法的分治思想</h3><p>归并算法是分治的一个应用。</p>
+<p>divide step：将数组分为两半，然后递归的对两个数组分派归并排序。</p>
+<p>conquer step：<a target="_blank" rel="noopener" href="http://localhost:5000/2020/02/12/%E7%AE%97%E6%B3%95-%E6%8E%92%E5%BA%8F-%E5%9F%BA%E4%BA%8E%E6%AF%94%E8%BE%83%E7%9A%84%E6%8E%92%E5%BA%8F/#%E5%BD%92%E5%B9%B6%E6%8E%92%E5%BA%8F%E4%B8%AD%E5%A4%8D%E6%9D%82%E5%BA%A6O-N-%E7%9A%84%E5%AD%90%E6%AD%A5%E9%AA%A4">将结果集合并成解</a>，这一步骤的工作量最大。</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs c++"><span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">mergeSort</span><span class="hljs-params">(<span class="hljs-type">int</span> a[], <span class="hljs-type">int</span> low, <span class="hljs-type">int</span> high)</span> </span>&#123;<br>  <span class="hljs-comment">// the array to be sorted is a[low..high]</span><br>  <span class="hljs-keyword">if</span> (low &lt; high) &#123; <span class="hljs-comment">// base case: low &gt;= high (0 or 1 item)</span><br>    <span class="hljs-type">int</span> mid = (low+high) / <span class="hljs-number">2</span>;    <br>    <span class="hljs-built_in">mergeSort</span>(a, low  , mid ); <span class="hljs-comment">// divide into two halves</span><br>    <span class="hljs-built_in">mergeSort</span>(a, mid+<span class="hljs-number">1</span>, high); <span class="hljs-comment">// then recursively sort them</span><br>    <span class="hljs-built_in">merge</span>(a, low, mid, high); <span class="hljs-comment">// conquer: the merge subroutine</span><br>  &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>Golang实现：</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs golang"><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">MER</span><span class="hljs-params">(a []<span class="hljs-type">int</span>, low, high <span class="hljs-type">int</span>)</span></span> &#123;<br>    <span class="hljs-keyword">if</span> low &lt; high &#123;<br>        mid := (low + high) / <span class="hljs-number">2</span><br>        MER(a, low, mid)<br>        MER(a, mid+<span class="hljs-number">1</span>, high)<br>        merge(a, low, mid, high)<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+<h3 id="归并排序时间复杂度分析"><a href="#归并排序时间复杂度分析" class="headerlink" title="归并排序时间复杂度分析"></a>归并排序时间复杂度分析</h3><p>归并排序中<code>merge</code>的复杂度是<code>O(N)</code>的，那么<code>merge</code>执行的次数决定了最终的时间复杂度。<br><img src="/images/ds/merge.png" alt="merge"></p>
+<p>可以看到<code>k=lg N</code>，忽略常数，我们记归并排序的时间复杂度为<code>O(N log N)</code>。</p>
+<h3 id="归并排序的优缺点"><a href="#归并排序的优缺点" class="headerlink" title="归并排序的优缺点"></a>归并排序的优缺点</h3><p>首先，最重要的一点是，归并排序的时间复杂度稳定的是<code>O(N log N)</code>，不受数据源的影响。没有任何的测试用例，不论数据源的大小，都不能是归并排序的时间超过<code>O(N log N)</code>。</p>
+<p>目前为止，我们讨论过的算法中，归并排序是最适合处理大规模数据的算法。</p>
+<p><a href="/2020/02/13/%E7%AE%97%E6%B3%95-%E7%A8%B3%E5%AE%9A%E4%B8%AA%E6%8E%92%E5%BA%8F%E7%AE%97%E6%B3%95/">归并排序是稳定排序算法，为啥？</a></p>
+<p>当然，归并排序也有其劣势。</p>
+<ol>
+<li>从头开始实现归并排序并不是很容易。</li>
+<li>在合并阶段，需要额外的存储空间。因此内存利用率不高，也不是原地排序算法。</li>
+</ol>
+<p><a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Merge_sort#Variants">对归并排序的优化你可以参考这里</a></p>
+<h3 id="快速排序算法"><a href="#快速排序算法" class="headerlink" title="快速排序算法"></a>快速排序算法</h3><p>快速排序也是分治法的应用。</p>
+<p>Divide step：选择一个元素p，即<code>pivot</code>。<br>将数组a[i..j]分为三个部分：a[i..m-1], a[m], a[m=1..j]。<br>a[i..m-1]包含比p小的元素。<br>a[m]即<code>pivot</code>，m是p在数据源a中的索引。<br>a[m+1..j]包含了大于等于p的元素。<br>然后递归的重复上述步骤。</p>
+<p>Conquer step：额，啥也不用做…</p>
+<p>与归并排序对比，你会发现它的<code>D&amp;C</code>步骤刚好相反。</p>
+<h3 id="分析快速排序"><a href="#分析快速排序" class="headerlink" title="分析快速排序"></a>分析快速排序</h3><p>还是查分开讨论，先讨论复杂度为<code>O(N)</code>的子步骤。</p>
+<p>为了分割a[i..j]，我们先找到一个<code>pivot</code>p = a[i]。<br>剩下的a[i+1..j]将被分割为三个部分：</p>
+<ol>
+<li>S1=a[i+1..m]，元素都 &lt; P。</li>
+<li>S2=a[m+1..k-1]，元素都 ≥ p。</li>
+<li>未知部分 = a[k..j]，其他元素待分配到S1 或 S2。</li>
+</ol>
+<p>讨论：为什么选择p=a[i]，有没有其他选择？<br>硬核讨论：若每次都将==p的元素放在S2里合适吗？</p>
+<p>起初，S1和S2都是空的，所有的元素除了p=<code>pivot</code>都在未知区域中。<br>对于每一个在位置区域的元素a[k]，将a[k]与p比较：</p>
+<ol>
+<li>a[k] ≥ p，将a[k]放入S2。</li>
+<li>a[k] &lt; p，将a[k]放入S1。<br>最后交换a[i]和a[m]，即将p放在S1和S2的中间。<br><img src="/images/ds/partition1.png" alt="partition1"><br><img src="/images/ds/partition2.png" alt="partition2"><br>代码如下：<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><code class="hljs c++"><span class="hljs-function"><span class="hljs-type">int</span> <span class="hljs-title">partition</span><span class="hljs-params">(<span class="hljs-type">int</span> a[], <span class="hljs-type">int</span> i, <span class="hljs-type">int</span> j)</span> </span>&#123;<br>  <span class="hljs-type">int</span> p = a[i]; <span class="hljs-comment">// p is the pivot</span><br>  <span class="hljs-type">int</span> m = i; <span class="hljs-comment">// S1 and S2 are initially empty</span><br>  <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> k = i+<span class="hljs-number">1</span>; k &lt;= j; k++) &#123; <span class="hljs-comment">// explore the unknown region</span><br>    <span class="hljs-keyword">if</span> (a[k] &lt; p) &#123; <span class="hljs-comment">// case 2</span><br>      m++;<br>      <span class="hljs-built_in">swap</span>(a[k], a[m]); <span class="hljs-comment">// C++ STL algorithm std::swap</span><br>    &#125; <span class="hljs-comment">// notice that we do nothing in case 1: a[k] &gt;= p</span><br>  &#125;<br>  <span class="hljs-built_in">swap</span>(a[i], a[m]); <span class="hljs-comment">// final step, swap pivot with a[m]</span><br>  <span class="hljs-keyword">return</span> m; <span class="hljs-comment">// return the index of pivot</span><br>&#125;<br><br><span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">quickSort</span><span class="hljs-params">(<span class="hljs-type">int</span> a[], <span class="hljs-type">int</span> low, <span class="hljs-type">int</span> high)</span> </span>&#123;<br>  <span class="hljs-keyword">if</span> (low &lt; high) &#123;<br>    <span class="hljs-type">int</span> m = <span class="hljs-built_in">partition</span>(a, low, high); <span class="hljs-comment">// O(N)</span><br>    <span class="hljs-comment">// a[low..high] ~&gt; a[low..m–1], pivot, a[m+1..high]</span><br>    <span class="hljs-built_in">quickSort</span>(a, low, m<span class="hljs-number">-1</span>); <span class="hljs-comment">// recursively sort left subarray</span><br>    <span class="hljs-comment">// a[m] = pivot is already sorted after partition</span><br>    <span class="hljs-built_in">quickSort</span>(a, m+<span class="hljs-number">1</span>, high); <span class="hljs-comment">// then sort right subarray</span><br>  &#125;<br>&#125;<br></code></pre></td></tr></table></figure></li>
+</ol>
+<p>Golang实现：</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><code class="hljs golang"><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">QUI</span><span class="hljs-params">(a []<span class="hljs-type">int</span>, low, high <span class="hljs-type">int</span>)</span></span> &#123;<br>    <span class="hljs-keyword">if</span> low &lt; high &#123;<br>        pivot := partition(a, low, high)<br>        QUI(a, low, pivot<span class="hljs-number">-1</span>)<br>        QUI(a, pivot+<span class="hljs-number">1</span>, high)<br>    &#125;<br>&#125;<br><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">partition</span><span class="hljs-params">(a []<span class="hljs-type">int</span>, i, j <span class="hljs-type">int</span>)</span></span> <span class="hljs-type">int</span> &#123;<br>    p := a[i]<br>    m := i<br><br>    <span class="hljs-keyword">for</span> k := i + <span class="hljs-number">1</span>; k &lt;= j; k++ &#123;<br>        <span class="hljs-keyword">if</span> a[k] &lt; p &#123;<br>            m++<br>            a[k],a[m] = a[m],a[k]<br>        &#125;<br>    &#125;<br>    a[i],a[m] = a[m],a[i]<br>    <span class="hljs-keyword">return</span> m<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<h3 id="快速排序的时间复杂度分析"><a href="#快速排序的时间复杂度分析" class="headerlink" title="快速排序的时间复杂度分析"></a>快速排序的时间复杂度分析</h3><p><code>partition</code>操作只有一个循环，复杂度是<code>O(N)</code>。</p>
+<p>那么快速排序的时间复杂度取决于<code>partition</code>执行的次数。</p>
+<p>最坏情况下，当数据源是升序的，经过一轮后，S1是空的，S2包含除了<code>pivot</code>外其他元素。<br><img src="/images/ds/qsort_worstcase.png" alt="qsort_worstcase"><br>一共需要N轮循环，所以时间复杂度是<code>O(N²)</code>。</p>
+<p>而最好情况下，每一次<code>pivot</code>都将数据源分割为两半，一共需要<code>log N</code>次。<br>因此复杂度是<code>O(N log N)</code>。</p>
+<h3 id="随机快速排序-O-N-log-N"><a href="#随机快速排序-O-N-log-N" class="headerlink" title="随机快速排序 - O(N log N)"></a>随机快速排序 - O(N log N)</h3><p>It will take about 1 hour lecture to properly explain why this randomized version of Quick Sort has expected time complexity of O(N log N) on any input array of N elements.</p>
+<p>In this e-Lecture, we will assume that it is true.</p>
+<p>If you need non formal explanation: Just imagine that on randomized version of Quick Sort that randomizes the pivot selection, we will not always get extremely bad split of 0 (empty), 1 (pivot), and N-1 other items. This combination of lucky (half-pivot-half), somewhat lucky, somewhat unlucky, and extremely unlucky (empty, pivot, the rest) yields an average time complexity of O(N log N).</p>
+<p>Discussion: Actually the phrase “any input array” above is not fully true. There is actually a way to make the randomized version of Quick Sort as currently presented in this VisuAlgo page still runs in O(N2). How?</p>
+
+      
+    </div>
+    <div class="article-footer">
+      <blockquote class="mt-2x">
+  <ul class="post-copyright list-unstyled">
+    
+    <li class="post-copyright-link hidden-xs">
+      <strong>本文链接：</strong>
+      <a href="https://straysh.github.life/2020/02/12/%E7%AE%97%E6%B3%95-%E6%8E%92%E5%BA%8F-%E5%9F%BA%E4%BA%8E%E6%AF%94%E8%BE%83%E7%9A%84%E6%8E%92%E5%BA%8F/" title="算法_排序_基于比较的排序" target="_blank" rel="external">https://straysh.github.life/2020/02/12/%E7%AE%97%E6%B3%95-%E6%8E%92%E5%BA%8F-%E5%9F%BA%E4%BA%8E%E6%AF%94%E8%BE%83%E7%9A%84%E6%8E%92%E5%BA%8F/</a>
+    </li>
+    
+    <li class="post-copyright-license">
+      <strong>版权声明： </strong> 本博客所有文章除特别声明外，均采用 <a href="http://creativecommons.org/licenses/by/4.0/deed.zh" target="_blank" rel="external">CC BY 4.0 CN协议</a> 许可协议。转载请注明出处！
+    </li>
+  </ul>
+</blockquote>
+
+
+<div class="panel panel-default panel-badger">
+  <div class="panel-body">
+    <figure class="media">
+      <div class="media-left">
+        <a href="https://hexo.straysh.com" target="_blank" class="img-burn thumb-sm visible-lg">
+          <img src="/images/avatar.jpg" class="img-rounded w-full" alt="">
+        </a>
+      </div>
+      <div class="media-body">
+        <h3 class="media-heading"><a href="https://hexo.straysh.com" target="_blank"><span class="text-dark">Straysh</span><small class="ml-1x">野生程序猿</small></a></h3>
+        <div>野生程序猿 &amp; 猫奴。</div>
+      </div>
+    </figure>
+  </div>
+</div>
+
+
+    </div>
+  </article>
+  
+    
+  <section id="comments">
+  	
+      <div id="disqus_thread">
+        <noscript>Please enable JavaScript to view the <a target="_blank" rel="noopener" href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+      </div>
+    
+  </section>
+
+
+  
+</div>
+
+  <nav class="bar bar-footer clearfix" data-stick-bottom>
+  <div class="bar-inner">
+  
+  <ul class="pager pull-left">
+    
+    <li class="prev">
+      <a href="/2020/02/13/%E7%AE%97%E6%B3%95-%E7%A8%B3%E5%AE%9A%E6%8E%92%E5%BA%8F%E7%AE%97%E6%B3%95/" title="算法_稳定排序算法"><i class="icon icon-angle-left" aria-hidden="true"></i><span>&nbsp;&nbsp;上一篇</span></a>
+    </li>
+    
+    
+    <li class="next">
+      <a href="/2020/02/12/%E7%AE%97%E6%B3%95-%E6%8E%92%E5%BA%8F-%E5%BC%80%E7%AF%87/" title="算法_排序_开篇"><span>下一篇&nbsp;&nbsp;</span><i class="icon icon-angle-right" aria-hidden="true"></i></a>
+    </li>
+    
+    
+    <li class="toggle-toc">
+      <a class="toggle-btn collapsed" data-toggle="collapse" href="#collapseToc" aria-expanded="false" title="文章目录" role="button">
+        <span>[&nbsp;</span><span>文章目录</span>
+        <i class="text-collapsed icon icon-anchor"></i>
+        <i class="text-in icon icon-close"></i>
+        <span>]</span>
+      </a>
+    </li>
+    
+  </ul>
+  
+  
+  
+  <div class="bar-right">
+    
+    <div class="share-component" data-sites="weibo,qq,wechat,facebook,twitter" data-mobile-sites="weibo,qq,qzone"></div>
+    
+  </div>
+  </div>
+</nav>
+  
+
+
+
+</main>
+
+  <footer class="footer" itemscope itemtype="http://schema.org/WPFooter">
+	
+	
+    <ul class="social-links">
+    	
+        <li><a href="https://github.com/straysh" target="_blank" title="Github" data-toggle=tooltip data-placement=top><i class="icon icon-github"></i></a></li>
+        
+        <li><a href="https://weibo.com/u/1689171115" target="_blank" title="Weibo" data-toggle=tooltip data-placement=top><i class="icon icon-weibo"></i></a></li>
+        
+        <li><a href="/atom.xml" target="_blank" title="Rss" data-toggle=tooltip data-placement=top><i class="icon icon-rss"></i></a></li>
+        
+    </ul>
+
+    <div class="copyright">
+    	
+        &copy; 2022 straysh.com 版权所有。ICP证：鄂ICP备2021016952号-1<!--Straysh-->
+        
+        <div class="publishby">
+        	Theme by <a href="https://github.com/cofess" target="_blank"> cofess </a>base on <a href="https://github.com/cofess/hexo-theme-pure" target="_blank">pure</a>.
+        </div>
+    </div>
+</footer>
+
+  <script src="//cdn.jsdelivr.net/npm/jquery@1.12.4/dist/jquery.min.js"></script>
+<script>
+window.jQuery || document.write('<script src="js/jquery.min.js"><\/script>')
+</script>
+
+<script src="/js/plugin.min.js"></script>
+
+
+<script src="/js/application.js"></script>
+
+
+    <script>
+(function (window) {
+    var INSIGHT_CONFIG = {
+        TRANSLATION: {
+            POSTS: '文章',
+            PAGES: '页面',
+            CATEGORIES: '分类',
+            TAGS: '标签',
+            UNTITLED: '(未命名)',
+        },
+        ROOT_URL: '/',
+        CONTENT_URL: '/content.json',
+    };
+    window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+})(window);
+</script>
+
+<script src="/js/insight.js"></script>
+
+
+
+
+
+
+   
+
+
+
+
+<!--   
+    
+    <script defer>
+    var disqus_config = function () {
+        
+            this.page.url = 'https://straysh.github.life/2020/02/12/%E7%AE%97%E6%B3%95-%E6%8E%92%E5%BA%8F-%E5%9F%BA%E4%BA%8E%E6%AF%94%E8%BE%83%E7%9A%84%E6%8E%92%E5%BA%8F/';
+        
+        this.page.identifier = '算法-排序-基于比较的排序';
+    };
+    (function() { 
+        var d = document, s = d.createElement('script');  
+        s.src = '//' + 'straysh' + '.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+</script>
+
+-->
+
+
+
+
+
+
+
+</body>
+</html>

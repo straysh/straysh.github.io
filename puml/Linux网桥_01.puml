@@ -1,0 +1,39 @@
+@startuml element
+'!include https://unpkg.com/plantuml-style-c4@latest/core.puml
+' uncomment the following line and comment the first to use locally
+!include /app/straysh/2022/plantuml-style-c4/core.puml
+
+GREEN_ARROW
+
+state host {
+    state "enp0s3:\n物理机网卡通过ipv4 ip_forward与docker0通信" as enp0s3 <<inputPin>>
+    state docker0 {
+        state "veth" as veth1 <<outputPin>>
+        state "veth" as veth2 <<outputPin>>
+        state "veth" as veth3 <<outputPin>>
+    }
+    state docker_container1 {
+        state "eth0" as eth01 <<inputPin>>
+    }
+    state docker_container2 {
+        state "eth0" as eth02 <<inputPin>>
+    }
+    state docker_container3 {
+        state "eth0" as eth03 <<inputPin>>
+    }
+}
+state "host 宿主机" as host
+state "docker0 虚拟网桥\t172.17.0.1/16" as docker0
+state "Docker容器" as docker_container1
+state "Docker容器" as docker_container2
+state "Docker容器" as docker_container3
+
+enp0s3 --> docker0
+enp0s3 <-- docker0
+veth1 --> eth01
+veth1 <-- eth01
+veth2 --> eth02
+veth2 <-- eth02
+veth3 --> eth03
+veth3 <-- eth03
+@enduml

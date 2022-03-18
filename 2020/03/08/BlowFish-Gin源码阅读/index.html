@@ -1,0 +1,782 @@
+<!DOCTYPE html>
+<html lang=zh>
+<head>
+  <meta charset="utf-8">
+  
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, minimal-ui">
+  <meta name="renderer" content="webkit">
+  <meta http-equiv="Cache-Control" content="no-transform" />
+  <meta http-equiv="Cache-Control" content="no-siteapp" />
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="format-detection" content="telephone=no,email=no,adress=no">
+  <!-- Color theme for statusbar -->
+  <meta name="theme-color" content="#000000" />
+  <!-- 强制页面在当前窗口以独立页面显示,防止别人在框架里调用页面 -->
+  <meta http-equiv="window-target" content="_top" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lxgw-wenkai-webfont@1.1.0/style.css" />
+  
+  
+  <title>BlowFish_Gin源码阅读 | Hexo</title>
+  <meta name="description" content="持续整理中，不适合阅读 GIN版本 commithash a71af9c144f9579f6dbe945341c1df37aaf09c0dGin框架的特点 快：路由使用radix trie实现，检索路径短。无反射。API性能可预测。 支持中间件：请求可以有多个中间件逐个处理，最后交给业务处理。例如：Logger,Authorization,GZIP,最后写入数据库。 若发生了panic，Gin可以">
+<meta property="og:type" content="article">
+<meta property="og:title" content="BlowFish_Gin源码阅读">
+<meta property="og:url" content="https://straysh.github.life/2020/03/08/BlowFish-Gin%E6%BA%90%E7%A0%81%E9%98%85%E8%AF%BB/index.html">
+<meta property="og:site_name" content="Straysh的小院">
+<meta property="og:description" content="持续整理中，不适合阅读 GIN版本 commithash a71af9c144f9579f6dbe945341c1df37aaf09c0dGin框架的特点 快：路由使用radix trie实现，检索路径短。无反射。API性能可预测。 支持中间件：请求可以有多个中间件逐个处理，最后交给业务处理。例如：Logger,Authorization,GZIP,最后写入数据库。 若发生了panic，Gin可以">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://straysh.github.life/images/golang/gin/gin_Engine_methods.png">
+<meta property="og:image" content="https://straysh.github.life/images/golang/gin/engine_handleHTTPRequest.png">
+<meta property="og:image" content="https://straysh.github.life/images/golang/gin/gin_Route_Next.png">
+<meta property="og:image" content="https://straysh.github.life/images/golang/gin/Trie_example.svg">
+<meta property="og:image" content="https://straysh.github.life/images/golang/gin/trie_example_001.png">
+<meta property="article:published_time" content="2020-03-08T10:34:40.000Z">
+<meta property="article:modified_time" content="2020-03-12T15:30:34.398Z">
+<meta property="article:author" content="Straysh">
+<meta property="article:tag" content="Golang">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://straysh.github.life/images/golang/gin/gin_Engine_methods.png">
+  <!-- Canonical links -->
+  <link rel="canonical" href="https://straysh.github.life/2020/03/08/BlowFish-Gin%E6%BA%90%E7%A0%81%E9%98%85%E8%AF%BB/index.html">
+  
+    <link rel="alternate" href="/atom.xml" title="Straysh的小院" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.ico" type="image/x-icon">
+  
+  
+<link rel="stylesheet" href="/css/style.css">
+
+  
+<link rel="stylesheet" href="/css/custom.css">
+
+  
+  
+  
+  
+    <link href="https://cdn.bootcss.com/fancybox/3.5.7/jquery.fancybox.min.css" rel="stylesheet">
+  
+  
+<meta name="generator" content="Hexo 5.4.1"></head>
+
+
+<body class="main-center theme-green" itemscope itemtype="http://schema.org/WebPage">
+  <header class="header" style="background-image: url(/images/left_images/2.jpg);" itemscope itemtype="http://schema.org/WPHeader">
+  <div class="slimContent" style="height:100%;background-color: rgba(0,0,0,0.7);">
+    <div class="navbar-header">
+      
+      
+      <div class="profile-block text-center">
+        <a id="avatar" href="https://hexo.straysh.com" target="_blank">
+          <img class="img-circle img-rotate" src="/images/avatar.jpg" width="200" height="200">
+        </a>
+        <h2 id="name" class="hidden-xs hidden-sm">Straysh</h2>
+        <h3 id="title" class="hidden-xs hidden-sm hidden-md">野生程序猿</h3>
+        <small id="location" class="text-muted hidden-xs hidden-sm"><i class="icon icon-map-marker"></i> Beijing, China</small>
+      </div>
+      
+      <div class="search" id="search-form-wrap">
+
+    <form class="search-form sidebar-form">
+        <div class="input-group">
+            <input type="text" class="search-form-input form-control" placeholder="搜索" />
+            <span class="input-group-btn">
+                <button type="submit" class="search-form-submit btn btn-flat" onclick="return false;"><i class="icon icon-search"></i></button>
+            </span>
+        </div>
+    </form>
+    <div class="ins-search">
+  <div class="ins-search-mask"></div>
+  <div class="ins-search-container">
+    <div class="ins-input-wrapper">
+      <input type="text" class="ins-search-input" placeholder="想要查找什么..." x-webkit-speech />
+      <button type="button" class="close ins-close ins-selectable" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+    </div>
+    <div class="ins-section-wrapper">
+      <div class="ins-section-container"></div>
+    </div>
+  </div>
+</div>
+
+
+</div>
+      <button class="navbar-toggle collapsed" type="button" data-toggle="collapse" data-target="#main-navbar" aria-controls="main-navbar" aria-expanded="false">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+    </div>
+    <nav id="main-navbar" class="collapse navbar-collapse" itemscope itemtype="http://schema.org/SiteNavigationElement" role="navigation">
+      <ul class="nav navbar-nav main-nav menu-highlight">
+        
+        
+        <li class="menu-item menu-item-home">
+          <a href="/.">
+            
+            <i class="icon icon-home-fill"></i>
+            
+            <span class="menu-title">首页</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives">
+            
+            <i class="icon icon-archives-fill"></i>
+            
+            <span class="menu-title">归档</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories">
+            
+            <i class="icon icon-folder"></i>
+            
+            <span class="menu-title">分类</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags">
+            
+            <i class="icon icon-tags"></i>
+            
+            <span class="menu-title">标签</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-repository">
+          <a href="/repository">
+            
+            <i class="icon icon-project"></i>
+            
+            <span class="menu-title">项目</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-books">
+          <a href="/books">
+            
+            <i class="icon icon-book-fill"></i>
+            
+            <span class="menu-title">书单</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-links">
+          <a href="/links">
+            
+            <i class="icon icon-friendship"></i>
+            
+            <span class="menu-title">友链</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about">
+            
+            <i class="icon icon-cup-fill"></i>
+            
+            <span class="menu-title">关于</span>
+          </a>
+        </li>
+        
+      </ul>
+      
+	
+    <ul class="social-links">
+    	
+        <li><a href="https://github.com/straysh" target="_blank" title="Github" data-toggle=tooltip data-placement=top><i class="icon icon-github"></i></a></li>
+        
+        <li><a href="https://weibo.com/u/1689171115" target="_blank" title="Weibo" data-toggle=tooltip data-placement=top><i class="icon icon-weibo"></i></a></li>
+        
+        <li><a href="/atom.xml" target="_blank" title="Rss" data-toggle=tooltip data-placement=top><i class="icon icon-rss"></i></a></li>
+        
+    </ul>
+
+    </nav>
+  </div>
+</header>
+
+  
+    <aside class="sidebar" itemscope itemtype="http://schema.org/WPSideBar">
+  <div class="slimContent">
+
+    
+      <ul class="sidebar-nav motion-element" style="text-align:center; opacity: 1; display: block; transform: translateX(0px);">
+        <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+          系统目录
+        </li>
+      </ul>
+      <section class="site-overview-wrap sidebar-panel" style="opacity: 0; display: none;">
+        
+          <div class="widget">
+    <h3 class="widget-title">公告</h3>
+    <div class="widget-body">
+        <div id="board">
+            <div class="content">
+                <p>妳是风中的叶，风起而走，我想去追，怎么抓的住？</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+        
+          
+  <div class="widget">
+    <h3 class="widget-title">分类</h3>
+    <div class="widget-body">
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%8D%9A%E6%96%87/">博文</a><span class="category-list-count">102</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%8D%9A%E6%96%87/%E7%AC%94%E8%AE%B0/">笔记</a><span class="category-list-count">2</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E6%9D%82%E8%AE%B0/">杂记</a><span class="category-list-count">6</span></li></ul>
+    </div>
+  </div>
+
+
+        
+          
+  <div class="widget">
+    <h3 class="widget-title">标签</h3>
+    <div class="widget-body">
+      <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/Algorithm/" rel="tag">Algorithm</a><span class="tag-list-count">13</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Apache/" rel="tag">Apache</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Banbrick/" rel="tag">Banbrick</a><span class="tag-list-count">5</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Docker/" rel="tag">Docker</a><span class="tag-list-count">4</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Golang/" rel="tag">Golang</a><span class="tag-list-count">25</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Javascript/" rel="tag">Javascript</a><span class="tag-list-count">10</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Linux/" rel="tag">Linux</a><span class="tag-list-count">13</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/MySQL/" rel="tag">MySQL</a><span class="tag-list-count">13</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Mysql/" rel="tag">Mysql</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Nginx/" rel="tag">Nginx</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Nodejs/" rel="tag">Nodejs</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/PHP/" rel="tag">PHP</a><span class="tag-list-count">19</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/R/" rel="tag">R</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Redis/" rel="tag">Redis</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/SVN/" rel="tag">SVN</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Sphinx/" rel="tag">Sphinx</a><span class="tag-list-count">5</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Translation/" rel="tag">Translation</a><span class="tag-list-count">18</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Yii/" rel="tag">Yii</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%9D%82/" rel="tag">杂</a><span class="tag-list-count">6</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%B1%87%E7%BC%96/" rel="tag">汇编</a><span class="tag-list-count">1</span></li></ul>
+    </div>
+  </div>
+
+
+        
+          
+  <div class="widget">
+    <h3 class="widget-title">标签云</h3>
+    <div class="widget-body tagcloud">
+      <a href="/tags/Algorithm/" style="font-size: 13.67px;">Algorithm</a> <a href="/tags/Apache/" style="font-size: 13px;">Apache</a> <a href="/tags/Banbrick/" style="font-size: 13.33px;">Banbrick</a> <a href="/tags/Docker/" style="font-size: 13.22px;">Docker</a> <a href="/tags/Golang/" style="font-size: 14px;">Golang</a> <a href="/tags/Javascript/" style="font-size: 13.56px;">Javascript</a> <a href="/tags/Linux/" style="font-size: 13.67px;">Linux</a> <a href="/tags/MySQL/" style="font-size: 13.67px;">MySQL</a> <a href="/tags/Mysql/" style="font-size: 13px;">Mysql</a> <a href="/tags/Nginx/" style="font-size: 13.11px;">Nginx</a> <a href="/tags/Nodejs/" style="font-size: 13px;">Nodejs</a> <a href="/tags/PHP/" style="font-size: 13.89px;">PHP</a> <a href="/tags/R/" style="font-size: 13.11px;">R</a> <a href="/tags/Redis/" style="font-size: 13.11px;">Redis</a> <a href="/tags/SVN/" style="font-size: 13px;">SVN</a> <a href="/tags/Sphinx/" style="font-size: 13.33px;">Sphinx</a> <a href="/tags/Translation/" style="font-size: 13.78px;">Translation</a> <a href="/tags/Yii/" style="font-size: 13.11px;">Yii</a> <a href="/tags/%E6%9D%82/" style="font-size: 13.44px;">杂</a> <a href="/tags/%E6%B1%87%E7%BC%96/" style="font-size: 13px;">汇编</a>
+    </div>
+  </div>
+
+        
+          
+  <div class="widget">
+    <h3 class="widget-title">归档</h3>
+    <div class="widget-body">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/03/">三月 2022</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/03/">三月 2021</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/03/">三月 2020</a><span class="archive-list-count">5</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/02/">二月 2020</a><span class="archive-list-count">26</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/12/">十二月 2019</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/04/">四月 2019</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/09/">九月 2018</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/07/">七月 2016</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/06/">六月 2016</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/11/">十一月 2015</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/10/">十月 2015</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/09/">九月 2015</a><span class="archive-list-count">5</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/08/">八月 2015</a><span class="archive-list-count">13</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/07/">七月 2015</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/11/">十一月 2014</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/03/">三月 2014</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/12/">十二月 2013</a><span class="archive-list-count">8</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/10/">十月 2013</a><span class="archive-list-count">8</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/09/">九月 2013</a><span class="archive-list-count">2</span></li></ul>
+    </div>
+  </div>
+
+
+        
+          
+  <div class="widget">
+    <h3 class="widget-title">最新文章</h3>
+    <div class="widget-body">
+      <ul class="recent-post-list list-unstyled no-thumbnail">
+        
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/%E5%8D%9A%E6%96%87/">博文</a><i class="icon icon-angle-right"></i><a class="category-link" href="/categories/%E5%8D%9A%E6%96%87/%E7%AC%94%E8%AE%B0/">笔记</a>
+              </p>
+              <p class="item-title">
+                <a href="/2022/03/14/%E4%BD%BF%E7%94%A8Go%E6%93%8D%E4%BD%9C%E6%96%87%E4%BB%B6/" class="title">使用Go操作文件</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2022-03-14T12:11:25.000Z" itemprop="datePublished">2022-03-14</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/%E5%8D%9A%E6%96%87/">博文</a>
+              </p>
+              <p class="item-title">
+                <a href="/2022/03/13/Docker%E5%AE%B9%E5%99%A8%E7%BD%91%E7%BB%9C/" class="title">Docker容器网络</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2022-03-13T04:10:09.000Z" itemprop="datePublished">2022-03-13</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/%E5%8D%9A%E6%96%87/">博文</a><i class="icon icon-angle-right"></i><a class="category-link" href="/categories/%E5%8D%9A%E6%96%87/%E7%AC%94%E8%AE%B0/">笔记</a>
+              </p>
+              <p class="item-title">
+                <a href="/2022/03/13/Iptables%E5%92%8C%E5%AE%B9%E5%99%A8/" class="title">Iptables和容器</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2022-03-13T03:01:46.000Z" itemprop="datePublished">2022-03-13</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/%E5%8D%9A%E6%96%87/">博文</a>
+              </p>
+              <p class="item-title">
+                <a href="/2022/03/12/Linux%E7%BD%91%E6%A1%A5%E5%B7%A5%E4%BD%9C%E5%8E%9F%E7%90%86/" class="title">Linux网桥工作原理</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2022-03-12T10:02:29.000Z" itemprop="datePublished">2022-03-12</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/%E5%8D%9A%E6%96%87/">博文</a>
+              </p>
+              <p class="item-title">
+                <a href="/2021/03/16/%E5%B9%B6%E5%8F%91%E5%92%8C%E8%B0%83%E5%BA%A6%E7%9A%84%E5%85%B3%E7%B3%BB/" class="title">并发和调度的关系</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2021-03-16T05:54:13.000Z" itemprop="datePublished">2021-03-16</time>
+              </p>
+            </div>
+          </li>
+          
+      </ul>
+    </div>
+  </div>
+  
+
+        
+      </section>
+
+      <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active" style="opacity: 1; display: block;">
+        <nav id="toc" class="article-toc">
+          <h3 class="toc-title">文章目录</h3>
+          <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#GIN%E7%89%88%E6%9C%AC-commithash-a71af9c144f9579f6dbe945341c1df37aaf09c0d"><span class="toc-number">1.</span> <span class="toc-text">GIN版本 commithash a71af9c144f9579f6dbe945341c1df37aaf09c0d</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Gin%E6%A1%86%E6%9E%B6%E7%9A%84%E7%89%B9%E7%82%B9"><span class="toc-number">2.</span> <span class="toc-text">Gin框架的特点</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E6%BA%90%E4%BB%A3%E7%A0%81%E9%98%85%E8%AF%BB"><span class="toc-number">3.</span> <span class="toc-text">源代码阅读</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%9C%8D%E5%8A%A1%E5%90%AF%E5%8A%A8"><span class="toc-number">3.1.</span> <span class="toc-text">服务启动</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Socket-Server-VS-HTTP-Server"><span class="toc-number">3.1.1.</span> <span class="toc-text">Socket Server VS HTTP Server</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Gin%E7%9A%84%E5%90%AF%E5%8A%A8%E8%BF%87%E7%A8%8B"><span class="toc-number">3.2.</span> <span class="toc-text">Gin的启动过程</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E8%B7%AF%E7%94%B1"><span class="toc-number">4.</span> <span class="toc-text">路由</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#Trie"><span class="toc-number">4.1.</span> <span class="toc-text">Trie</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#trie%E9%80%9A%E5%B8%B8%E7%94%A8%E6%9D%A5%E5%8F%96%E4%BB%A3hash-table%EF%BC%8C%E5%9B%A0%E4%B8%BA%E6%9C%89%E5%A6%82%E4%B8%8B%E4%BC%98%E5%8A%BF%EF%BC%9A"><span class="toc-number">4.1.1.</span> <span class="toc-text">trie通常用来取代hash table，因为有如下优势：</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BD%86%E5%90%8C%E6%97%B6%EF%BC%8C%E7%9B%B8%E5%AF%B9%E5%93%88%E5%B8%8C%E8%A1%A8%EF%BC%8Ctrie%E6%9C%89%E5%A6%82%E4%B8%8B%E7%BC%BA%E7%82%B9%EF%BC%9A"><span class="toc-number">4.1.2.</span> <span class="toc-text">但同时，相对哈希表，trie有如下缺点：</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Radix-Tree"><span class="toc-number">4.2.</span> <span class="toc-text">Radix Tree</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E8%A7%A3%E6%9E%90%E8%AF%B7%E6%B1%82%E5%8F%82%E6%95%B0"><span class="toc-number">5.</span> <span class="toc-text">解析请求参数</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E6%B8%B2%E6%9F%93JSON"><span class="toc-number">6.</span> <span class="toc-text">渲染JSON</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#session-amp-cookie"><span class="toc-number">7.</span> <span class="toc-text">session &amp; cookie</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#URL%E9%87%8D%E5%AE%9A%E5%90%91"><span class="toc-number">8.</span> <span class="toc-text">URL重定向</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#goroutin-inside-a-middleware"><span class="toc-number">9.</span> <span class="toc-text">goroutin inside a middleware</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E6%97%A5%E5%BF%97%E6%A8%A1%E5%9D%97"><span class="toc-number">10.</span> <span class="toc-text">日志模块</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#debug%E6%97%A5%E5%BF%97"><span class="toc-number">10.1.</span> <span class="toc-text">debug日志</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%B7%AF%E7%94%B1%E6%97%A5%E5%BF%97"><span class="toc-number">10.2.</span> <span class="toc-text">路由日志</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Build-a-single-binary-with-templates"><span class="toc-number">11.</span> <span class="toc-text">Build a single binary with templates</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#http2-server-push"><span class="toc-number">12.</span> <span class="toc-text">http2 server push</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#go%E6%9C%8D%E5%8A%A1%E8%A6%81%E4%B8%8D%E8%A6%81%E9%85%8Dnginx%E5%89%8D%E7%AB%AF"><span class="toc-number">13.</span> <span class="toc-text">go服务要不要配nginx前端</span></a></li></ol>
+        </nav>
+      </section>
+    
+  </div>
+</aside>
+
+  
+  
+<aside class="sidebar sidebar-toc collapse" id="collapseToc" itemscope itemtype="http://schema.org/WPSideBar">
+  <div class="slimContent">
+    <nav id="toc" class="article-toc">
+      <h3 class="toc-title">文章目录</h3>
+      <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#GIN%E7%89%88%E6%9C%AC-commithash-a71af9c144f9579f6dbe945341c1df37aaf09c0d"><span class="toc-number">1.</span> <span class="toc-text">GIN版本 commithash a71af9c144f9579f6dbe945341c1df37aaf09c0d</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Gin%E6%A1%86%E6%9E%B6%E7%9A%84%E7%89%B9%E7%82%B9"><span class="toc-number">2.</span> <span class="toc-text">Gin框架的特点</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E6%BA%90%E4%BB%A3%E7%A0%81%E9%98%85%E8%AF%BB"><span class="toc-number">3.</span> <span class="toc-text">源代码阅读</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%9C%8D%E5%8A%A1%E5%90%AF%E5%8A%A8"><span class="toc-number">3.1.</span> <span class="toc-text">服务启动</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Socket-Server-VS-HTTP-Server"><span class="toc-number">3.1.1.</span> <span class="toc-text">Socket Server VS HTTP Server</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Gin%E7%9A%84%E5%90%AF%E5%8A%A8%E8%BF%87%E7%A8%8B"><span class="toc-number">3.2.</span> <span class="toc-text">Gin的启动过程</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E8%B7%AF%E7%94%B1"><span class="toc-number">4.</span> <span class="toc-text">路由</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#Trie"><span class="toc-number">4.1.</span> <span class="toc-text">Trie</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#trie%E9%80%9A%E5%B8%B8%E7%94%A8%E6%9D%A5%E5%8F%96%E4%BB%A3hash-table%EF%BC%8C%E5%9B%A0%E4%B8%BA%E6%9C%89%E5%A6%82%E4%B8%8B%E4%BC%98%E5%8A%BF%EF%BC%9A"><span class="toc-number">4.1.1.</span> <span class="toc-text">trie通常用来取代hash table，因为有如下优势：</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BD%86%E5%90%8C%E6%97%B6%EF%BC%8C%E7%9B%B8%E5%AF%B9%E5%93%88%E5%B8%8C%E8%A1%A8%EF%BC%8Ctrie%E6%9C%89%E5%A6%82%E4%B8%8B%E7%BC%BA%E7%82%B9%EF%BC%9A"><span class="toc-number">4.1.2.</span> <span class="toc-text">但同时，相对哈希表，trie有如下缺点：</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Radix-Tree"><span class="toc-number">4.2.</span> <span class="toc-text">Radix Tree</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E8%A7%A3%E6%9E%90%E8%AF%B7%E6%B1%82%E5%8F%82%E6%95%B0"><span class="toc-number">5.</span> <span class="toc-text">解析请求参数</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E6%B8%B2%E6%9F%93JSON"><span class="toc-number">6.</span> <span class="toc-text">渲染JSON</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#session-amp-cookie"><span class="toc-number">7.</span> <span class="toc-text">session &amp; cookie</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#URL%E9%87%8D%E5%AE%9A%E5%90%91"><span class="toc-number">8.</span> <span class="toc-text">URL重定向</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#goroutin-inside-a-middleware"><span class="toc-number">9.</span> <span class="toc-text">goroutin inside a middleware</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E6%97%A5%E5%BF%97%E6%A8%A1%E5%9D%97"><span class="toc-number">10.</span> <span class="toc-text">日志模块</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#debug%E6%97%A5%E5%BF%97"><span class="toc-number">10.1.</span> <span class="toc-text">debug日志</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%B7%AF%E7%94%B1%E6%97%A5%E5%BF%97"><span class="toc-number">10.2.</span> <span class="toc-text">路由日志</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Build-a-single-binary-with-templates"><span class="toc-number">11.</span> <span class="toc-text">Build a single binary with templates</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#http2-server-push"><span class="toc-number">12.</span> <span class="toc-text">http2 server push</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#go%E6%9C%8D%E5%8A%A1%E8%A6%81%E4%B8%8D%E8%A6%81%E9%85%8Dnginx%E5%89%8D%E7%AB%AF"><span class="toc-number">13.</span> <span class="toc-text">go服务要不要配nginx前端</span></a></li></ol>
+    </nav>
+  </div>
+</aside>
+
+<main class="main" role="main">
+  <div class="content">
+  <article id="post-BlowFish-Gin源码阅读" class="article article-type-post" itemscope itemtype="http://schema.org/BlogPosting">
+    
+    <div class="article-header">
+      
+        
+  
+    <h1 class="article-title" itemprop="name">
+      BlowFish_Gin源码阅读
+    </h1>
+  
+
+
+      
+      <div class="article-meta">
+        
+        <span class="article-date">
+    <i class="icon icon-calendar-check"></i>
+	<a href="/2020/03/08/BlowFish-Gin%E6%BA%90%E7%A0%81%E9%98%85%E8%AF%BB/" class="article-date">
+	  <time datetime="2020-03-08T10:34:40.000Z" itemprop="datePublished">2020-03-08</time>
+	</a>
+</span>
+        
+  <span class="article-category">
+    <i class="icon icon-folder"></i>
+    <a class="article-category-link" href="/categories/%E5%8D%9A%E6%96%87/">博文</a>
+  </span>
+
+        
+  <span class="article-tag">
+    <i class="icon icon-tags"></i>
+	<a class="article-tag-link-link" href="/tags/Golang/" rel="tag">Golang</a>
+  </span>
+
+
+        
+
+        <span class="post-comment"><i class="icon icon-comment"></i> <a href="/2020/03/08/BlowFish-Gin%E6%BA%90%E7%A0%81%E9%98%85%E8%AF%BB/#comments" class="article-comment-link">评论</a></span>
+        
+      </div>
+    </div>
+    <div class="article-entry marked-body" itemprop="articleBody">
+      
+        <p>持续整理中，不适合阅读</p>
+<h1 id="GIN版本-commithash-a71af9c144f9579f6dbe945341c1df37aaf09c0d"><a href="#GIN版本-commithash-a71af9c144f9579f6dbe945341c1df37aaf09c0d" class="headerlink" title="GIN版本 commithash a71af9c144f9579f6dbe945341c1df37aaf09c0d"></a>GIN版本 commithash a71af9c144f9579f6dbe945341c1df37aaf09c0d</h1><h1 id="Gin框架的特点"><a href="#Gin框架的特点" class="headerlink" title="Gin框架的特点"></a>Gin框架的特点</h1><ul>
+<li>快：路由使用<code>radix trie</code>实现，检索路径短。无反射。API性能可预测。</li>
+<li>支持中间件：请求可以有多个中间件逐个处理，最后交给业务处理。例如：<code>Logger</code>,<code>Authorization</code>,<code>GZIP</code>,最后写入数据库。</li>
+<li>若发生了<code>panic</code>，Gin可以捕获并恢复错误，因此服务并不会终止，且可有机会介入错误恢复的过程。</li>
+<li>JSON校验：Gin可以解析并校验请求的json数据，例如检查字段值。</li>
+<li>路由分组：更好的组织路由。通过分组将需要鉴权和不需鉴权的路由分开，分组可以无限嵌套且不影响性能。</li>
+<li>错误管理：Gin可以和很方便的收集错误信息。最后使用中间件将错误写入文件或数据库或发送到网络上。</li>
+<li>内置视图渲染：提供了易用的接口来渲染<code>JSON</code>，<code>XML</code>和<code>HTML</code>。</li>
+<li>可扩展：自定义中间件非常容易。</li>
+</ul>
+<h1 id="源代码阅读"><a href="#源代码阅读" class="headerlink" title="源代码阅读"></a>源代码阅读</h1><h2 id="服务启动"><a href="#服务启动" class="headerlink" title="服务启动"></a>服务启动</h2><h3 id="Socket-Server-VS-HTTP-Server"><a href="#Socket-Server-VS-HTTP-Server" class="headerlink" title="Socket Server VS HTTP Server"></a>Socket Server VS HTTP Server</h3><p>HTTP是<a href="/2020/02/27/%E7%BD%91%E7%BB%9C-tcp-udp/#TCP-UDP%E5%B7%A5%E4%BD%9C%E5%9C%A8%E4%BC%A0%E8%BE%93%E5%B1%82">应用层协议</a>；Socket是系统提供的抽象接口，它直接操作传输层协议(如<code>TCP</code>、<code>UDP</code>等)来工作。它们不是一个层级上的概念。<br>所以，只要Socket两端不主动关闭连接，就可以通过TCP连接来双向通信。<br>而HTTP服务器则按照HTTP协议来通信：<code>建立TCP连接 🡺 客户端发送报文 🡺 服务器相应报文 🡺 客户端或服务器关闭连接</code>。每一个请求都要重复这个过程。虽说TCP协议是长连接的，但上层的HTTP协议会主动关闭它。<br>另外HTTP中有一个<code>Connection: keep-alive</code>头信息，来重用连接，减少创建连接的消耗。它受到重用次数和超时时间的限制(服务器设置)，触发限制时仍会主动断开连接。因此这个所谓的”长连接”和Socket长连接的本质是不同的。</p>
+<p>Socket Server例子，内层的for循环读并不会主动关闭连接(不发生panic时)</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><code class="hljs golang"><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span> &#123;<br>    srv, err := net.Listen(<span class="hljs-string">&quot;tcp&quot;</span>, <span class="hljs-string">&quot;:8080&quot;</span>) <span class="hljs-comment">// 协议，端口</span><br>    <span class="hljs-keyword">if</span> err != <span class="hljs-literal">nil</span> &#123;<br>        <span class="hljs-built_in">panic</span>(err)<br>    &#125;<br>    <span class="hljs-keyword">defer</span> srv.Close()<br><br>    <span class="hljs-keyword">for</span> &#123;<br>        conn, err := srv.Accept() <span class="hljs-comment">// 监听连接</span><br>        <span class="hljs-keyword">if</span> err != <span class="hljs-literal">nil</span> &#123;<br>            fmt.Println(<span class="hljs-string">&quot;accept failed:&quot;</span>, err.Error())<br>            <span class="hljs-keyword">continue</span><br>        &#125;<br><br>        <span class="hljs-keyword">go</span> <span class="hljs-function"><span class="hljs-keyword">func</span><span class="hljs-params">(c net.Conn)</span></span>&#123;<br>            <span class="hljs-keyword">defer</span> c.Close()<br>            buf := <span class="hljs-built_in">make</span>([]<span class="hljs-type">byte</span>, <span class="hljs-number">1024</span>)<br>            <span class="hljs-keyword">for</span> &#123;<br>                n, err := c.Read(buf) <span class="hljs-comment">// 尝试读数据</span><br>                <span class="hljs-keyword">if</span> err != <span class="hljs-literal">nil</span> &#123;<br>                    fmt.Println(<span class="hljs-string">&quot;read failed:&quot;</span>, err.Error())<br>                    <span class="hljs-keyword">continue</span><br>                &#125;<br><br>                receiveData := buf[:n] <span class="hljs-comment">// 接收到的字节buf[0:n]</span><br>                fmt.Println(<span class="hljs-string">&quot;received data=&quot;</span>, receiveData)<br>            &#125;<br>        &#125;(conn)<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>HTTP Server</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><code class="hljs golang"><span class="hljs-keyword">type</span> handler <span class="hljs-keyword">struct</span> &#123;<br>&#125;<br><br><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-params">(h handler)</span></span> ServeHTTP(w http.ResponseWriter, r *http.Request) &#123;<br>    requestUrl := r.URL.String()<br>    msg := fmt.Sprintf(<span class="hljs-string">&quot;request uri=%s\n&quot;</span>, requestUrl)<br>    fmt.Println(msg)<br>    _, _ = w.Write([]<span class="hljs-type">byte</span>(msg))<br>&#125;<br><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span> &#123;<br>    err := http.ListenAndServe(<span class="hljs-string">&quot;127.0.0.1:8080&quot;</span>, handler&#123;&#125;) <span class="hljs-comment">//地址、端口，处理句柄</span><br>    <span class="hljs-keyword">if</span> err != <span class="hljs-literal">nil</span> &#123;<br>        <span class="hljs-built_in">panic</span>(err)<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>HTTP Server的底层还是TCP连接，对比上面Socket Server的代码，我们期望在HTTP Server的实现里发现</p>
+<ol>
+<li>创建连接<code>net.Listen</code></li>
+<li>网络监听<code>srv.Accept()</code></li>
+<li>读取数据<code>c.Read(buf)</code></li>
+<li>额外的，在服务端发送完数据后，应该要关闭连接</li>
+</ol>
+<p>带着以上四个目标，我们来跟一下HTTP Server的启动过程。</p>
+<ol>
+<li>启动HTTP Server<code>err := http.ListenAndServe(&quot;127.0.0.1:8080&quot;, handler&#123;&#125;)</code> <a href="/images/golang/gin/Server_start.png" data-caption="Server_start" data-fancybox class="fancy_box_trg">&nbsp;</a></li>
+<li>构造server对象 <a href="/images/golang/gin/Server_struct.png" data-caption="Server_struct" data-fancybox class="fancy_box_trg">&nbsp;</a></li>
+</ol>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs golang"><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">ListenAndServe</span><span class="hljs-params">(addr <span class="hljs-type">string</span>, handler Handler)</span></span> <span class="hljs-type">error</span> &#123;<br>    server := &amp;Server&#123;Addr: addr, Handler: handler&#125;<br>    <span class="hljs-keyword">return</span> server.ListenAndServe()<br>&#125;<br></code></pre></td></tr></table></figure>
+<ol start="3">
+<li>调用server的<code>ListenAndServe</code>方法。在#Line9我们发现了<code>net.Listen(&quot;tcp&quot;, addr)</code>，<strong>目标1找到</strong>。</li>
+</ol>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><code class="hljs golang"><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-params">(srv *Server)</span></span> ListenAndServe() <span class="hljs-type">error</span> &#123;<br>    <span class="hljs-keyword">if</span> srv.shuttingDown() &#123;<br>        <span class="hljs-keyword">return</span> ErrServerClosed<br>    &#125;<br>    addr := srv.Addr<br>    <span class="hljs-keyword">if</span> addr == <span class="hljs-string">&quot;&quot;</span> &#123;<br>        addr = <span class="hljs-string">&quot;:http&quot;</span><br>    &#125;<br>    ln, err := net.Listen(<span class="hljs-string">&quot;tcp&quot;</span>, addr)<br>    <span class="hljs-keyword">if</span> err != <span class="hljs-literal">nil</span> &#123;<br>        <span class="hljs-keyword">return</span> err<br>    &#125;<br>    <span class="hljs-keyword">return</span> srv.Serve(ln)<br>&#125;<br></code></pre></td></tr></table></figure>
+<ol start="4">
+<li>跟入#Line13行代码<code>srv.Serve(ln)</code> <a href="/images/golang/gin/srv.Serve.png" data-fancybox data-caption="srv.Serve" class="fancy_box_trg">&nbsp;</a>。这里，#Line4:<code>rw,err := l.Accept()</code>，<strong>目标2找到</strong>。<br>这里的<code>rw</code>即是<code>net.Conn</code>，在#Line14重新包装了<code>rw</code> <a href="/images/golang/gin/srv.newConn.png" data-fancybox data-caption="srv.newConn" class="fancy_box_trg">&nbsp;</a>，，并在#Line14启动协程<code>go c.serve(connCtx)</code>。<br>到此，服务器已经正常启动，并且给每一个新进来的Request都分配了一个协程。#Line3的for循环配合golang轻协程的特性，一个高并发的web服务器启动了。</li>
+</ol>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><code class="hljs golang"><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-params">(srv *Server)</span></span> Serve(l net.Listener) <span class="hljs-type">error</span> &#123;<br>    ...<br>    <span class="hljs-keyword">for</span> &#123;<br>        rw, err := l.Accept()<br>        ...<br>        connCtx := ctx<br>        <span class="hljs-keyword">if</span> cc := srv.ConnContext; cc != <span class="hljs-literal">nil</span> &#123;<br>            connCtx = cc(connCtx, rw)<br>            <span class="hljs-keyword">if</span> connCtx == <span class="hljs-literal">nil</span> &#123;<br>                <span class="hljs-built_in">panic</span>(<span class="hljs-string">&quot;ConnContext returned nil&quot;</span>)<br>            &#125;<br>        &#125;<br>        tempDelay = <span class="hljs-number">0</span><br>        c := srv.newConn(rw)<br>        c.setState(c.rwc, StateNew) <span class="hljs-comment">// before Serve can return</span><br>        <span class="hljs-keyword">go</span> c.serve(connCtx)<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+<ol start="5">
+<li>继续挖<code>go c.serve(connCtx)</code>看看<code>net/http</code>是如何处理一个Request的。先快速扫一下这个函数里面做了哪些事情：</li>
+<li>#Line20<code>w, err := c.readRequest(ctx)</code>构建Response对象。向内追找到HTTP协议的解析过程<code>newTextprotoReader</code>。<strong>目标3找到</strong>。</li>
+<li>#Line35<code>serverHandler&#123;c.server&#125;.ServeHTTP(w, w.req)</code> 处理业务逻辑(即用户定义的路由逻辑)。<code>ServeHTTP</code>的第一个参数<code>w</code>就是Response对象，负责向客户端响应数据，<code>w.req</code>即Request，负责解析请求参数、头信息等。</li>
+<li>#Line40<code>w.finishRequest()</code>中有flush操作，到这里服务器已经完成了数据响应。</li>
+<li>#Line50-64处理了<code>keep-alive</code>重用连接和<code>idle_timeout</code>空闲超时断开连接的逻辑。这里涉及到一些网络知识不具体展开。<br>若设置了<code>Connection: close</code>或者服务器保持连接直到空闲超时，都会return从而执行#Line5中的defer代码,注意源代码中的#Line1775~1777 <a href="/images/golang/gin/defer_conn_close.png" data-fancybox data-caption="defer_conn_close" class="fancy_box_trg">&nbsp;</a>。<strong>目标4找到</strong></li>
+<li>需要额外关注一下#Line35行上面的注释 <a href="/images/golang/gin/serverHandler_comments.png" data-fancybox data-caption="serverHandler_comments" class="fancy_box_trg">&nbsp;</a>。这里明确指出了<code>net/http</code>没有实现pipeline，理由是在HTTP1.1中pipeline并没有被（客户端/浏览器）广泛的实现，因此扔到了和HTTP2.0一起实现。</li>
+</ol>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br></pre></td><td class="code"><pre><code class="hljs golang"><span class="hljs-comment">// Serve a new connection.</span><br><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-params">(c *conn)</span></span> serve(ctx context.Context) &#123;<br>    c.remoteAddr = c.rwc.RemoteAddr().String()<br>    ctx = context.WithValue(ctx, LocalAddrContextKey, c.rwc.LocalAddr())<br>    <span class="hljs-keyword">defer</span> <span class="hljs-function"><span class="hljs-keyword">func</span><span class="hljs-params">()</span></span> &#123;...&#125;()<br><br>    ...<br><br>    <span class="hljs-comment">// HTTP/1.x from here on.</span><br><br>    ctx, cancelCtx := context.WithCancel(ctx)<br>    c.cancelCtx = cancelCtx<br>    <span class="hljs-keyword">defer</span> cancelCtx()<br><br>    c.r = &amp;connReader&#123;conn: c&#125;<br>    c.bufr = newBufioReader(c.r)<br>    c.bufw = newBufioWriterSize(checkConnErrorWriter&#123;c&#125;, <span class="hljs-number">4</span>&lt;&lt;<span class="hljs-number">10</span>)<br><br>    <span class="hljs-keyword">for</span> &#123;<br>        w, err := c.readRequest(ctx)<br>        <span class="hljs-keyword">if</span> c.r.remain != c.server.initialReadLimitSize() &#123;<br>            <span class="hljs-comment">// If we read any bytes off the wire, we&#x27;re active.</span><br>            c.setState(c.rwc, StateActive)<br>        &#125;<br>        <span class="hljs-keyword">if</span> err != <span class="hljs-literal">nil</span> &#123;...&#125;<br><br>        <span class="hljs-comment">// Expect 100 Continue support</span><br>        req := w.req<br>        <span class="hljs-keyword">if</span> req.expectsContinue() &#123;...&#125;<br><br>        c.curReq.Store(w)<br><br>        <span class="hljs-keyword">if</span> requestBodyRemains(req.Body) &#123;...&#125;<br><br>        serverHandler&#123;c.server&#125;.ServeHTTP(w, w.req)<br>        w.cancelCtx()<br>        <span class="hljs-keyword">if</span> c.hijacked() &#123;<br>            <span class="hljs-keyword">return</span><br>        &#125;<br>        w.finishRequest()<br>        <span class="hljs-keyword">if</span> !w.shouldReuseConnection() &#123;<br>            <span class="hljs-keyword">if</span> w.requestBodyLimitHit || w.closedRequestBodyEarly() &#123;<br>                c.closeWriteAndWait()<br>            &#125;<br>            <span class="hljs-keyword">return</span><br>        &#125;<br>        c.setState(c.rwc, StateIdle)<br>        c.curReq.Store((*response)(<span class="hljs-literal">nil</span>))<br><br>        <span class="hljs-keyword">if</span> !w.conn.server.doKeepAlives() &#123;<br>            <span class="hljs-comment">// We&#x27;re in shutdown mode. We might&#x27;ve replied</span><br>            <span class="hljs-comment">// to the user without &quot;Connection: close&quot; and</span><br>            <span class="hljs-comment">// they might think they can send another</span><br>            <span class="hljs-comment">// request, but such is life with HTTP/1.1.</span><br>            <span class="hljs-keyword">return</span><br>        &#125;<br><br>        <span class="hljs-keyword">if</span> d := c.server.idleTimeout(); d != <span class="hljs-number">0</span> &#123;<br>            c.rwc.SetReadDeadline(time.Now().Add(d))<br>            <span class="hljs-keyword">if</span> _, err := c.bufr.Peek(<span class="hljs-number">4</span>); err != <span class="hljs-literal">nil</span> &#123;<br>                <span class="hljs-keyword">return</span><br>            &#125;<br>        &#125;<br>        c.rwc.SetReadDeadline(time.Time&#123;&#125;)<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+<p>P.S. 这里再额外挖一下#Line35<code>serverHandler&#123;c.server&#125;.ServeHTTP(w, w.req)</code>的实现，将用户代码和<code>net/http</code>包打通。<br>这里首先构造了一个serverHandler对象并调用了它的<code>ServeHTTP</code>方法。<a href="/images/golang/gin/serverHandler_ServeHTTP.png" data-fancybox data-caption="serverHandler_ServeHTTP" class="fancy_box_trg">&nbsp;</a><br>之后，调用了<code>sh.srv.Handler.ServeHTTP(rw, req)</code>，这里的<code>srv</code>就是本文步骤2中<code>构造server对象</code>的这个server对象。<br>因此这里的<code>.Handler.ServeHTTP</code>最终调用的是我们的<code>HTTP Server</code>demo中#Line4-9的代码。</p>
+<h2 id="Gin的启动过程"><a href="#Gin的启动过程" class="headerlink" title="Gin的启动过程"></a>Gin的启动过程</h2><p>挖完了<code>net/http</code>包，对http网络请求的过程有了一个整体的认知，接下来正式开挖Gin。</p>
+<ol>
+<li>启动服务非常简便<code>engine := gin.New()</code>然后<code>engine.Run(&quot;:8080&quot;)</code> <a href="/images/golang/gin/gin_New.png" data-caption="gin_New" data-fancybox class="fancy_box_trg">&nbsp;</a></li>
+</ol>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs golang"><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span> &#123;<br>    engine := gin.New()<br><br>    <span class="hljs-comment">//engine.GET(&quot;/someGet&quot;, getting)</span><br>    ...<br>    <span class="hljs-comment">//engine.Use(middlewares.Authenticate())</span><br><br>    engine.Run(<span class="hljs-string">&quot;:8080&quot;</span>)<br>&#125;<br></code></pre></td></tr></table></figure>
+<ol start="2">
+<li><code>gin.New()</code>的细节。其中<code>Engine</code>的结构 <a href="/images/golang/gin/gin_Engine.png" data-caption="gin_Engine" data-fancybox class="fancy_box_trg">&nbsp;</a><br>其中：</li>
+</ol>
+<ul>
+<li><code>RedirectTrailingSlash</code>若请求地址是<code>/foo/</code>且未匹配，但<code>/foo</code>可以匹配，则将客户端重定向到<code>/foo</code>，若请求是GET则状态码是301，其他动词则是307</li>
+<li><code>RedirectFixedPath</code>未匹配时尝试去除多余的<code>../</code>或<code>//</code>以修正路径(且转化为小写)，例如<code>/FOO</code>或<code>/..//FOO</code>都能匹配<code>/foo</code></li>
+<li><code>HandleMethodNotAllowed</code>未匹配时尝试其他动词，若路由匹配则以状态码405响应，否则将请求代理到<code>NotFound</code>句柄。</li>
+</ul>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><code class="hljs golang"><span class="hljs-comment">// New returns a new blank Engine instance without any middleware attached.</span><br><span class="hljs-comment">// By default the configuration is:</span><br><span class="hljs-comment">// - RedirectTrailingSlash:  true</span><br><span class="hljs-comment">// - RedirectFixedPath:      false</span><br><span class="hljs-comment">// - HandleMethodNotAllowed: false</span><br><span class="hljs-comment">// - ForwardedByClientIP:    true</span><br><span class="hljs-comment">// - UseRawPath:             false</span><br><span class="hljs-comment">// - UnescapePathValues:     true</span><br><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">New</span><span class="hljs-params">()</span></span> *Engine &#123;<br>    debugPrintWARNINGNew() <span class="hljs-comment">//debug模式下打印开发模式警告</span><br>    engine := &amp;Engine&#123;<br>        RouterGroup: RouterGroup&#123; <span class="hljs-comment">// 路由分组</span><br>            Handlers: <span class="hljs-literal">nil</span>,<br>            basePath: <span class="hljs-string">&quot;/&quot;</span>,<br>            root:     <span class="hljs-literal">true</span>,<br>        &#125;,<br>        FuncMap:                template.FuncMap&#123;&#125;, <span class="hljs-comment">// 模板函数？</span><br>        RedirectTrailingSlash:  <span class="hljs-literal">true</span>,<br>        RedirectFixedPath:      <span class="hljs-literal">false</span>,<br>        HandleMethodNotAllowed: <span class="hljs-literal">false</span>,<br>        ForwardedByClientIP:    <span class="hljs-literal">true</span>,<br>        AppEngine:              defaultAppEngine,<br>        UseRawPath:             <span class="hljs-literal">false</span>,<br>        UnescapePathValues:     <span class="hljs-literal">true</span>,<br>        MaxMultipartMemory:     defaultMultipartMemory,<br>        trees:                  <span class="hljs-built_in">make</span>(methodTrees, <span class="hljs-number">0</span>, <span class="hljs-number">9</span>),<br>        delims:                 render.Delims&#123;Left: <span class="hljs-string">&quot;&#123;&#123;&quot;</span>, Right: <span class="hljs-string">&quot;&#125;&#125;&quot;</span>&#125;,<br>        secureJsonPrefix:       <span class="hljs-string">&quot;while(1);&quot;</span>,<br>    &#125;<br>    engine.RouterGroup.engine = engine<br>    engine.pool.New = <span class="hljs-function"><span class="hljs-keyword">func</span><span class="hljs-params">()</span></span> <span class="hljs-keyword">interface</span>&#123;&#125; &#123; <span class="hljs-comment">// 连接池</span><br>        <span class="hljs-keyword">return</span> engine.allocateContext()<br>    &#125;<br>    <span class="hljs-keyword">return</span> engine<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<ol start="3">
+<li><code>engine.Run(&quot;:8080&quot;)</code>中的细节。它仅仅是<code>http.ListenAndServe(address, engine)</code>的语法糖，啥也没做。<br>因此可以看出来，Gin对网络底层没做任何处理，直接使用了<code>net/http</code>包。其核心代码全部在<code>Engine</code>这个结构体中。根据我们分析<code>net/http</code>包的经验，Engine中一定实现了<code>ServeHTTP</code>方法</li>
+</ol>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs golang"><span class="hljs-comment">// Run attaches the router to a http.Server and starts listening and serving HTTP requests.</span><br><span class="hljs-comment">// It is a shortcut for http.ListenAndServe(addr, router)</span><br><span class="hljs-comment">// Note: this method will block the calling goroutine indefinitely unless an error happens.</span><br><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-params">(engine *Engine)</span></span> Run(addr ...<span class="hljs-type">string</span>) (err <span class="hljs-type">error</span>) &#123;<br>    <span class="hljs-keyword">defer</span> <span class="hljs-function"><span class="hljs-keyword">func</span><span class="hljs-params">()</span></span> &#123; debugPrintError(err) &#125;()<br><br>    address := resolveAddress(addr) <span class="hljs-comment">// addr 是动态参数，默认值取:8080</span><br>    debugPrint(<span class="hljs-string">&quot;Listening and serving HTTP on %s\n&quot;</span>, address)<br>    err = http.ListenAndServe(address, engine)<br>    <span class="hljs-keyword">return</span><br>&#125;<br></code></pre></td></tr></table></figure>
+
+<ol start="4">
+<li><code>engine.ServeHTTP</code>到底干了啥？ <code>Engine</code>结构体的方法集：<br><img src="/images/golang/gin/gin_Engine_methods.png" alt="gin_Engine_methods"></li>
+</ol>
+<p><code>gin.Context</code> <a href="/images/golang/gin/gin_Context.png" data-caption="gin_Context" data-fancybox class="fancy_box_trg">&nbsp;</a></p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><code class="hljs golang"><span class="hljs-comment">// ServeHTTP conforms to the http.Handler interface.</span><br><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-params">(engine *Engine)</span></span> ServeHTTP(w http.ResponseWriter, req *http.Request) &#123;<br>    <span class="hljs-comment">// 源码#Line145行定义，这里返回engine.allocateContext()的结果</span><br>    <span class="hljs-comment">// 是*gin.Context指针</span><br>    c := engine.pool.Get().(*Context) <span class="hljs-comment">// 从连接池中取出一个连接</span><br>    c.writermem.reset(w) <span class="hljs-comment">// 重置 http.responseWriter</span><br>    c.Request = req<br>    c.reset() <span class="hljs-comment">// 重置Context</span><br><br>    engine.handleHTTPRequest(c) <span class="hljs-comment">// 核心!!! 路由处理逻辑</span><br><br>    engine.pool.Put(c) <span class="hljs-comment">// 执行结束，将连接放入连接池</span><br>&#125;<br></code></pre></td></tr></table></figure>
+
+<ol start="5">
+<li><code>engine.handleHTTPRequest(c)</code>的细节。</li>
+</ol>
+<p><img src="/images/golang/gin/engine_handleHTTPRequest.png" alt="engine_handleHTTPRequest"></p>
+<p>可以看到源码#Line403行调用<code>c.Next()</code>后<code>c.index</code>从-1自增到0，然后调用<code>c.handlers[0]</code>句柄，执行第一个中间件<code>RouteLogger</code>，而在中间件中我们需要再次调用<code>c.Next()</code>。非常明显的一个递归调用，然后执行第二个中间件<code>RecoverWithWriter</code>，之后调用<code>GET</code>动词注册的路由<code>api.Ping</code>，最后调用链路依次返回。<br>参考下图（点击可放大）<br><a href="/images/golang/gin/gin_Route_Next.png" data-caption="gin_Route_Next" data-fancybox><br><img src="/images/golang/gin/gin_Route_Next.png" alt="gin_Route_Next"><br></a></p>
+<h1 id="路由"><a href="#路由" class="headerlink" title="路由"></a>路由</h1><p>Gin的路由按HTTP动词，分9组（默认<code>engine.trees = make(methodTrees, 0, 9)</code>）分别对应<code>GET</code>组，<code>POST</code>组，<code>PUT</code>组等。<code>methodTrees</code>是<code>[]methodTree</code>的别名：<code>type methodTrees []methodTree</code>。<br><code>node</code>是一颗前缀树或<code>Radix trie</code>。</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs golang"><span class="hljs-keyword">type</span> methodTree <span class="hljs-keyword">struct</span> &#123;<br>    method <span class="hljs-type">string</span> <span class="hljs-comment">// 即HTTP动词，如GET</span><br>    root   *node  <span class="hljs-comment">// 路由链路</span><br>&#125;<br></code></pre></td></tr></table></figure>
+
+<h2 id="Trie"><a href="#Trie" class="headerlink" title="Trie"></a><code>Trie</code></h2><p><code>trie</code>译为字典树或单词查找树或前缀树。这是一种搜索树——存储动态集合或关联数组的有序的树形数据结构，且通常使用字符串做键。与二叉搜索树不同，其节点上并不直接存键。其在树中的位置决定了与其关联的键。所有的子节点都有相同的前缀，而根节点对应的是空字符串。键只与叶子节点关联。</p>
+<p><code>trie</code>术语的发明者念<code>/ˈtriː/</code>(tree)，而有些作者念为<code>/ˈtraɪ/</code>以便和tree区别。</p>
+<p>下图是一颗字典树，描述了键值为<code>A</code>、<code>to</code>、<code>tea</code>、<code>ted</code>、<code>ten</code>、<code>i</code>、<code>in</code>、<code>inn</code>的情况。（图中节点并不是完全有序的，虽然应该如此：如root节点与<code>t</code>节点）<br><img src="/images/golang/gin/Trie_example.svg" alt="wiki字典树"></p>
+<p>不难想象，字典树典型的应用场景是单词计数。</p>
+<h3 id="trie通常用来取代hash-table，因为有如下优势："><a href="#trie通常用来取代hash-table，因为有如下优势：" class="headerlink" title="trie通常用来取代hash table，因为有如下优势："></a><code>trie</code>通常用来取代<code>hash table</code>，因为有如下优势：</h3><ul>
+<li>在最坏的情况下，<code>trie</code>的时间复杂度是<code>O(m)</code>，其中m是字符串的长度。但哈希表有<code>key</code>碰撞的情况，最坏的情况下其复杂度是<code>O(N)</code>，虽然通常是<code>O(1)</code>，且计算哈希的复杂度是<code>O(m)</code>。</li>
+<li><code>trie</code>中没有碰撞。</li>
+<li>当<code>trie</code>中一个<code>key</code>对应多个值时，会使用<code>buckets</code>来存储多个值，与哈希表中发生碰撞时使用的桶相似。</li>
+<li>不论有多少个<code>key</code>，都不需哈希函数或重哈希函数。</li>
+<li><code>key</code>的路径是有序的。</li>
+</ul>
+<h3 id="但同时，相对哈希表，trie有如下缺点："><a href="#但同时，相对哈希表，trie有如下缺点：" class="headerlink" title="但同时，相对哈希表，trie有如下缺点："></a>但同时，相对哈希表，<code>trie</code>有如下缺点：</h3><ul>
+<li><code>trie</code>的搜索通常比哈希表慢，特别是需要从硬盘上加载数据时。</li>
+<li>浮点数做<code>key</code>通常导致链路过长。</li>
+<li>有些<code>trie</code>可能比哈希表需要更多的空间，因为每一个字符都要分配内存。而哈希表只需要申请一块内存。</li>
+</ul>
+<img src="/images/golang/gin/trie_example_001.png" alt="trie_001" style="width:30em;" />
+
+<h2 id="Radix-Tree"><a href="#Radix-Tree" class="headerlink" title="Radix Tree"></a><code>Radix Tree</code></h2><p><code>radix tree</code>也叫<code>radix trie</code>或<code>compact prefix trie</code>。在字典树中，每一个字符都要占一个节点，这样造成树过高。<code>radix trie</code>则将唯一的子节点压缩到自身来降低树的高度。</p>
+<hr>
+<p>参考资料：</p>
+<ol>
+<li><a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Trie">字典树</a></li>
+<li><a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Radix_tree">Radix树</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.youtube.com/watch?v=CX777rfuZtM">Trie Data Structure Tutorial - Introduction to the Trie Data Structure</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.youtube.com/watch?v=jXAHLqQthKw">Trie and Patricia Trie Overview</a></li>
+<li><a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/HzGS0ekNFubJGjj19NxlEw">图解Redis中的Radix树</a></li>
+<li><a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/4DWC9Upv2UEXKssb8DDwVw">Linux 内核数据结构：Radix树</a></li>
+</ol>
+<h1 id="解析请求参数"><a href="#解析请求参数" class="headerlink" title="解析请求参数"></a>解析请求参数</h1><h1 id="渲染JSON"><a href="#渲染JSON" class="headerlink" title="渲染JSON"></a>渲染JSON</h1><h1 id="session-amp-cookie"><a href="#session-amp-cookie" class="headerlink" title="session &amp; cookie"></a>session &amp; cookie</h1><h1 id="URL重定向"><a href="#URL重定向" class="headerlink" title="URL重定向"></a>URL重定向</h1><h1 id="goroutin-inside-a-middleware"><a href="#goroutin-inside-a-middleware" class="headerlink" title="goroutin inside a middleware"></a>goroutin inside a middleware</h1><h1 id="日志模块"><a href="#日志模块" class="headerlink" title="日志模块"></a>日志模块</h1><h2 id="debug日志"><a href="#debug日志" class="headerlink" title="debug日志"></a>debug日志</h2><p><code>/debug.go#L55</code></p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs golang"><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">debugPrint</span><span class="hljs-params">(format <span class="hljs-type">string</span>, values ...<span class="hljs-keyword">interface</span>&#123;&#125;)</span></span> &#123;<br>    <span class="hljs-keyword">if</span> IsDebugging() &#123;<br>        <span class="hljs-keyword">if</span> !strings.HasSuffix(format, <span class="hljs-string">&quot;\n&quot;</span>) &#123;<br>            format += <span class="hljs-string">&quot;\n&quot;</span><br>        &#125;<br>        <span class="hljs-comment">// DefaultWriter是在项目bootstrap阶段配置的写句柄</span><br>        <span class="hljs-comment">// 可以通过DefaultWriter=io.MultiWriter(...)自定义</span><br>        <span class="hljs-comment">// 也可以使用默认值os.Stdout见/mode.go#L31-38</span><br>        fmt.Fprintf(DefaultWriter, <span class="hljs-string">&quot;[GIN-debug] &quot;</span>+format, values...)<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p><code>/debug.go#L97</code></p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs golang"><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">debugPrintError</span><span class="hljs-params">(err <span class="hljs-type">error</span>)</span></span> &#123;<br>    <span class="hljs-keyword">if</span> err != <span class="hljs-literal">nil</span> &#123;<br>        <span class="hljs-keyword">if</span> IsDebugging() &#123;<br>            <span class="hljs-comment">// DefaultErrorWriter is the default io.Writer used by Gin to debug errors</span><br>            fmt.Fprintf(DefaultErrorWriter, <span class="hljs-string">&quot;[GIN-debug] [ERROR] %v\n&quot;</span>, err)<br>        &#125;<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<h2 id="路由日志"><a href="#路由日志" class="headerlink" title="路由日志"></a>路由日志</h2><p><code>/logger.go#L131</code></p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><code class="hljs golang"><span class="hljs-comment">// defaultLogFormatter is the default log format function Logger middleware uses.</span><br><span class="hljs-keyword">var</span> defaultLogFormatter = <span class="hljs-function"><span class="hljs-keyword">func</span><span class="hljs-params">(param LogFormatterParams)</span></span> <span class="hljs-type">string</span> &#123;<br>    <span class="hljs-keyword">var</span> statusColor, methodColor, resetColor <span class="hljs-type">string</span><br>    <span class="hljs-keyword">if</span> param.IsOutpu123456<br>    or() &#123;<br>        statusColor = param.StatusCodeColor()<br>        methodColor = param.MethodColor()<br>        resetColor = param.ResetColor()<br>    &#125;<br><br>    <span class="hljs-keyword">if</span> param.Latency &gt; time.Minute &#123;<br>        <span class="hljs-comment">// Truncate in a golang &lt; 1.8 safe way</span><br>        param.Latency = param.Latency - param.Latency%time.Second<br>    &#125;<br>    <span class="hljs-comment">// 默认日志格式：</span><br>    <span class="hljs-comment">//             [GIN] 时间戳|HTTP_Code|响应时间|客户IP| http_verb url 错误信息 </span><br>    <span class="hljs-keyword">return</span> fmt.Sprintf(<span class="hljs-string">&quot;[GIN] %v |%s %3d %s| %13v | %15s |%s %-7s %s %#v\n%s&quot;</span>,<br>        param.TimeStamp.Format(<span class="hljs-string">&quot;2006/01/02 - 15:04:05&quot;</span>),<br>        statusColor, param.StatusCode, resetColor,<br>        param.Latency,<br>        param.ClientIP,<br>        methodColor, param.Method, resetColor,<br>        param.Path,<br>        param.ErrorMessage,<br>    )<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p><code>/logger.go#L203</code></p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br></pre></td><td class="code"><pre><code class="hljs golang"><span class="hljs-comment">// LoggerWithConfig instance a Logger middleware with config.</span><br><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">LoggerWithConfig</span><span class="hljs-params">(conf LoggerConfig)</span></span> HandlerFunc &#123;<br>    formatter := conf.Formatter<br>    <span class="hljs-keyword">if</span> formatter == <span class="hljs-literal">nil</span> &#123;<br>        formatter = defaultLogFormatter<br>    &#125;<br><br>    out := conf.Output<br>    <span class="hljs-keyword">if</span> out == <span class="hljs-literal">nil</span> &#123;<br>        out = DefaultWriter<br>    &#125;<br><br>    notlogged := conf.SkipPaths<br><br>    isTerm := <span class="hljs-literal">true</span><br><br>    <span class="hljs-keyword">if</span> w, ok := out.(*os.File); !ok || os.Getenv(<span class="hljs-string">&quot;TERM&quot;</span>) == <span class="hljs-string">&quot;dumb&quot;</span> ||<br>        (!isatty.IsTerminal(w.Fd()) &amp;&amp; !isatty.IsCygwinTerminal(w.Fd())) &#123;<br>        isTerm = <span class="hljs-literal">false</span><br>    &#125;<br><br>    <span class="hljs-keyword">var</span> skip <span class="hljs-keyword">map</span>[<span class="hljs-type">string</span>]<span class="hljs-keyword">struct</span>&#123;&#125;<br><br>    <span class="hljs-keyword">if</span> length := <span class="hljs-built_in">len</span>(notlogged); length &gt; <span class="hljs-number">0</span> &#123;<br>        skip = <span class="hljs-built_in">make</span>(<span class="hljs-keyword">map</span>[<span class="hljs-type">string</span>]<span class="hljs-keyword">struct</span>&#123;&#125;, length)<br><br>        <span class="hljs-keyword">for</span> _, path := <span class="hljs-keyword">range</span> notlogged &#123;<br>            skip[path] = <span class="hljs-keyword">struct</span>&#123;&#125;&#123;&#125;<br>        &#125;<br>    &#125;<br><br>    <span class="hljs-keyword">return</span> <span class="hljs-function"><span class="hljs-keyword">func</span><span class="hljs-params">(c *Context)</span></span> &#123;<br>        <span class="hljs-comment">// Start timer</span><br>        start := time.Now()<br>        path := c.Request.URL.Path<br>        raw := c.Request.URL.RawQuery<br><br>        <span class="hljs-comment">// Process request</span><br>        c.Next()<br><br>        <span class="hljs-comment">// Log only when path is not being skipped</span><br>        <span class="hljs-keyword">if</span> _, ok := skip[path]; !ok &#123;<br>            param := LogFormatterParams&#123;<br>                Request: c.Request,<br>                isTerm:  isTerm,<br>                Keys:    c.Keys,<br>            &#125;<br><br>            <span class="hljs-comment">// Stop timer</span><br>            param.TimeStamp = time.Now()<br>            param.Latency = param.TimeStamp.Sub(start)<br><br>            param.ClientIP = c.ClientIP()<br>            param.Method = c.Request.Method<br>            param.StatusCode = c.Writer.Status()<br>            param.ErrorMessage = c.Errors.ByType(ErrorTypePrivate).String()<br><br>            param.BodySize = c.Writer.Size()<br><br>            <span class="hljs-keyword">if</span> raw != <span class="hljs-string">&quot;&quot;</span> &#123;<br>                path = path + <span class="hljs-string">&quot;?&quot;</span> + raw<br>            &#125;<br><br>            param.Path = path<br><br>            fmt.Fprint(out, formatter(param))<br>        &#125;<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<h1 id="Build-a-single-binary-with-templates"><a href="#Build-a-single-binary-with-templates" class="headerlink" title="Build a single binary with templates"></a>Build a single binary with templates</h1><p>See a complete example in the <a target="_blank" rel="noopener" href="https://github.com/gin-gonic/examples/tree/master/assets-in-binary">https://github.com/gin-gonic/examples/tree/master/assets-in-binary</a> directory.</p>
+<h1 id="http2-server-push"><a href="#http2-server-push" class="headerlink" title="http2 server push"></a>http2 server push</h1><p>https on port 8080</p>
+<h1 id="go服务要不要配nginx前端"><a href="#go服务要不要配nginx前端" class="headerlink" title="go服务要不要配nginx前端"></a>go服务要不要配nginx前端</h1><hr>
+<p>参考阅读:</p>
+<ol>
+<li><a href="">Gin的路由为什么这么快?</a></li>
+</ol>
+<hr>
+<p>参考资料:</p>
+
+      
+    </div>
+    <div class="article-footer">
+      <blockquote class="mt-2x">
+  <ul class="post-copyright list-unstyled">
+    
+    <li class="post-copyright-link hidden-xs">
+      <strong>本文链接：</strong>
+      <a href="https://straysh.github.life/2020/03/08/BlowFish-Gin%E6%BA%90%E7%A0%81%E9%98%85%E8%AF%BB/" title="BlowFish_Gin源码阅读" target="_blank" rel="external">https://straysh.github.life/2020/03/08/BlowFish-Gin%E6%BA%90%E7%A0%81%E9%98%85%E8%AF%BB/</a>
+    </li>
+    
+    <li class="post-copyright-license">
+      <strong>版权声明： </strong> 本博客所有文章除特别声明外，均采用 <a href="http://creativecommons.org/licenses/by/4.0/deed.zh" target="_blank" rel="external">CC BY 4.0 CN协议</a> 许可协议。转载请注明出处！
+    </li>
+  </ul>
+</blockquote>
+
+
+<div class="panel panel-default panel-badger">
+  <div class="panel-body">
+    <figure class="media">
+      <div class="media-left">
+        <a href="https://hexo.straysh.com" target="_blank" class="img-burn thumb-sm visible-lg">
+          <img src="/images/avatar.jpg" class="img-rounded w-full" alt="">
+        </a>
+      </div>
+      <div class="media-body">
+        <h3 class="media-heading"><a href="https://hexo.straysh.com" target="_blank"><span class="text-dark">Straysh</span><small class="ml-1x">野生程序猿</small></a></h3>
+        <div>野生程序猿 &amp; 猫奴。</div>
+      </div>
+    </figure>
+  </div>
+</div>
+
+
+    </div>
+  </article>
+  
+    
+  <section id="comments">
+  	
+      <div id="disqus_thread">
+        <noscript>Please enable JavaScript to view the <a target="_blank" rel="noopener" href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+      </div>
+    
+  </section>
+
+
+  
+</div>
+
+  <nav class="bar bar-footer clearfix" data-stick-bottom>
+  <div class="bar-inner">
+  
+  <ul class="pager pull-left">
+    
+    <li class="prev">
+      <a href="/2020/03/10/BlowFish-https-ssl/" title="BlowFish_https_ssl"><i class="icon icon-angle-left" aria-hidden="true"></i><span>&nbsp;&nbsp;上一篇</span></a>
+    </li>
+    
+    
+    <li class="next">
+      <a href="/2020/03/01/Golang-%E6%B1%87%E7%BC%96%E5%9F%BA%E7%A1%80/" title="Golang_汇编基础"><span>下一篇&nbsp;&nbsp;</span><i class="icon icon-angle-right" aria-hidden="true"></i></a>
+    </li>
+    
+    
+    <li class="toggle-toc">
+      <a class="toggle-btn collapsed" data-toggle="collapse" href="#collapseToc" aria-expanded="false" title="文章目录" role="button">
+        <span>[&nbsp;</span><span>文章目录</span>
+        <i class="text-collapsed icon icon-anchor"></i>
+        <i class="text-in icon icon-close"></i>
+        <span>]</span>
+      </a>
+    </li>
+    
+  </ul>
+  
+  
+  
+  <div class="bar-right">
+    
+    <div class="share-component" data-sites="weibo,qq,wechat,facebook,twitter" data-mobile-sites="weibo,qq,qzone"></div>
+    
+  </div>
+  </div>
+</nav>
+  
+
+
+
+</main>
+
+  <footer class="footer" itemscope itemtype="http://schema.org/WPFooter">
+	
+	
+    <ul class="social-links">
+    	
+        <li><a href="https://github.com/straysh" target="_blank" title="Github" data-toggle=tooltip data-placement=top><i class="icon icon-github"></i></a></li>
+        
+        <li><a href="https://weibo.com/u/1689171115" target="_blank" title="Weibo" data-toggle=tooltip data-placement=top><i class="icon icon-weibo"></i></a></li>
+        
+        <li><a href="/atom.xml" target="_blank" title="Rss" data-toggle=tooltip data-placement=top><i class="icon icon-rss"></i></a></li>
+        
+    </ul>
+
+    <div class="copyright">
+    	
+        &copy; 2022 straysh.com 版权所有。ICP证：鄂ICP备2021016952号-1<!--Straysh-->
+        
+        <div class="publishby">
+        	Theme by <a href="https://github.com/cofess" target="_blank"> cofess </a>base on <a href="https://github.com/cofess/hexo-theme-pure" target="_blank">pure</a>.
+        </div>
+    </div>
+</footer>
+
+  <script src="//cdn.jsdelivr.net/npm/jquery@1.12.4/dist/jquery.min.js"></script>
+<script>
+window.jQuery || document.write('<script src="js/jquery.min.js"><\/script>')
+</script>
+
+<script src="/js/plugin.min.js"></script>
+
+
+<script src="/js/application.js"></script>
+
+
+    <script>
+(function (window) {
+    var INSIGHT_CONFIG = {
+        TRANSLATION: {
+            POSTS: '文章',
+            PAGES: '页面',
+            CATEGORIES: '分类',
+            TAGS: '标签',
+            UNTITLED: '(未命名)',
+        },
+        ROOT_URL: '/',
+        CONTENT_URL: '/content.json',
+    };
+    window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+})(window);
+</script>
+
+<script src="/js/insight.js"></script>
+
+
+
+
+
+
+   
+
+
+
+
+<!--   
+    
+    <script defer>
+    var disqus_config = function () {
+        
+            this.page.url = 'https://straysh.github.life/2020/03/08/BlowFish-Gin%E6%BA%90%E7%A0%81%E9%98%85%E8%AF%BB/';
+        
+        this.page.identifier = 'BlowFish-Gin源码阅读';
+    };
+    (function() { 
+        var d = document, s = d.createElement('script');  
+        s.src = '//' + 'straysh' + '.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+</script>
+
+-->
+
+
+<!--  <script src="https://cdn.bootcss.com/fancybox/3.5.7/jquery.fancybox.min.js"></script>-->
+  <script src="/js/jquery.fancybox.min.js"></script>
+  <script>
+  //利用 FancyBox 实现点击图片放大
+  $(document).ready(function() {
+    // $('article img').not('[hidden]').not('.panel-body img').each(function() {
+    //   var $image = $(this);
+    //   var imageCaption = $image.attr('alt');
+    //   var $imageWrapLink = $image.parent('a');
+    //   if ($imageWrapLink.length < 1) {
+    //     var src = this.getAttribute('src');
+    //     var idx = src.lastIndexOf('?');
+    //     if (idx != -1) {
+    //       src = src.substring(0, idx);
+    //     }
+    //     $imageWrapLink = $image.wrap('<a href="' + src + '"></a>').parent('a');
+    //   }
+    //   $imageWrapLink.attr('data-fancybox', 'images');
+    //   if (imageCaption) {
+    //     $imageWrapLink.attr('data-caption', imageCaption);
+    //   }
+    // });
+    // $().fancybox({
+    //   selector: '[data-fancybox="images"]',
+    //   hash: false,
+    //   loop: false,
+    // });
+
+    $('[data-fancybox]').fancybox({
+      // afterShow :function() {
+      //   $('.fancybox-button--zoom').click();
+      // }
+    });
+  });
+  </script>
+
+
+
+
+
+
+</body>
+</html>

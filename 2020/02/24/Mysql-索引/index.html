@@ -1,0 +1,691 @@
+<!DOCTYPE html>
+<html lang=zh>
+<head>
+  <meta charset="utf-8">
+  
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, minimal-ui">
+  <meta name="renderer" content="webkit">
+  <meta http-equiv="Cache-Control" content="no-transform" />
+  <meta http-equiv="Cache-Control" content="no-siteapp" />
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="format-detection" content="telephone=no,email=no,adress=no">
+  <!-- Color theme for statusbar -->
+  <meta name="theme-color" content="#000000" />
+  <!-- 强制页面在当前窗口以独立页面显示,防止别人在框架里调用页面 -->
+  <meta http-equiv="window-target" content="_top" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lxgw-wenkai-webfont@1.1.0/style.css" />
+  
+  
+  <title>Mysql_索引 | Hexo</title>
+  <meta name="description" content="explain Indexes are used to find rows with specific column values quickly.">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Mysql_索引">
+<meta property="og:url" content="https://straysh.github.life/2020/02/24/Mysql-%E7%B4%A2%E5%BC%95/index.html">
+<meta property="og:site_name" content="Straysh的小院">
+<meta property="og:description" content="explain Indexes are used to find rows with specific column values quickly.">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://straysh.github.life/images/mysql/explain_eg01.png">
+<meta property="article:published_time" content="2020-02-24T10:12:01.000Z">
+<meta property="article:modified_time" content="2020-02-28T08:00:54.149Z">
+<meta property="article:author" content="Straysh">
+<meta property="article:tag" content="MySQL">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://straysh.github.life/images/mysql/explain_eg01.png">
+  <!-- Canonical links -->
+  <link rel="canonical" href="https://straysh.github.life/2020/02/24/Mysql-%E7%B4%A2%E5%BC%95/index.html">
+  
+    <link rel="alternate" href="/atom.xml" title="Straysh的小院" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.ico" type="image/x-icon">
+  
+  
+<link rel="stylesheet" href="/css/style.css">
+
+  
+<link rel="stylesheet" href="/css/custom.css">
+
+  
+  
+  
+  
+  
+<meta name="generator" content="Hexo 5.4.1"></head>
+
+
+<body class="main-center theme-green" itemscope itemtype="http://schema.org/WebPage">
+  <header class="header" style="background-image: url(/images/left_images/2.jpg);" itemscope itemtype="http://schema.org/WPHeader">
+  <div class="slimContent" style="height:100%;background-color: rgba(0,0,0,0.7);">
+    <div class="navbar-header">
+      
+      
+      <div class="profile-block text-center">
+        <a id="avatar" href="https://hexo.straysh.com" target="_blank">
+          <img class="img-circle img-rotate" src="/images/avatar.jpg" width="200" height="200">
+        </a>
+        <h2 id="name" class="hidden-xs hidden-sm">Straysh</h2>
+        <h3 id="title" class="hidden-xs hidden-sm hidden-md">野生程序猿</h3>
+        <small id="location" class="text-muted hidden-xs hidden-sm"><i class="icon icon-map-marker"></i> Beijing, China</small>
+      </div>
+      
+      <div class="search" id="search-form-wrap">
+
+    <form class="search-form sidebar-form">
+        <div class="input-group">
+            <input type="text" class="search-form-input form-control" placeholder="搜索" />
+            <span class="input-group-btn">
+                <button type="submit" class="search-form-submit btn btn-flat" onclick="return false;"><i class="icon icon-search"></i></button>
+            </span>
+        </div>
+    </form>
+    <div class="ins-search">
+  <div class="ins-search-mask"></div>
+  <div class="ins-search-container">
+    <div class="ins-input-wrapper">
+      <input type="text" class="ins-search-input" placeholder="想要查找什么..." x-webkit-speech />
+      <button type="button" class="close ins-close ins-selectable" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+    </div>
+    <div class="ins-section-wrapper">
+      <div class="ins-section-container"></div>
+    </div>
+  </div>
+</div>
+
+
+</div>
+      <button class="navbar-toggle collapsed" type="button" data-toggle="collapse" data-target="#main-navbar" aria-controls="main-navbar" aria-expanded="false">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+    </div>
+    <nav id="main-navbar" class="collapse navbar-collapse" itemscope itemtype="http://schema.org/SiteNavigationElement" role="navigation">
+      <ul class="nav navbar-nav main-nav menu-highlight">
+        
+        
+        <li class="menu-item menu-item-home">
+          <a href="/.">
+            
+            <i class="icon icon-home-fill"></i>
+            
+            <span class="menu-title">首页</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives">
+            
+            <i class="icon icon-archives-fill"></i>
+            
+            <span class="menu-title">归档</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories">
+            
+            <i class="icon icon-folder"></i>
+            
+            <span class="menu-title">分类</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags">
+            
+            <i class="icon icon-tags"></i>
+            
+            <span class="menu-title">标签</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-repository">
+          <a href="/repository">
+            
+            <i class="icon icon-project"></i>
+            
+            <span class="menu-title">项目</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-books">
+          <a href="/books">
+            
+            <i class="icon icon-book-fill"></i>
+            
+            <span class="menu-title">书单</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-links">
+          <a href="/links">
+            
+            <i class="icon icon-friendship"></i>
+            
+            <span class="menu-title">友链</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about">
+            
+            <i class="icon icon-cup-fill"></i>
+            
+            <span class="menu-title">关于</span>
+          </a>
+        </li>
+        
+      </ul>
+      
+	
+    <ul class="social-links">
+    	
+        <li><a href="https://github.com/straysh" target="_blank" title="Github" data-toggle=tooltip data-placement=top><i class="icon icon-github"></i></a></li>
+        
+        <li><a href="https://weibo.com/u/1689171115" target="_blank" title="Weibo" data-toggle=tooltip data-placement=top><i class="icon icon-weibo"></i></a></li>
+        
+        <li><a href="/atom.xml" target="_blank" title="Rss" data-toggle=tooltip data-placement=top><i class="icon icon-rss"></i></a></li>
+        
+    </ul>
+
+    </nav>
+  </div>
+</header>
+
+  
+    <aside class="sidebar" itemscope itemtype="http://schema.org/WPSideBar">
+  <div class="slimContent">
+
+    
+      <ul class="sidebar-nav motion-element" style="text-align:center; opacity: 1; display: block; transform: translateX(0px);">
+        <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+          系统目录
+        </li>
+      </ul>
+      <section class="site-overview-wrap sidebar-panel" style="opacity: 0; display: none;">
+        
+          <div class="widget">
+    <h3 class="widget-title">公告</h3>
+    <div class="widget-body">
+        <div id="board">
+            <div class="content">
+                <p>妳是风中的叶，风起而走，我想去追，怎么抓的住？</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+        
+          
+  <div class="widget">
+    <h3 class="widget-title">分类</h3>
+    <div class="widget-body">
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%8D%9A%E6%96%87/">博文</a><span class="category-list-count">102</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%8D%9A%E6%96%87/%E7%AC%94%E8%AE%B0/">笔记</a><span class="category-list-count">2</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E6%9D%82%E8%AE%B0/">杂记</a><span class="category-list-count">6</span></li></ul>
+    </div>
+  </div>
+
+
+        
+          
+  <div class="widget">
+    <h3 class="widget-title">标签</h3>
+    <div class="widget-body">
+      <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/Algorithm/" rel="tag">Algorithm</a><span class="tag-list-count">13</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Apache/" rel="tag">Apache</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Banbrick/" rel="tag">Banbrick</a><span class="tag-list-count">5</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Docker/" rel="tag">Docker</a><span class="tag-list-count">4</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Golang/" rel="tag">Golang</a><span class="tag-list-count">25</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Javascript/" rel="tag">Javascript</a><span class="tag-list-count">10</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Linux/" rel="tag">Linux</a><span class="tag-list-count">13</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/MySQL/" rel="tag">MySQL</a><span class="tag-list-count">13</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Mysql/" rel="tag">Mysql</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Nginx/" rel="tag">Nginx</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Nodejs/" rel="tag">Nodejs</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/PHP/" rel="tag">PHP</a><span class="tag-list-count">19</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/R/" rel="tag">R</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Redis/" rel="tag">Redis</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/SVN/" rel="tag">SVN</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Sphinx/" rel="tag">Sphinx</a><span class="tag-list-count">5</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Translation/" rel="tag">Translation</a><span class="tag-list-count">18</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Yii/" rel="tag">Yii</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%9D%82/" rel="tag">杂</a><span class="tag-list-count">6</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%B1%87%E7%BC%96/" rel="tag">汇编</a><span class="tag-list-count">1</span></li></ul>
+    </div>
+  </div>
+
+
+        
+          
+  <div class="widget">
+    <h3 class="widget-title">标签云</h3>
+    <div class="widget-body tagcloud">
+      <a href="/tags/Algorithm/" style="font-size: 13.67px;">Algorithm</a> <a href="/tags/Apache/" style="font-size: 13px;">Apache</a> <a href="/tags/Banbrick/" style="font-size: 13.33px;">Banbrick</a> <a href="/tags/Docker/" style="font-size: 13.22px;">Docker</a> <a href="/tags/Golang/" style="font-size: 14px;">Golang</a> <a href="/tags/Javascript/" style="font-size: 13.56px;">Javascript</a> <a href="/tags/Linux/" style="font-size: 13.67px;">Linux</a> <a href="/tags/MySQL/" style="font-size: 13.67px;">MySQL</a> <a href="/tags/Mysql/" style="font-size: 13px;">Mysql</a> <a href="/tags/Nginx/" style="font-size: 13.11px;">Nginx</a> <a href="/tags/Nodejs/" style="font-size: 13px;">Nodejs</a> <a href="/tags/PHP/" style="font-size: 13.89px;">PHP</a> <a href="/tags/R/" style="font-size: 13.11px;">R</a> <a href="/tags/Redis/" style="font-size: 13.11px;">Redis</a> <a href="/tags/SVN/" style="font-size: 13px;">SVN</a> <a href="/tags/Sphinx/" style="font-size: 13.33px;">Sphinx</a> <a href="/tags/Translation/" style="font-size: 13.78px;">Translation</a> <a href="/tags/Yii/" style="font-size: 13.11px;">Yii</a> <a href="/tags/%E6%9D%82/" style="font-size: 13.44px;">杂</a> <a href="/tags/%E6%B1%87%E7%BC%96/" style="font-size: 13px;">汇编</a>
+    </div>
+  </div>
+
+        
+          
+  <div class="widget">
+    <h3 class="widget-title">归档</h3>
+    <div class="widget-body">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/03/">三月 2022</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/03/">三月 2021</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/03/">三月 2020</a><span class="archive-list-count">5</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/02/">二月 2020</a><span class="archive-list-count">26</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/12/">十二月 2019</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/04/">四月 2019</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/09/">九月 2018</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/07/">七月 2016</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/06/">六月 2016</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/11/">十一月 2015</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/10/">十月 2015</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/09/">九月 2015</a><span class="archive-list-count">5</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/08/">八月 2015</a><span class="archive-list-count">13</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/07/">七月 2015</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/11/">十一月 2014</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/03/">三月 2014</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/12/">十二月 2013</a><span class="archive-list-count">8</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/10/">十月 2013</a><span class="archive-list-count">8</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/09/">九月 2013</a><span class="archive-list-count">2</span></li></ul>
+    </div>
+  </div>
+
+
+        
+          
+  <div class="widget">
+    <h3 class="widget-title">最新文章</h3>
+    <div class="widget-body">
+      <ul class="recent-post-list list-unstyled no-thumbnail">
+        
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/%E5%8D%9A%E6%96%87/">博文</a><i class="icon icon-angle-right"></i><a class="category-link" href="/categories/%E5%8D%9A%E6%96%87/%E7%AC%94%E8%AE%B0/">笔记</a>
+              </p>
+              <p class="item-title">
+                <a href="/2022/03/14/%E4%BD%BF%E7%94%A8Go%E6%93%8D%E4%BD%9C%E6%96%87%E4%BB%B6/" class="title">使用Go操作文件</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2022-03-14T12:11:25.000Z" itemprop="datePublished">2022-03-14</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/%E5%8D%9A%E6%96%87/">博文</a>
+              </p>
+              <p class="item-title">
+                <a href="/2022/03/13/Docker%E5%AE%B9%E5%99%A8%E7%BD%91%E7%BB%9C/" class="title">Docker容器网络</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2022-03-13T04:10:09.000Z" itemprop="datePublished">2022-03-13</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/%E5%8D%9A%E6%96%87/">博文</a><i class="icon icon-angle-right"></i><a class="category-link" href="/categories/%E5%8D%9A%E6%96%87/%E7%AC%94%E8%AE%B0/">笔记</a>
+              </p>
+              <p class="item-title">
+                <a href="/2022/03/13/Iptables%E5%92%8C%E5%AE%B9%E5%99%A8/" class="title">Iptables和容器</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2022-03-13T03:01:46.000Z" itemprop="datePublished">2022-03-13</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/%E5%8D%9A%E6%96%87/">博文</a>
+              </p>
+              <p class="item-title">
+                <a href="/2022/03/12/Linux%E7%BD%91%E6%A1%A5%E5%B7%A5%E4%BD%9C%E5%8E%9F%E7%90%86/" class="title">Linux网桥工作原理</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2022-03-12T10:02:29.000Z" itemprop="datePublished">2022-03-12</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/%E5%8D%9A%E6%96%87/">博文</a>
+              </p>
+              <p class="item-title">
+                <a href="/2021/03/16/%E5%B9%B6%E5%8F%91%E5%92%8C%E8%B0%83%E5%BA%A6%E7%9A%84%E5%85%B3%E7%B3%BB/" class="title">并发和调度的关系</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2021-03-16T05:54:13.000Z" itemprop="datePublished">2021-03-16</time>
+              </p>
+            </div>
+          </li>
+          
+      </ul>
+    </div>
+  </div>
+  
+
+        
+      </section>
+
+      <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active" style="opacity: 1; display: block;">
+        <nav id="toc" class="article-toc">
+          <h3 class="toc-title">文章目录</h3>
+          <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#explain"><span class="toc-number">1.</span> <span class="toc-text">explain</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%AB%98%E7%BA%A7%E7%94%A8%E6%B3%95"><span class="toc-number">1.1.</span> <span class="toc-text">高级用法</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E7%B4%A2%E5%BC%95"><span class="toc-number">2.</span> <span class="toc-text">索引</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Hash%E7%B4%A2%E5%BC%95"><span class="toc-number">3.</span> <span class="toc-text">Hash索引</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#B-%E6%A0%91%E7%B4%A2%E5%BC%95-Innodb"><span class="toc-number">4.</span> <span class="toc-text">B+树索引 - Innodb</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%81%9A%E7%B0%87%E7%B4%A2%E5%BC%95"><span class="toc-number">4.1.</span> <span class="toc-text">聚簇索引</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%9D%9E%E8%81%9A%E7%B0%87%E7%B4%A2%E5%BC%95"><span class="toc-number">4.2.</span> <span class="toc-text">非聚簇索引</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%81%94%E5%90%88%E7%B4%A2%E5%BC%95%E7%9A%84%E7%B4%A2%E5%BC%95%E8%A6%86%E7%9B%96"><span class="toc-number">4.3.</span> <span class="toc-text">联合索引的索引覆盖</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%81%94%E5%90%88%E7%B4%A2%E5%BC%95%E7%9A%84%E6%9C%80%E5%B7%A6%E5%8C%B9%E9%85%8D%E5%8E%9F%E5%88%99"><span class="toc-number">4.4.</span> <span class="toc-text">联合索引的最左匹配原则</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%B4%A2%E5%BC%95%E4%B8%8B%E6%8E%A8-Index-Condition-Pushdown-Optimization"><span class="toc-number">4.5.</span> <span class="toc-text">索引下推 - Index Condition Pushdown Optimization</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%B4%A2%E5%BC%95%E5%A4%B1%E6%95%88%E5%9C%BA%E6%99%AF"><span class="toc-number">4.6.</span> <span class="toc-text">索引失效场景</span></a></li></ol></li></ol>
+        </nav>
+      </section>
+    
+  </div>
+</aside>
+
+  
+  
+<aside class="sidebar sidebar-toc collapse" id="collapseToc" itemscope itemtype="http://schema.org/WPSideBar">
+  <div class="slimContent">
+    <nav id="toc" class="article-toc">
+      <h3 class="toc-title">文章目录</h3>
+      <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#explain"><span class="toc-number">1.</span> <span class="toc-text">explain</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%AB%98%E7%BA%A7%E7%94%A8%E6%B3%95"><span class="toc-number">1.1.</span> <span class="toc-text">高级用法</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E7%B4%A2%E5%BC%95"><span class="toc-number">2.</span> <span class="toc-text">索引</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Hash%E7%B4%A2%E5%BC%95"><span class="toc-number">3.</span> <span class="toc-text">Hash索引</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#B-%E6%A0%91%E7%B4%A2%E5%BC%95-Innodb"><span class="toc-number">4.</span> <span class="toc-text">B+树索引 - Innodb</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%81%9A%E7%B0%87%E7%B4%A2%E5%BC%95"><span class="toc-number">4.1.</span> <span class="toc-text">聚簇索引</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%9D%9E%E8%81%9A%E7%B0%87%E7%B4%A2%E5%BC%95"><span class="toc-number">4.2.</span> <span class="toc-text">非聚簇索引</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%81%94%E5%90%88%E7%B4%A2%E5%BC%95%E7%9A%84%E7%B4%A2%E5%BC%95%E8%A6%86%E7%9B%96"><span class="toc-number">4.3.</span> <span class="toc-text">联合索引的索引覆盖</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%81%94%E5%90%88%E7%B4%A2%E5%BC%95%E7%9A%84%E6%9C%80%E5%B7%A6%E5%8C%B9%E9%85%8D%E5%8E%9F%E5%88%99"><span class="toc-number">4.4.</span> <span class="toc-text">联合索引的最左匹配原则</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%B4%A2%E5%BC%95%E4%B8%8B%E6%8E%A8-Index-Condition-Pushdown-Optimization"><span class="toc-number">4.5.</span> <span class="toc-text">索引下推 - Index Condition Pushdown Optimization</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%B4%A2%E5%BC%95%E5%A4%B1%E6%95%88%E5%9C%BA%E6%99%AF"><span class="toc-number">4.6.</span> <span class="toc-text">索引失效场景</span></a></li></ol></li></ol>
+    </nav>
+  </div>
+</aside>
+
+<main class="main" role="main">
+  <div class="content">
+  <article id="post-Mysql-索引" class="article article-type-post" itemscope itemtype="http://schema.org/BlogPosting">
+    
+    <div class="article-header">
+      
+        
+  
+    <h1 class="article-title" itemprop="name">
+      Mysql_索引
+    </h1>
+  
+
+
+      
+      <div class="article-meta">
+        
+        <span class="article-date">
+    <i class="icon icon-calendar-check"></i>
+	<a href="/2020/02/24/Mysql-%E7%B4%A2%E5%BC%95/" class="article-date">
+	  <time datetime="2020-02-24T10:12:01.000Z" itemprop="datePublished">2020-02-24</time>
+	</a>
+</span>
+        
+  <span class="article-category">
+    <i class="icon icon-folder"></i>
+    <a class="article-category-link" href="/categories/%E5%8D%9A%E6%96%87/">博文</a>
+  </span>
+
+        
+  <span class="article-tag">
+    <i class="icon icon-tags"></i>
+	<a class="article-tag-link-link" href="/tags/MySQL/" rel="tag">MySQL</a>
+  </span>
+
+
+        
+
+        <span class="post-comment"><i class="icon icon-comment"></i> <a href="/2020/02/24/Mysql-%E7%B4%A2%E5%BC%95/#comments" class="article-comment-link">评论</a></span>
+        
+      </div>
+    </div>
+    <div class="article-entry marked-body" itemprop="articleBody">
+      
+        <h1 id="explain"><a href="#explain" class="headerlink" title="explain"></a>explain</h1><blockquote>
+<p>Indexes are used to find rows with specific column values quickly.</p>
+</blockquote>
+<span id="more"></span>
+<p><img src="/images/mysql/explain_eg01.png" alt="explain_eg01"></p>
+<blockquote>
+<ul>
+<li>id (query id) - 查询执行的顺序</li>
+</ul>
+</blockquote>
+<ul>
+<li>select_type (type of statement) - 查询的类型<ol>
+<li><code>SIMPLE</code>，简单查询，不使用UNION或子查询等。</li>
+<li><code>PRIMARY</code>，子查询中的最外层查询。</li>
+<li><code>UNION</code>，UNION中的第二个或后面的select查询。</li>
+<li><code>SUBQUERY</code>，子查询中的第一个select，结果不依赖于外部查询。</li>
+<li><code>DEPENDENT SUBQUERY</code>，子查询中的第一个select，结果依赖于外部查询。</li>
+<li><code>DERIVED</code>，派生表的select,from子句的子查询。</li>
+</ol>
+</li>
+<li>table (table referenced) - 使用的表名，可能是表的别名。</li>
+<li>type (join type) - 连接的类型<ol>
+<li><code>ALL</code> - Full Table Scan，全表查询</li>
+<li><code>index</code> - Full Index Scan，只遍历索引树。</li>
+<li><code>range</code> - 只检索给定范围的行且使用索引。</li>
+<li><code>ref</code> - 连接匹配条件，即哪些列或常量被用于查找索引列上的值。</li>
+<li><code>eq_ref</code> - 类似ref，区别是使用的索引是唯一索引，对于每个索引值表中只有一条记录匹配。</li>
+<li><code>const</code>、<code>system</code> - 当mysql对查询某部分优化并转换为一个常量时，使用这些类型访问。例如将主键置于where条件中，MySQL就能将该查询转换为一个常量。system是const的特例，当查询表中只有一行记录时。</li>
+<li><code>NULL</code> - 优化后甚至不需要访问表或索引，如取最小值可通过单独索引完成查找。</li>
+</ol>
+</li>
+<li>possible_keys (which keys could have been used) - 可能使用到的索引</li>
+<li>key (key that was used) - 实际使用到的索引，若没有任何索引则显示为null</li>
+<li>key_len (length of used key) - (实际使用的)索引的长度<ol>
+<li>表示索引中使用的字节数（通过定义得到的理论值）</li>
+</ol>
+</li>
+<li>ref (columns compared to index) - 列与索引的比较，表示上述表的连接匹配条件，即哪些列或常量被用于查找索引列上的值</li>
+<li><strong>rows</strong> (amount of rows searched) - 扫描的行数</li>
+<li><strong>Extra</strong> (additional information) - 额外的信息<ol>
+<li><code>Using index</code> - 使用了索引覆盖。</li>
+<li><code>Using where</code> - 不用读取表中的数据，只通过索引就能完成查询。即通常所说的<code>索引覆盖</code>。</li>
+<li><code>Using filesort</code> - 当含有<code>order by</code>操作，且无法通过索引完成排序。</li>
+<li><code>Using join buffer</code> - 连接条件没有使用索引，且需要连接缓冲区来存储中间结果。通常是一个需要优化的信号。</li>
+<li><code>Impossible where</code> - where语句可能导致没有符合条件的行。</li>
+<li><code>Select tables optimized away</code> - 仅通过使用索引，优化器可能仅从聚合函数结果中返回一行。如MIN/MAX/MyISAM引擎中的Count(*)</li>
+<li><code>No tables used</code> - Query语句中使用from dual（即空表）或不含任何from子句</li>
+</ol>
+</li>
+</ul>
+<h2 id="高级用法"><a href="#高级用法" class="headerlink" title="高级用法"></a>高级用法</h2><p>explain FORMAT=JSON select xxx from yyy where zzz;<br><a href="/2020/02/24/Mysql-%E7%B4%A2%E5%BC%95/#%E8%81%94%E5%90%88%E7%B4%A2%E5%BC%95%E7%9A%84%E7%B4%A2%E5%BC%95%E8%A6%86%E7%9B%96">查看用例</a></p>
+<h1 id="索引"><a href="#索引" class="headerlink" title="索引"></a>索引</h1><p>用以高效查询数据的数据结构。</p>
+<h1 id="Hash索引"><a href="#Hash索引" class="headerlink" title="Hash索引"></a>Hash索引</h1><p>底层数据结构是哈希表，只能用于等值查询，在碰撞场景下效率低，无法利用索引完成排序，没有最左匹配特性。</p>
+<h1 id="B-树索引-Innodb"><a href="#B-树索引-Innodb" class="headerlink" title="B+树索引 - Innodb"></a>B+树索引 - Innodb</h1><p>底层数据结构是多路平衡查询树，节点天然有序，额外的适用于范围查询。<br><a href="/2020/02/27/MySQL-B-Tree%E7%B4%A2%E5%BC%95/">详细讨论参考另一篇文章</a></p>
+<h2 id="聚簇索引"><a href="#聚簇索引" class="headerlink" title="聚簇索引"></a>聚簇索引</h2><p>通常就是主键索引。索引所在的页储存了数据行。</p>
+<h2 id="非聚簇索引"><a href="#非聚簇索引" class="headerlink" title="非聚簇索引"></a>非聚簇索引</h2><p>除聚簇索引之外其他的索引都称为非聚簇索引。索引所在的页只存储了主键值，若需要其他数据需要回表查询。</p>
+<h2 id="联合索引的索引覆盖"><a href="#联合索引的索引覆盖" class="headerlink" title="联合索引的索引覆盖"></a>联合索引的索引覆盖</h2><p>创建测试数据库</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-keyword">Create</span> <span class="hljs-keyword">Table</span>: <span class="hljs-keyword">CREATE</span> <span class="hljs-keyword">TABLE</span> `teacher` (<br>  `id` <span class="hljs-type">int</span>(<span class="hljs-number">11</span>) <span class="hljs-keyword">NOT</span> <span class="hljs-keyword">NULL</span>,<br>  `name` <span class="hljs-type">varchar</span>(<span class="hljs-number">32</span>) <span class="hljs-keyword">NOT</span> <span class="hljs-keyword">NULL</span> <span class="hljs-keyword">DEFAULT</span> <span class="hljs-string">&#x27;&#x27;</span>,<br>  `age` <span class="hljs-type">int</span>(<span class="hljs-number">11</span>) <span class="hljs-keyword">NOT</span> <span class="hljs-keyword">NULL</span> <span class="hljs-keyword">DEFAULT</span> <span class="hljs-number">0</span>,<br>  `subject` <span class="hljs-type">varchar</span>(<span class="hljs-number">32</span>) <span class="hljs-keyword">NOT</span> <span class="hljs-keyword">NULL</span> <span class="hljs-keyword">DEFAULT</span> <span class="hljs-string">&#x27;&#x27;</span>,<br>  `salary` <span class="hljs-type">int</span>(<span class="hljs-number">11</span>) <span class="hljs-keyword">NOT</span> <span class="hljs-keyword">NULL</span> <span class="hljs-keyword">DEFAULT</span> <span class="hljs-number">0</span>,<br>  <span class="hljs-keyword">PRIMARY</span> KEY (`id`),<br>  KEY `idx_name` (`name`),<br>  KEY `idx_name_subject_salary` (`name`,`subject`,`salary`)<br>) ENGINE<span class="hljs-operator">=</span>InnoDB <span class="hljs-keyword">DEFAULT</span> CHARSET<span class="hljs-operator">=</span>utf8mb4;<br><span class="hljs-keyword">INSERT</span> <span class="hljs-keyword">INTO</span> `teacher` <span class="hljs-keyword">VALUES</span> <br>(<span class="hljs-number">10101</span>,<span class="hljs-string">&#x27;Srinivasan&#x27;</span>,<span class="hljs-number">30</span>,<span class="hljs-string">&#x27;Comp. Sci.&#x27;</span>,<span class="hljs-number">65000</span>),<br>(<span class="hljs-number">12121</span>,<span class="hljs-string">&#x27;Wu&#x27;</span>,<span class="hljs-number">26</span>,<span class="hljs-string">&#x27;Finance&#x27;</span>,<span class="hljs-number">90000</span>),<br>(<span class="hljs-number">15151</span>,<span class="hljs-string">&#x27;Mozart&#x27;</span>,<span class="hljs-number">50</span>,<span class="hljs-string">&#x27;Music&#x27;</span>,<span class="hljs-number">40000</span>),<br>(<span class="hljs-number">22222</span>,<span class="hljs-string">&#x27;Einstein&#x27;</span>,<span class="hljs-number">76</span>,<span class="hljs-string">&#x27;Physics&#x27;</span>,<span class="hljs-number">95000</span>),<br>(<span class="hljs-number">32343</span>,<span class="hljs-string">&#x27;El Said&#x27;</span>,<span class="hljs-number">35</span>,<span class="hljs-string">&#x27;History&#x27;</span>,<span class="hljs-number">80000</span>),<br>(<span class="hljs-number">33456</span>,<span class="hljs-string">&#x27;Gold&#x27;</span>,<span class="hljs-number">49</span>,<span class="hljs-string">&#x27;Physics&#x27;</span>,<span class="hljs-number">87000</span>),<br>(<span class="hljs-number">45565</span>,<span class="hljs-string">&#x27;Katz&#x27;</span>,<span class="hljs-number">42</span>,<span class="hljs-string">&#x27;Comp. Sci.&#x27;</span>,<span class="hljs-number">75000</span>),<br>(<span class="hljs-number">58583</span>,<span class="hljs-string">&#x27;Califieri&#x27;</span>,<span class="hljs-number">38</span>,<span class="hljs-string">&#x27;History&#x27;</span>,<span class="hljs-number">60000</span>),<br>(<span class="hljs-number">76543</span>,<span class="hljs-string">&#x27;Singh&#x27;</span>,<span class="hljs-number">33</span>,<span class="hljs-string">&#x27;Finance&#x27;</span>,<span class="hljs-number">80000</span>),<br>(<span class="hljs-number">76766</span>,<span class="hljs-string">&#x27;Crick&#x27;</span>,<span class="hljs-number">46</span>,<span class="hljs-string">&#x27;Biology&#x27;</span>,<span class="hljs-number">72000</span>),<br>(<span class="hljs-number">83821</span>,<span class="hljs-string">&#x27;Brandt&#x27;</span>,<span class="hljs-number">29</span>,<span class="hljs-string">&#x27;Comp. Sci.&#x27;</span>,<span class="hljs-number">92000</span>),<br>(<span class="hljs-number">98345</span>,<span class="hljs-string">&#x27;Kim&#x27;</span>,<span class="hljs-number">31</span>,<span class="hljs-string">&#x27;Elec. Eng.&#x27;</span>,<span class="hljs-number">80000</span>);<br></code></pre></td></tr></table></figure>
+
+<p><code>explain FORMAT=JSON select subject,salary from teacher where name=&quot;Mozart&quot;;</code><br>输出:</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><code class="hljs json"><span class="hljs-punctuation">&#123;</span><br>  <span class="hljs-attr">&quot;query_block&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">&#123;</span><br>    <span class="hljs-attr">&quot;select_id&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-number">1</span><span class="hljs-punctuation">,</span><br>    <span class="hljs-attr">&quot;table&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">&#123;</span><br>      <span class="hljs-attr">&quot;table_name&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;teacher&quot;</span><span class="hljs-punctuation">,</span><br>      <span class="hljs-attr">&quot;access_type&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;ref&quot;</span><span class="hljs-punctuation">,</span><br>      <span class="hljs-attr">&quot;possible_keys&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">[</span><span class="hljs-string">&quot;idx_name&quot;</span><span class="hljs-punctuation">,</span> <span class="hljs-string">&quot;idx_name_subject_salary&quot;</span><span class="hljs-punctuation">]</span><span class="hljs-punctuation">,</span><br>      <span class="hljs-attr">&quot;key&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;idx_name_subject_salary&quot;</span><span class="hljs-punctuation">,</span><br>      <span class="hljs-attr">&quot;key_length&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;130&quot;</span><span class="hljs-punctuation">,</span><br>      <span class="hljs-attr">&quot;used_key_parts&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">[</span><span class="hljs-string">&quot;name&quot;</span><span class="hljs-punctuation">]</span><span class="hljs-punctuation">,</span><br>      <span class="hljs-attr">&quot;ref&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">[</span><span class="hljs-string">&quot;const&quot;</span><span class="hljs-punctuation">]</span><span class="hljs-punctuation">,</span><br>      <span class="hljs-attr">&quot;rows&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-number">1</span><span class="hljs-punctuation">,</span><br>      <span class="hljs-attr">&quot;filtered&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-number">100</span><span class="hljs-punctuation">,</span><br>      <span class="hljs-attr">&quot;attached_condition&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;teacher.`name` = &#x27;Mozart&#x27;&quot;</span><span class="hljs-punctuation">,</span><br>      <span class="hljs-attr">&quot;using_index&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-keyword">true</span> <span class="hljs-comment">//索引覆盖</span><br>    <span class="hljs-punctuation">&#125;</span><br>  <span class="hljs-punctuation">&#125;</span><br><span class="hljs-punctuation">&#125;</span><br></code></pre></td></tr></table></figure>
+<blockquote>
+<p>Using index (JSON property: using_index)</p>
+<p>The column information is retrieved from the table using only information in the index tree without having to do an additional seek to read the actual row.</p>
+</blockquote>
+<ul>
+<li>索引如何加速排序</li>
+<li>Mysql的ICP（Index Condition Pushdown Optimization）</li>
+<li>索引的存储和缓存</li>
+<li>索引区分度和索引长度</li>
+<li>…</li>
+</ul>
+<h2 id="联合索引的最左匹配原则"><a href="#联合索引的最左匹配原则" class="headerlink" title="联合索引的最左匹配原则"></a>联合索引的最左匹配原则</h2><table><tr><th>假设索引idx_a_b_c(`a`,`b`,`c`)</th><th>索引是否使用</th></tr><tr><td>where a=3</td><td></td></tr><tr><td>where a=3 and b=4</td><td></td></tr><tr><td>where a=3 and b=4 and c=5</td><td></td></tr><tr><td>where c=5 and a=3 and b=4</td><td></td></tr><tr><td>where b=4 / where b=4 and c=5 /<br>where c=5</td><td></td></tr><tr><td>where a=3 and c=5</td><td></td></tr><tr><td>where a=3 and b&gt;4 and c=5</td><td></td></tr><tr><td>where a is null and b is not null</td><td></td></tr><tr><td>where a &lt;&gt; 3 and b=4</td><td></td></tr><tr><td>where a^3&gt;0</td><td></td></tr><tr><td>where a=3 and b like 'k%' and c=5</td><td></td></tr><tr><td>where a=3 and b like '%k%' and c=5</td><td></td></tr><tr><td>where a=3 and b like 'k%k%' and c=5</td><td></td></tr></table>
+
+<h2 id="索引下推-Index-Condition-Pushdown-Optimization"><a href="#索引下推-Index-Condition-Pushdown-Optimization" class="headerlink" title="索引下推 - Index Condition Pushdown Optimization"></a>索引下推 - Index Condition Pushdown Optimization</h2><h2 id="索引失效场景"><a href="#索引失效场景" class="headerlink" title="索引失效场景"></a>索引失效场景</h2><p><a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s?__biz=MzI4NTA1MDEwNg==&mid=2650777604&idx=1&sn=9a0cfd88cfe15e9f198a7be02e2db3f6&chksm=f3f91d91c48e9487f0f815a77e3ab35e2bd7172e5e4a06deff7ea6d819748283e6e6db78f9d0&mpshare=1&scene=1&srcid=0226IIHf7SrQUneNI0PUIVBL&sharer_sharetime=1582723108055&sharer_shareid=0a5f0581869913747e54ca097f77ea2b&key=e6296972ac076826e6bb923456fb1df47326c43fe252e5b370eb168cb3ea72f9b988f65af9d04dfa654dac6a14bd6967cb08ce845ee7dd30a255d230ed38975133d7d9dd10f3a01fb011d037222eb5e2&ascene=1&uin=MTA4MTU0ODIyMg==&devicetype=Windows+7&version=6208006f&lang=zh_CN&exportkey=AQthZutP+xc63SO0tW7U5NY=&pass_ticket=eYprKboj//Vkb9z2n1rVgrNb833slBE0lMIXwN27FvVBipjBM67fSOf2ZckEmBBo">不看后悔的腾讯面试题：SQL语句为什么执行的很慢？</a></p>
+<p>参考资料：</p>
+<ol>
+<li><a target="_blank" rel="noopener" href="https://dev.mysql.com/doc/refman/8.0/en/innodb-index-types.html">15.6.2.1 Clustered and Secondary Indexes</a></li>
+<li><a target="_blank" rel="noopener" href="https://dev.mysql.com/doc/refman/8.0/en/mysql-indexes.html">8.3.1 How MySQL Uses Indexes</a></li>
+<li><a target="_blank" rel="noopener" href="https://dev.mysql.com/doc/refman/8.0/en/index-btree-hash.html">8.3.9 Comparison of B-Tree and Hash Indexes</a></li>
+<li><a target="_blank" rel="noopener" href="https://dev.mysql.com/doc/refman/8.0/en/multiple-column-indexes.html">8.3.6 Multiple-Column Indexes</a></li>
+<li><a target="_blank" rel="noopener" href="https://dev.mysql.com/doc/refman/8.0/en/glossary.html#glos_covering_index">covering index</a></li>
+<li><a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s?__biz=MzI4Njg5MDA5NA==&mid=2247486057&idx=1&sn=eec75a0f6f2c408c8188658011c38e07&chksm=ebd74b68dca0c27e90096f0017ba5479774ae7643f2cecd72b011823df1411ab1659ea889b37&mpshare=1&scene=1&srcid=0227wKqrRDn5WWOWC5hOZnrW&sharer_sharetime=1582784840625&sharer_shareid=0a5f0581869913747e54ca097f77ea2b&key=e1d18effe01e13c45e831bca7ce32424fbdfcd17afd7bd8529258d0dbbde26ef9685b7359cbad4b5df760219307def5f806daf7c611d12fe08d4f7b5ffe113045975d784908d381965b74a306162d71d&ascene=1&uin=MTA4MTU0ODIyMg==&devicetype=Windows+7&version=6208006f&lang=zh_CN&exportkey=ARKOykk77XHXzE9b6n4W5k0=&pass_ticket=LfdlJsZTmXBQdrVYQljTmpWvFMzoeQx6Wi9ewOu4ScxuKyysIBvhLO/8k6ZGN7MK">Mysql索引简明教程</a></li>
+</ol>
+
+      
+    </div>
+    <div class="article-footer">
+      <blockquote class="mt-2x">
+  <ul class="post-copyright list-unstyled">
+    
+    <li class="post-copyright-link hidden-xs">
+      <strong>本文链接：</strong>
+      <a href="https://straysh.github.life/2020/02/24/Mysql-%E7%B4%A2%E5%BC%95/" title="Mysql_索引" target="_blank" rel="external">https://straysh.github.life/2020/02/24/Mysql-%E7%B4%A2%E5%BC%95/</a>
+    </li>
+    
+    <li class="post-copyright-license">
+      <strong>版权声明： </strong> 本博客所有文章除特别声明外，均采用 <a href="http://creativecommons.org/licenses/by/4.0/deed.zh" target="_blank" rel="external">CC BY 4.0 CN协议</a> 许可协议。转载请注明出处！
+    </li>
+  </ul>
+</blockquote>
+
+
+<div class="panel panel-default panel-badger">
+  <div class="panel-body">
+    <figure class="media">
+      <div class="media-left">
+        <a href="https://hexo.straysh.com" target="_blank" class="img-burn thumb-sm visible-lg">
+          <img src="/images/avatar.jpg" class="img-rounded w-full" alt="">
+        </a>
+      </div>
+      <div class="media-body">
+        <h3 class="media-heading"><a href="https://hexo.straysh.com" target="_blank"><span class="text-dark">Straysh</span><small class="ml-1x">野生程序猿</small></a></h3>
+        <div>野生程序猿 &amp; 猫奴。</div>
+      </div>
+    </figure>
+  </div>
+</div>
+
+
+    </div>
+  </article>
+  
+    
+  <section id="comments">
+  	
+      <div id="disqus_thread">
+        <noscript>Please enable JavaScript to view the <a target="_blank" rel="noopener" href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+      </div>
+    
+  </section>
+
+
+  
+</div>
+
+  <nav class="bar bar-footer clearfix" data-stick-bottom>
+  <div class="bar-inner">
+  
+  <ul class="pager pull-left">
+    
+    <li class="prev">
+      <a href="/2020/02/26/%E6%9D%82%E8%AE%B0-%E6%9D%82/" title="杂记_杂"><i class="icon icon-angle-left" aria-hidden="true"></i><span>&nbsp;&nbsp;上一篇</span></a>
+    </li>
+    
+    
+    <li class="next">
+      <a href="/2020/02/19/%E7%AE%97%E6%B3%95-%E4%BA%8C%E5%8F%89%E6%A0%91/" title="算法_二叉树"><span>下一篇&nbsp;&nbsp;</span><i class="icon icon-angle-right" aria-hidden="true"></i></a>
+    </li>
+    
+    
+    <li class="toggle-toc">
+      <a class="toggle-btn collapsed" data-toggle="collapse" href="#collapseToc" aria-expanded="false" title="文章目录" role="button">
+        <span>[&nbsp;</span><span>文章目录</span>
+        <i class="text-collapsed icon icon-anchor"></i>
+        <i class="text-in icon icon-close"></i>
+        <span>]</span>
+      </a>
+    </li>
+    
+  </ul>
+  
+  
+  
+  <div class="bar-right">
+    
+    <div class="share-component" data-sites="weibo,qq,wechat,facebook,twitter" data-mobile-sites="weibo,qq,qzone"></div>
+    
+  </div>
+  </div>
+</nav>
+  
+
+
+
+</main>
+
+  <footer class="footer" itemscope itemtype="http://schema.org/WPFooter">
+	
+	
+    <ul class="social-links">
+    	
+        <li><a href="https://github.com/straysh" target="_blank" title="Github" data-toggle=tooltip data-placement=top><i class="icon icon-github"></i></a></li>
+        
+        <li><a href="https://weibo.com/u/1689171115" target="_blank" title="Weibo" data-toggle=tooltip data-placement=top><i class="icon icon-weibo"></i></a></li>
+        
+        <li><a href="/atom.xml" target="_blank" title="Rss" data-toggle=tooltip data-placement=top><i class="icon icon-rss"></i></a></li>
+        
+    </ul>
+
+    <div class="copyright">
+    	
+        &copy; 2022 straysh.com 版权所有。ICP证：鄂ICP备2021016952号-1<!--Straysh-->
+        
+        <div class="publishby">
+        	Theme by <a href="https://github.com/cofess" target="_blank"> cofess </a>base on <a href="https://github.com/cofess/hexo-theme-pure" target="_blank">pure</a>.
+        </div>
+    </div>
+</footer>
+
+  <script src="//cdn.jsdelivr.net/npm/jquery@1.12.4/dist/jquery.min.js"></script>
+<script>
+window.jQuery || document.write('<script src="js/jquery.min.js"><\/script>')
+</script>
+
+<script src="/js/plugin.min.js"></script>
+
+
+<script src="/js/application.js"></script>
+
+
+    <script>
+(function (window) {
+    var INSIGHT_CONFIG = {
+        TRANSLATION: {
+            POSTS: '文章',
+            PAGES: '页面',
+            CATEGORIES: '分类',
+            TAGS: '标签',
+            UNTITLED: '(未命名)',
+        },
+        ROOT_URL: '/',
+        CONTENT_URL: '/content.json',
+    };
+    window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+})(window);
+</script>
+
+<script src="/js/insight.js"></script>
+
+
+
+
+
+
+   
+
+
+
+
+<!--   
+    
+    <script defer>
+    var disqus_config = function () {
+        
+            this.page.url = 'https://straysh.github.life/2020/02/24/Mysql-%E7%B4%A2%E5%BC%95/';
+        
+        this.page.identifier = 'Mysql-索引';
+    };
+    (function() { 
+        var d = document, s = d.createElement('script');  
+        s.src = '//' + 'straysh' + '.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+</script>
+
+-->
+
+
+
+
+
+
+
+</body>
+</html>

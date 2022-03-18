@@ -1,0 +1,696 @@
+<!DOCTYPE html>
+<html lang=zh>
+<head>
+  <meta charset="utf-8">
+  
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, minimal-ui">
+  <meta name="renderer" content="webkit">
+  <meta http-equiv="Cache-Control" content="no-transform" />
+  <meta http-equiv="Cache-Control" content="no-siteapp" />
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="format-detection" content="telephone=no,email=no,adress=no">
+  <!-- Color theme for statusbar -->
+  <meta name="theme-color" content="#000000" />
+  <!-- 强制页面在当前窗口以独立页面显示,防止别人在框架里调用页面 -->
+  <meta http-equiv="window-target" content="_top" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lxgw-wenkai-webfont@1.1.0/style.css" />
+  
+  
+  <title>并发和调度的关系 | Hexo</title>
+  <meta name="description" content="注：该文章基于Go 1.13 将Go协程从一个系统线程切换到另一个系统线程有一定开销，若触发非常频繁，将降低应用的性能。但随着时间的推移，Go调调度器已经解决了这个问题。它负责协调并发工作时协程和系统线程间的关系。让我们回到几年前，看看这个问题是如何改进的。 原始问题在Go的早期，1.0和1.1版本，在多线程上(如提高GOMAXPROCS数值)执行并发的代码有性能问题。我们看看文档中素数筛的代码示">
+<meta property="og:type" content="article">
+<meta property="og:title" content="并发和调度的关系">
+<meta property="og:url" content="https://straysh.github.life/2021/03/16/%E5%B9%B6%E5%8F%91%E5%92%8C%E8%B0%83%E5%BA%A6%E7%9A%84%E5%85%B3%E7%B3%BB/index.html">
+<meta property="og:site_name" content="Straysh的小院">
+<meta property="og:description" content="注：该文章基于Go 1.13 将Go协程从一个系统线程切换到另一个系统线程有一定开销，若触发非常频繁，将降低应用的性能。但随着时间的推移，Go调调度器已经解决了这个问题。它负责协调并发工作时协程和系统线程间的关系。让我们回到几年前，看看这个问题是如何改进的。 原始问题在Go的早期，1.0和1.1版本，在多线程上(如提高GOMAXPROCS数值)执行并发的代码有性能问题。我们看看文档中素数筛的代码示">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://straysh.github.life/images/golang/a_journey_with_go/cocurrency_scheduler_01.png">
+<meta property="og:image" content="https://straysh.github.life/images/golang/a_journey_with_go/cocurrency_scheduler_02.png">
+<meta property="og:image" content="https://straysh.github.life/images/golang/a_journey_with_go/cocurrency_scheduler_03.png">
+<meta property="og:image" content="https://straysh.github.life/images/golang/a_journey_with_go/cocurrency_scheduler_04.png">
+<meta property="og:image" content="https://straysh.github.life/images/golang/a_journey_with_go/cocurrency_scheduler_05.png">
+<meta property="og:image" content="https://straysh.github.life/images/golang/a_journey_with_go/cocurrency_scheduler_06.png">
+<meta property="og:image" content="https://straysh.github.life/images/golang/a_journey_with_go/cocurrency_scheduler_07.png">
+<meta property="og:image" content="https://straysh.github.life/images/golang/a_journey_with_go/cocurrency_scheduler_08.png">
+<meta property="og:image" content="https://straysh.github.life/images/golang/a_journey_with_go/cocurrency_scheduler_09.png">
+<meta property="article:published_time" content="2021-03-16T05:54:13.000Z">
+<meta property="article:modified_time" content="2021-03-16T12:33:24.990Z">
+<meta property="article:author" content="Straysh">
+<meta property="article:tag" content="Golang">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://straysh.github.life/images/golang/a_journey_with_go/cocurrency_scheduler_01.png">
+  <!-- Canonical links -->
+  <link rel="canonical" href="https://straysh.github.life/2021/03/16/%E5%B9%B6%E5%8F%91%E5%92%8C%E8%B0%83%E5%BA%A6%E7%9A%84%E5%85%B3%E7%B3%BB/index.html">
+  
+    <link rel="alternate" href="/atom.xml" title="Straysh的小院" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.ico" type="image/x-icon">
+  
+  
+<link rel="stylesheet" href="/css/style.css">
+
+  
+<link rel="stylesheet" href="/css/custom.css">
+
+  
+  
+  
+  
+    <link href="https://cdn.bootcss.com/fancybox/3.5.7/jquery.fancybox.min.css" rel="stylesheet">
+  
+  
+<meta name="generator" content="Hexo 5.4.1"></head>
+
+
+<body class="main-center theme-green" itemscope itemtype="http://schema.org/WebPage">
+  <header class="header" style="background-image: url(/images/left_images/2.jpg);" itemscope itemtype="http://schema.org/WPHeader">
+  <div class="slimContent" style="height:100%;background-color: rgba(0,0,0,0.7);">
+    <div class="navbar-header">
+      
+      
+      <div class="profile-block text-center">
+        <a id="avatar" href="https://hexo.straysh.com" target="_blank">
+          <img class="img-circle img-rotate" src="/images/avatar.jpg" width="200" height="200">
+        </a>
+        <h2 id="name" class="hidden-xs hidden-sm">Straysh</h2>
+        <h3 id="title" class="hidden-xs hidden-sm hidden-md">野生程序猿</h3>
+        <small id="location" class="text-muted hidden-xs hidden-sm"><i class="icon icon-map-marker"></i> Beijing, China</small>
+      </div>
+      
+      <div class="search" id="search-form-wrap">
+
+    <form class="search-form sidebar-form">
+        <div class="input-group">
+            <input type="text" class="search-form-input form-control" placeholder="搜索" />
+            <span class="input-group-btn">
+                <button type="submit" class="search-form-submit btn btn-flat" onclick="return false;"><i class="icon icon-search"></i></button>
+            </span>
+        </div>
+    </form>
+    <div class="ins-search">
+  <div class="ins-search-mask"></div>
+  <div class="ins-search-container">
+    <div class="ins-input-wrapper">
+      <input type="text" class="ins-search-input" placeholder="想要查找什么..." x-webkit-speech />
+      <button type="button" class="close ins-close ins-selectable" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+    </div>
+    <div class="ins-section-wrapper">
+      <div class="ins-section-container"></div>
+    </div>
+  </div>
+</div>
+
+
+</div>
+      <button class="navbar-toggle collapsed" type="button" data-toggle="collapse" data-target="#main-navbar" aria-controls="main-navbar" aria-expanded="false">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+    </div>
+    <nav id="main-navbar" class="collapse navbar-collapse" itemscope itemtype="http://schema.org/SiteNavigationElement" role="navigation">
+      <ul class="nav navbar-nav main-nav menu-highlight">
+        
+        
+        <li class="menu-item menu-item-home">
+          <a href="/.">
+            
+            <i class="icon icon-home-fill"></i>
+            
+            <span class="menu-title">首页</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives">
+            
+            <i class="icon icon-archives-fill"></i>
+            
+            <span class="menu-title">归档</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories">
+            
+            <i class="icon icon-folder"></i>
+            
+            <span class="menu-title">分类</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags">
+            
+            <i class="icon icon-tags"></i>
+            
+            <span class="menu-title">标签</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-repository">
+          <a href="/repository">
+            
+            <i class="icon icon-project"></i>
+            
+            <span class="menu-title">项目</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-books">
+          <a href="/books">
+            
+            <i class="icon icon-book-fill"></i>
+            
+            <span class="menu-title">书单</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-links">
+          <a href="/links">
+            
+            <i class="icon icon-friendship"></i>
+            
+            <span class="menu-title">友链</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about">
+            
+            <i class="icon icon-cup-fill"></i>
+            
+            <span class="menu-title">关于</span>
+          </a>
+        </li>
+        
+      </ul>
+      
+	
+    <ul class="social-links">
+    	
+        <li><a href="https://github.com/straysh" target="_blank" title="Github" data-toggle=tooltip data-placement=top><i class="icon icon-github"></i></a></li>
+        
+        <li><a href="https://weibo.com/u/1689171115" target="_blank" title="Weibo" data-toggle=tooltip data-placement=top><i class="icon icon-weibo"></i></a></li>
+        
+        <li><a href="/atom.xml" target="_blank" title="Rss" data-toggle=tooltip data-placement=top><i class="icon icon-rss"></i></a></li>
+        
+    </ul>
+
+    </nav>
+  </div>
+</header>
+
+  
+    <aside class="sidebar" itemscope itemtype="http://schema.org/WPSideBar">
+  <div class="slimContent">
+
+    
+      <ul class="sidebar-nav motion-element" style="text-align:center; opacity: 1; display: block; transform: translateX(0px);">
+        <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+          系统目录
+        </li>
+      </ul>
+      <section class="site-overview-wrap sidebar-panel" style="opacity: 0; display: none;">
+        
+          <div class="widget">
+    <h3 class="widget-title">公告</h3>
+    <div class="widget-body">
+        <div id="board">
+            <div class="content">
+                <p>妳是风中的叶，风起而走，我想去追，怎么抓的住？</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+        
+          
+  <div class="widget">
+    <h3 class="widget-title">分类</h3>
+    <div class="widget-body">
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%8D%9A%E6%96%87/">博文</a><span class="category-list-count">102</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%8D%9A%E6%96%87/%E7%AC%94%E8%AE%B0/">笔记</a><span class="category-list-count">2</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E6%9D%82%E8%AE%B0/">杂记</a><span class="category-list-count">6</span></li></ul>
+    </div>
+  </div>
+
+
+        
+          
+  <div class="widget">
+    <h3 class="widget-title">标签</h3>
+    <div class="widget-body">
+      <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/Algorithm/" rel="tag">Algorithm</a><span class="tag-list-count">13</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Apache/" rel="tag">Apache</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Banbrick/" rel="tag">Banbrick</a><span class="tag-list-count">5</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Docker/" rel="tag">Docker</a><span class="tag-list-count">4</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Golang/" rel="tag">Golang</a><span class="tag-list-count">25</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Javascript/" rel="tag">Javascript</a><span class="tag-list-count">10</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Linux/" rel="tag">Linux</a><span class="tag-list-count">13</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/MySQL/" rel="tag">MySQL</a><span class="tag-list-count">13</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Mysql/" rel="tag">Mysql</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Nginx/" rel="tag">Nginx</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Nodejs/" rel="tag">Nodejs</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/PHP/" rel="tag">PHP</a><span class="tag-list-count">19</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/R/" rel="tag">R</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Redis/" rel="tag">Redis</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/SVN/" rel="tag">SVN</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Sphinx/" rel="tag">Sphinx</a><span class="tag-list-count">5</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Translation/" rel="tag">Translation</a><span class="tag-list-count">18</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Yii/" rel="tag">Yii</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%9D%82/" rel="tag">杂</a><span class="tag-list-count">6</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%B1%87%E7%BC%96/" rel="tag">汇编</a><span class="tag-list-count">1</span></li></ul>
+    </div>
+  </div>
+
+
+        
+          
+  <div class="widget">
+    <h3 class="widget-title">标签云</h3>
+    <div class="widget-body tagcloud">
+      <a href="/tags/Algorithm/" style="font-size: 13.67px;">Algorithm</a> <a href="/tags/Apache/" style="font-size: 13px;">Apache</a> <a href="/tags/Banbrick/" style="font-size: 13.33px;">Banbrick</a> <a href="/tags/Docker/" style="font-size: 13.22px;">Docker</a> <a href="/tags/Golang/" style="font-size: 14px;">Golang</a> <a href="/tags/Javascript/" style="font-size: 13.56px;">Javascript</a> <a href="/tags/Linux/" style="font-size: 13.67px;">Linux</a> <a href="/tags/MySQL/" style="font-size: 13.67px;">MySQL</a> <a href="/tags/Mysql/" style="font-size: 13px;">Mysql</a> <a href="/tags/Nginx/" style="font-size: 13.11px;">Nginx</a> <a href="/tags/Nodejs/" style="font-size: 13px;">Nodejs</a> <a href="/tags/PHP/" style="font-size: 13.89px;">PHP</a> <a href="/tags/R/" style="font-size: 13.11px;">R</a> <a href="/tags/Redis/" style="font-size: 13.11px;">Redis</a> <a href="/tags/SVN/" style="font-size: 13px;">SVN</a> <a href="/tags/Sphinx/" style="font-size: 13.33px;">Sphinx</a> <a href="/tags/Translation/" style="font-size: 13.78px;">Translation</a> <a href="/tags/Yii/" style="font-size: 13.11px;">Yii</a> <a href="/tags/%E6%9D%82/" style="font-size: 13.44px;">杂</a> <a href="/tags/%E6%B1%87%E7%BC%96/" style="font-size: 13px;">汇编</a>
+    </div>
+  </div>
+
+        
+          
+  <div class="widget">
+    <h3 class="widget-title">归档</h3>
+    <div class="widget-body">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/03/">三月 2022</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/03/">三月 2021</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/03/">三月 2020</a><span class="archive-list-count">5</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/02/">二月 2020</a><span class="archive-list-count">26</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/12/">十二月 2019</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/04/">四月 2019</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/09/">九月 2018</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/07/">七月 2016</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/06/">六月 2016</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/11/">十一月 2015</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/10/">十月 2015</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/09/">九月 2015</a><span class="archive-list-count">5</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/08/">八月 2015</a><span class="archive-list-count">13</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/07/">七月 2015</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/11/">十一月 2014</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/03/">三月 2014</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/12/">十二月 2013</a><span class="archive-list-count">8</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/10/">十月 2013</a><span class="archive-list-count">8</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/09/">九月 2013</a><span class="archive-list-count">2</span></li></ul>
+    </div>
+  </div>
+
+
+        
+          
+  <div class="widget">
+    <h3 class="widget-title">最新文章</h3>
+    <div class="widget-body">
+      <ul class="recent-post-list list-unstyled no-thumbnail">
+        
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/%E5%8D%9A%E6%96%87/">博文</a><i class="icon icon-angle-right"></i><a class="category-link" href="/categories/%E5%8D%9A%E6%96%87/%E7%AC%94%E8%AE%B0/">笔记</a>
+              </p>
+              <p class="item-title">
+                <a href="/2022/03/14/%E4%BD%BF%E7%94%A8Go%E6%93%8D%E4%BD%9C%E6%96%87%E4%BB%B6/" class="title">使用Go操作文件</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2022-03-14T12:11:25.000Z" itemprop="datePublished">2022-03-14</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/%E5%8D%9A%E6%96%87/">博文</a>
+              </p>
+              <p class="item-title">
+                <a href="/2022/03/13/Docker%E5%AE%B9%E5%99%A8%E7%BD%91%E7%BB%9C/" class="title">Docker容器网络</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2022-03-13T04:10:09.000Z" itemprop="datePublished">2022-03-13</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/%E5%8D%9A%E6%96%87/">博文</a><i class="icon icon-angle-right"></i><a class="category-link" href="/categories/%E5%8D%9A%E6%96%87/%E7%AC%94%E8%AE%B0/">笔记</a>
+              </p>
+              <p class="item-title">
+                <a href="/2022/03/13/Iptables%E5%92%8C%E5%AE%B9%E5%99%A8/" class="title">Iptables和容器</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2022-03-13T03:01:46.000Z" itemprop="datePublished">2022-03-13</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/%E5%8D%9A%E6%96%87/">博文</a>
+              </p>
+              <p class="item-title">
+                <a href="/2022/03/12/Linux%E7%BD%91%E6%A1%A5%E5%B7%A5%E4%BD%9C%E5%8E%9F%E7%90%86/" class="title">Linux网桥工作原理</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2022-03-12T10:02:29.000Z" itemprop="datePublished">2022-03-12</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/%E5%8D%9A%E6%96%87/">博文</a>
+              </p>
+              <p class="item-title">
+                <a href="/2021/03/16/%E5%B9%B6%E5%8F%91%E5%92%8C%E8%B0%83%E5%BA%A6%E7%9A%84%E5%85%B3%E7%B3%BB/" class="title">并发和调度的关系</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2021-03-16T05:54:13.000Z" itemprop="datePublished">2021-03-16</time>
+              </p>
+            </div>
+          </li>
+          
+      </ul>
+    </div>
+  </div>
+  
+
+        
+      </section>
+
+      <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active" style="opacity: 1; display: block;">
+        <nav id="toc" class="article-toc">
+          <h3 class="toc-title">文章目录</h3>
+          <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%B3%A8%EF%BC%9A%E8%AF%A5%E6%96%87%E7%AB%A0%E5%9F%BA%E4%BA%8EGo-1-13"><span class="toc-number">1.</span> <span class="toc-text">注：该文章基于Go 1.13</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8E%9F%E5%A7%8B%E9%97%AE%E9%A2%98"><span class="toc-number">2.</span> <span class="toc-text">原始问题</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%B9%B6%E5%8F%91%E4%BA%B2%E5%92%8C%E6%80%A7-Affinity-in-concurrency"><span class="toc-number">3.</span> <span class="toc-text">并发亲和性(Affinity in concurrency)</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BA%B2%E5%92%8C%E6%80%A7%E5%8F%97%E9%99%90-Affinity-limitation"><span class="toc-number">4.</span> <span class="toc-text">亲和性受限(Affinity limitation)</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%8E%92%E5%BA%8F%E4%BB%A5%E5%BC%BA%E5%8C%96%E4%BA%B2%E5%92%8C%E6%80%A7-Ordering-to-enhance-affinity"><span class="toc-number">5.</span> <span class="toc-text">排序以强化亲和性(Ordering to enhance affinity)</span></a></li></ol>
+        </nav>
+      </section>
+    
+  </div>
+</aside>
+
+  
+  
+<aside class="sidebar sidebar-toc collapse" id="collapseToc" itemscope itemtype="http://schema.org/WPSideBar">
+  <div class="slimContent">
+    <nav id="toc" class="article-toc">
+      <h3 class="toc-title">文章目录</h3>
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%B3%A8%EF%BC%9A%E8%AF%A5%E6%96%87%E7%AB%A0%E5%9F%BA%E4%BA%8EGo-1-13"><span class="toc-number">1.</span> <span class="toc-text">注：该文章基于Go 1.13</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8E%9F%E5%A7%8B%E9%97%AE%E9%A2%98"><span class="toc-number">2.</span> <span class="toc-text">原始问题</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%B9%B6%E5%8F%91%E4%BA%B2%E5%92%8C%E6%80%A7-Affinity-in-concurrency"><span class="toc-number">3.</span> <span class="toc-text">并发亲和性(Affinity in concurrency)</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BA%B2%E5%92%8C%E6%80%A7%E5%8F%97%E9%99%90-Affinity-limitation"><span class="toc-number">4.</span> <span class="toc-text">亲和性受限(Affinity limitation)</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%8E%92%E5%BA%8F%E4%BB%A5%E5%BC%BA%E5%8C%96%E4%BA%B2%E5%92%8C%E6%80%A7-Ordering-to-enhance-affinity"><span class="toc-number">5.</span> <span class="toc-text">排序以强化亲和性(Ordering to enhance affinity)</span></a></li></ol>
+    </nav>
+  </div>
+</aside>
+
+<main class="main" role="main">
+  <div class="content">
+  <article id="post-并发和调度的关系" class="article article-type-post" itemscope itemtype="http://schema.org/BlogPosting">
+    
+    <div class="article-header">
+      
+        
+  
+    <h1 class="article-title" itemprop="name">
+      并发和调度的关系
+    </h1>
+  
+
+
+      
+      <div class="article-meta">
+        
+        <span class="article-date">
+    <i class="icon icon-calendar-check"></i>
+	<a href="/2021/03/16/%E5%B9%B6%E5%8F%91%E5%92%8C%E8%B0%83%E5%BA%A6%E7%9A%84%E5%85%B3%E7%B3%BB/" class="article-date">
+	  <time datetime="2021-03-16T05:54:13.000Z" itemprop="datePublished">2021-03-16</time>
+	</a>
+</span>
+        
+  <span class="article-category">
+    <i class="icon icon-folder"></i>
+    <a class="article-category-link" href="/categories/%E5%8D%9A%E6%96%87/">博文</a>
+  </span>
+
+        
+  <span class="article-tag">
+    <i class="icon icon-tags"></i>
+	<a class="article-tag-link-link" href="/tags/Golang/" rel="tag">Golang</a>
+  </span>
+
+
+        
+
+        <span class="post-comment"><i class="icon icon-comment"></i> <a href="/2021/03/16/%E5%B9%B6%E5%8F%91%E5%92%8C%E8%B0%83%E5%BA%A6%E7%9A%84%E5%85%B3%E7%B3%BB/#comments" class="article-comment-link">评论</a></span>
+        
+      </div>
+    </div>
+    <div class="article-entry marked-body" itemprop="articleBody">
+      
+        <h2 id="注：该文章基于Go-1-13"><a href="#注：该文章基于Go-1-13" class="headerlink" title="注：该文章基于Go 1.13"></a>注：该文章基于Go 1.13</h2><p><img src="/images/golang/a_journey_with_go/cocurrency_scheduler_01.png"></p>
+<p>将Go协程从一个系统线程切换到另一个系统线程有一定开销，若触发非常频繁，将降低应用的性能。但随着时间的推移，Go调调度器已经解决了这个问题。它负责协调并发工作时协程和系统线程间的关系。让我们回到几年前，看看这个问题是如何改进的。</p>
+<h2 id="原始问题"><a href="#原始问题" class="headerlink" title="原始问题"></a>原始问题</h2><p>在Go的早期，1.0和1.1版本，在多线程上(如提高<code>GOMAXPROCS</code>数值)执行并发的代码有性能问题。我们看看文档中素数筛的代码示例：<br><img src="/images/golang/a_journey_with_go/cocurrency_scheduler_02.png"></p>
+<p>这是<code>GOMAXPROCS</code>非值1时，Go 1.0.3版本，计算前10万素数的压测数据。   </p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">name     time/op<br>Sieve    19.2s ± 0%<br>Sieve-2  19.3s ± 0%<br>Sieve-4  20.4s ± 0%<br>Sieve-8  20.4s ± 0%<br></code></pre></td></tr></table></figure>
+
+<p>为了理解上面的测试结果，需要先了解当时的调度器是如何设计的。在Go的第一个版本中，调度器只有一个全局队列，所有的线程都从这里存取协程。下图所示为运行了两个系统线程<code>M</code>的程序，通过设置<code>GOMAXPROCS=2</code>实现：<br><img src="/images/golang/a_journey_with_go/cocurrency_scheduler_03.png"></p>
+<p>只有一个队列无法保证协程恢复时，仍在相同的线程上执行。第一个就绪的线程会选取一个等待中的协程并运行它。因此，必然导致协程在另一个线程上执行，同时付出相当大的性能代价。以阻塞的管道举例：</p>
+<ul>
+<li><p>协程#7的管道阻塞并等待消息。当消息到达时，协程被推入全局队列。<br><img src="/images/golang/a_journey_with_go/cocurrency_scheduler_04.png"></p>
+</li>
+<li><p>然后，管道发送消息，协程#X将在空闲线程上执行，而协程#8因管道阻塞<br><img src="/images/golang/a_journey_with_go/cocurrency_scheduler_05.png"></p>
+</li>
+<li><p>协程#7此时将在空闲线程上执行<br><img src="/images/golang/a_journey_with_go/cocurrency_scheduler_06.png"></p>
+</li>
+</ul>
+<p>此时协程在不同的线程上执行了。只有一个全局队列也迫使调度器使用全局锁来控制对协程的调度操作。这里是通过<code>pprof</code>的CPU分析</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">Total: 8679 samples<br>3700  42.6%  42.6%     3700  42.6% runtime.procyield<br>1055  12.2%  54.8%     1055  12.2% runtime.xchg<br>753   8.7%  63.5%     1590   18.3% runtime.chanrecv<br>677   7.8%  71.3%      677    7.8% dequeue<br>438   5.0%  76.3%      438    5.0% runtime.futex<br>367   4.2%  80.5%     5924   68.3% main.filter<br>234   2.7%  83.2%     5005   57.7% runtime.lock<br>230   2.7%  85.9%     3933   45.3% runtime.chansend<br>214   2.5%  88.4%      214    2.5% runtime.osyield<br>150   1.7%  90.1%      150    1.7% runtime.cas<br></code></pre></td></tr></table></figure>
+
+<p><code>procyield</code>，<code>xchg</code>，<code>futex</code>和<code>lock</code>都是调度器的全局锁相关。显而易见，程序的大部分消耗都在锁上。</p>
+<p>这些问题使得Go无法利用多核，因此在Go 1.1版本中修复了。</p>
+<h2 id="并发亲和性-Affinity-in-concurrency"><a href="#并发亲和性-Affinity-in-concurrency" class="headerlink" title="并发亲和性(Affinity in concurrency)"></a>并发亲和性(Affinity in concurrency)</h2><p>Go1.1带来了<a target="_blank" rel="noopener" href="https://docs.google.com/document/d/1TTj4T2JO42uD5ID9e89oa0sLKhJYD0Y_kqxDv3I3XMw/edit?pli=1">新的调度器实现及本地协程队列的创建</a>。这个优化使用本地协程队列避免了对整个调度器加锁，并允许协程在相同的系统线程上运行。</p>
+<p>由于线程会因系统调用而阻塞，且阻塞线程的数量是无限制的，Go引入了处理器(processor)的概念。一个处理器<code>P</code>表示一个运行的系统线程并管理者本地协程队列。新的图示：<br><img src="/images/golang/a_journey_with_go/cocurrency_scheduler_07.png"></p>
+<p>这是用Go 1.1.2中新的调度器压测的结果：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">name     time/op<br>Sieve    18.7s ± 0%<br>Sieve-2  8.26s ± 0%<br>Sieve-4  3.30s ± 0%<br>Sieve-8  2.64s ± 0%<br></code></pre></td></tr></table></figure>
+
+<p>此时，Go真正发挥了多核的优势。CPU分析也改变了：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">Total: 630 samples<br>163  25.9%  25.9%      163  25.9% runtime.xchg<br>113  17.9%  43.8%      610  96.8% main.filter<br>93  14.8%  58.6%      265   42.1% runtime.chanrecv<br>87  13.8%  72.4%      206   32.7% runtime.chansend<br>72  11.4%  83.8%       72   11.4% dequeue<br>19   3.0%  86.8%       19    3.0% runtime.memcopy64<br>17   2.7%  89.5%      225   35.7% runtime.chansend1<br>16   2.5%  92.1%      280   44.4% runtime.chanrecv2<br>12   1.9%  94.0%      141   22.4% runtime.lock<br>9   1.4%  95.4%       98    15.6% runqput<br></code></pre></td></tr></table></figure>
+
+<p>大部分锁相关的操作被移除了，<code>chanXXXX</code>相关的操作仅和管道相关。但是，若调度器优化了协程与线程间的亲和性，在某些场景下亲和性会被减弱。</p>
+<h2 id="亲和性受限-Affinity-limitation"><a href="#亲和性受限-Affinity-limitation" class="headerlink" title="亲和性受限(Affinity limitation)"></a>亲和性受限(Affinity limitation)</h2><p>为理解亲和性受限，我们需要理解被放入本地和全局队列的东西是什么。所有操作，如管道/<code>select</code>阻塞，等待定时器，锁都会使用本地队列除了<code>系统调用</code>。因此，两个特性会限制协程和线程的亲和性：</p>
+<ul>
+<li>协程窃取。当处理器<code>P</code>没有足够的本地队列任务时，它会从其他<code>P</code>中窃取协程，若全局队列和network poller中都是空的。发生协程窃取时，协程会在另一个线程上运行。</li>
+<li>系统调用。发生系统调用时(如文件操作，http调用，数据库操作等)，Go将运行的系统线程变更为阻塞状态，让另一个新的线程接管当前<code>P</code>进而处理本地写成队列。</li>
+</ul>
+<p>但，为了更好的管理本地队列的优先级，这两个限制可以避免。Go 1.5旨在给在管道中通信的协程更高的优先级，从而优化协程与线程的亲和性。</p>
+<h2 id="排序以强化亲和性-Ordering-to-enhance-affinity"><a href="#排序以强化亲和性-Ordering-to-enhance-affinity" class="headerlink" title="排序以强化亲和性(Ordering to enhance affinity)"></a>排序以强化亲和性(Ordering to enhance affinity)</h2><p>在管道上来回通信的协程会频繁的阻塞，亦即频繁的重入本地队列。但，本地队列遵守<code>FIFO</code>原则，若有协程独占线程，被解锁的协程无法保证被及时执行。下图为被阻塞协程恢复可运行的例子：<br><img src="/images/golang/a_journey_with_go/cocurrency_scheduler_08.png"></p>
+<p>在因管道阻塞后协程#9恢复了(管道接收到消息)。但，它必须等待协程#2，#5和#4结束才能运行。在这个例子中，协程#5将独占线程，使得协程#9被延期执行，从而有被其他线程窃取的风险。从Go 1.5开始，从阻塞管道返回的协程会有更高的优先级(通过处理器<code>P</code>的一个特殊属性实现)：<br><img src="/images/golang/a_journey_with_go/cocurrency_scheduler_09.png"></p>
+<p>协程#9此时被标记为下一个可运行的。这个优先级特性使得协程能尽快被处理避免被再次阻塞。然后，其他协程才能获得运行时间。这个改变对<a target="_blank" rel="noopener" href="https://github.com/golang/go/commit/e870f06c3f49ed63960a2575e330c2c75fc54a34">Go标准库有全面的积极影响</a>。</p>
+<hr>
+<ul>
+<li>原文 <a target="_blank" rel="noopener" href="https://medium.com/a-journey-with-go/go-concurrency-scheduler-affinity-3b678f490488">Go: Concurrency &amp; Scheduler Affinity</a></li>
+</ul>
+
+      
+    </div>
+    <div class="article-footer">
+      <blockquote class="mt-2x">
+  <ul class="post-copyright list-unstyled">
+    
+    <li class="post-copyright-link hidden-xs">
+      <strong>本文链接：</strong>
+      <a href="https://straysh.github.life/2021/03/16/%E5%B9%B6%E5%8F%91%E5%92%8C%E8%B0%83%E5%BA%A6%E7%9A%84%E5%85%B3%E7%B3%BB/" title="并发和调度的关系" target="_blank" rel="external">https://straysh.github.life/2021/03/16/%E5%B9%B6%E5%8F%91%E5%92%8C%E8%B0%83%E5%BA%A6%E7%9A%84%E5%85%B3%E7%B3%BB/</a>
+    </li>
+    
+    <li class="post-copyright-license">
+      <strong>版权声明： </strong> 本博客所有文章除特别声明外，均采用 <a href="http://creativecommons.org/licenses/by/4.0/deed.zh" target="_blank" rel="external">CC BY 4.0 CN协议</a> 许可协议。转载请注明出处！
+    </li>
+  </ul>
+</blockquote>
+
+
+<div class="panel panel-default panel-badger">
+  <div class="panel-body">
+    <figure class="media">
+      <div class="media-left">
+        <a href="https://hexo.straysh.com" target="_blank" class="img-burn thumb-sm visible-lg">
+          <img src="/images/avatar.jpg" class="img-rounded w-full" alt="">
+        </a>
+      </div>
+      <div class="media-body">
+        <h3 class="media-heading"><a href="https://hexo.straysh.com" target="_blank"><span class="text-dark">Straysh</span><small class="ml-1x">野生程序猿</small></a></h3>
+        <div>野生程序猿 &amp; 猫奴。</div>
+      </div>
+    </figure>
+  </div>
+</div>
+
+
+    </div>
+  </article>
+  
+    
+  <section id="comments">
+  	
+      <div id="disqus_thread">
+        <noscript>Please enable JavaScript to view the <a target="_blank" rel="noopener" href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+      </div>
+    
+  </section>
+
+
+  
+</div>
+
+  <nav class="bar bar-footer clearfix" data-stick-bottom>
+  <div class="bar-inner">
+  
+  <ul class="pager pull-left">
+    
+    <li class="prev">
+      <a href="/2022/03/12/Linux%E7%BD%91%E6%A1%A5%E5%B7%A5%E4%BD%9C%E5%8E%9F%E7%90%86/" title="Linux网桥工作原理"><i class="icon icon-angle-left" aria-hidden="true"></i><span>&nbsp;&nbsp;上一篇</span></a>
+    </li>
+    
+    
+    <li class="next">
+      <a href="/2021/03/16/gsignal%EF%BC%8C%E4%BF%A1%E5%8F%B7%E5%A4%A7%E5%B8%88/" title="gsignal，信号大师"><span>下一篇&nbsp;&nbsp;</span><i class="icon icon-angle-right" aria-hidden="true"></i></a>
+    </li>
+    
+    
+    <li class="toggle-toc">
+      <a class="toggle-btn collapsed" data-toggle="collapse" href="#collapseToc" aria-expanded="false" title="文章目录" role="button">
+        <span>[&nbsp;</span><span>文章目录</span>
+        <i class="text-collapsed icon icon-anchor"></i>
+        <i class="text-in icon icon-close"></i>
+        <span>]</span>
+      </a>
+    </li>
+    
+  </ul>
+  
+  
+  
+  <div class="bar-right">
+    
+    <div class="share-component" data-sites="weibo,qq,wechat,facebook,twitter" data-mobile-sites="weibo,qq,qzone"></div>
+    
+  </div>
+  </div>
+</nav>
+  
+
+
+
+</main>
+
+  <footer class="footer" itemscope itemtype="http://schema.org/WPFooter">
+	
+	
+    <ul class="social-links">
+    	
+        <li><a href="https://github.com/straysh" target="_blank" title="Github" data-toggle=tooltip data-placement=top><i class="icon icon-github"></i></a></li>
+        
+        <li><a href="https://weibo.com/u/1689171115" target="_blank" title="Weibo" data-toggle=tooltip data-placement=top><i class="icon icon-weibo"></i></a></li>
+        
+        <li><a href="/atom.xml" target="_blank" title="Rss" data-toggle=tooltip data-placement=top><i class="icon icon-rss"></i></a></li>
+        
+    </ul>
+
+    <div class="copyright">
+    	
+        &copy; 2022 straysh.com 版权所有。ICP证：鄂ICP备2021016952号-1<!--Straysh-->
+        
+        <div class="publishby">
+        	Theme by <a href="https://github.com/cofess" target="_blank"> cofess </a>base on <a href="https://github.com/cofess/hexo-theme-pure" target="_blank">pure</a>.
+        </div>
+    </div>
+</footer>
+
+  <script src="//cdn.jsdelivr.net/npm/jquery@1.12.4/dist/jquery.min.js"></script>
+<script>
+window.jQuery || document.write('<script src="js/jquery.min.js"><\/script>')
+</script>
+
+<script src="/js/plugin.min.js"></script>
+
+
+<script src="/js/application.js"></script>
+
+
+    <script>
+(function (window) {
+    var INSIGHT_CONFIG = {
+        TRANSLATION: {
+            POSTS: '文章',
+            PAGES: '页面',
+            CATEGORIES: '分类',
+            TAGS: '标签',
+            UNTITLED: '(未命名)',
+        },
+        ROOT_URL: '/',
+        CONTENT_URL: '/content.json',
+    };
+    window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+})(window);
+</script>
+
+<script src="/js/insight.js"></script>
+
+
+
+
+
+
+   
+
+
+
+
+<!--   
+    
+    <script defer>
+    var disqus_config = function () {
+        
+            this.page.url = 'https://straysh.github.life/2021/03/16/%E5%B9%B6%E5%8F%91%E5%92%8C%E8%B0%83%E5%BA%A6%E7%9A%84%E5%85%B3%E7%B3%BB/';
+        
+        this.page.identifier = '并发和调度的关系';
+    };
+    (function() { 
+        var d = document, s = d.createElement('script');  
+        s.src = '//' + 'straysh' + '.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+</script>
+
+-->
+
+
+<!--  <script src="https://cdn.bootcss.com/fancybox/3.5.7/jquery.fancybox.min.js"></script>-->
+  <script src="/js/jquery.fancybox.min.js"></script>
+  <script>
+  //利用 FancyBox 实现点击图片放大
+  $(document).ready(function() {
+    // $('article img').not('[hidden]').not('.panel-body img').each(function() {
+    //   var $image = $(this);
+    //   var imageCaption = $image.attr('alt');
+    //   var $imageWrapLink = $image.parent('a');
+    //   if ($imageWrapLink.length < 1) {
+    //     var src = this.getAttribute('src');
+    //     var idx = src.lastIndexOf('?');
+    //     if (idx != -1) {
+    //       src = src.substring(0, idx);
+    //     }
+    //     $imageWrapLink = $image.wrap('<a href="' + src + '"></a>').parent('a');
+    //   }
+    //   $imageWrapLink.attr('data-fancybox', 'images');
+    //   if (imageCaption) {
+    //     $imageWrapLink.attr('data-caption', imageCaption);
+    //   }
+    // });
+    // $().fancybox({
+    //   selector: '[data-fancybox="images"]',
+    //   hash: false,
+    //   loop: false,
+    // });
+
+    $('[data-fancybox]').fancybox({
+      // afterShow :function() {
+      //   $('.fancybox-button--zoom').click();
+      // }
+    });
+  });
+  </script>
+
+
+
+
+
+
+</body>
+</html>

@@ -1,0 +1,690 @@
+<!DOCTYPE html>
+<html lang=zh>
+<head>
+  <meta charset="utf-8">
+  
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, minimal-ui">
+  <meta name="renderer" content="webkit">
+  <meta http-equiv="Cache-Control" content="no-transform" />
+  <meta http-equiv="Cache-Control" content="no-siteapp" />
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="format-detection" content="telephone=no,email=no,adress=no">
+  <!-- Color theme for statusbar -->
+  <meta name="theme-color" content="#000000" />
+  <!-- 强制页面在当前窗口以独立页面显示,防止别人在框架里调用页面 -->
+  <meta http-equiv="window-target" content="_top" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lxgw-wenkai-webfont@1.1.0/style.css" />
+  
+  
+  <title>Sphinx基础 | Hexo</title>
+  <meta name="description" content="什么是SphinxSphinx 是SQL Phrase Index的缩写;Sphinx是一个在GPLv2下分发的全文检索引擎;一般而言，Sphinx是一个独立的全文搜索引擎;可以非常容易的与SQL数据库和脚本语言集成;搜索API支持PHP、Python、Perl、Rudy和Java，并且也可以用作MySQL存储引擎. Sphinx 的主要特性： 索引和搜索性能优异； 先进的索引和查询工具 (灵活且">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Sphinx基础">
+<meta property="og:url" content="https://straysh.github.life/2015/07/16/2015-Sphinx%E5%9F%BA%E7%A1%80/index.html">
+<meta property="og:site_name" content="Straysh的小院">
+<meta property="og:description" content="什么是SphinxSphinx 是SQL Phrase Index的缩写;Sphinx是一个在GPLv2下分发的全文检索引擎;一般而言，Sphinx是一个独立的全文搜索引擎;可以非常容易的与SQL数据库和脚本语言集成;搜索API支持PHP、Python、Perl、Rudy和Java，并且也可以用作MySQL存储引擎. Sphinx 的主要特性： 索引和搜索性能优异； 先进的索引和查询工具 (灵活且">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2015-07-16T14:00:31.000Z">
+<meta property="article:modified_time" content="2019-12-01T10:13:40.316Z">
+<meta property="article:author" content="Straysh">
+<meta property="article:tag" content="Sphinx">
+<meta name="twitter:card" content="summary">
+  <!-- Canonical links -->
+  <link rel="canonical" href="https://straysh.github.life/2015/07/16/2015-Sphinx%E5%9F%BA%E7%A1%80/index.html">
+  
+    <link rel="alternate" href="/atom.xml" title="Straysh的小院" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.ico" type="image/x-icon">
+  
+  
+<link rel="stylesheet" href="/css/style.css">
+
+  
+<link rel="stylesheet" href="/css/custom.css">
+
+  
+  
+  
+  
+  
+<meta name="generator" content="Hexo 5.4.1"></head>
+
+
+<body class="main-center theme-green" itemscope itemtype="http://schema.org/WebPage">
+  <header class="header" style="background-image: url(/images/left_images/2.jpg);" itemscope itemtype="http://schema.org/WPHeader">
+  <div class="slimContent" style="height:100%;background-color: rgba(0,0,0,0.7);">
+    <div class="navbar-header">
+      
+      
+      <div class="profile-block text-center">
+        <a id="avatar" href="https://hexo.straysh.com" target="_blank">
+          <img class="img-circle img-rotate" src="/images/avatar.jpg" width="200" height="200">
+        </a>
+        <h2 id="name" class="hidden-xs hidden-sm">Straysh</h2>
+        <h3 id="title" class="hidden-xs hidden-sm hidden-md">野生程序猿</h3>
+        <small id="location" class="text-muted hidden-xs hidden-sm"><i class="icon icon-map-marker"></i> Beijing, China</small>
+      </div>
+      
+      <div class="search" id="search-form-wrap">
+
+    <form class="search-form sidebar-form">
+        <div class="input-group">
+            <input type="text" class="search-form-input form-control" placeholder="搜索" />
+            <span class="input-group-btn">
+                <button type="submit" class="search-form-submit btn btn-flat" onclick="return false;"><i class="icon icon-search"></i></button>
+            </span>
+        </div>
+    </form>
+    <div class="ins-search">
+  <div class="ins-search-mask"></div>
+  <div class="ins-search-container">
+    <div class="ins-input-wrapper">
+      <input type="text" class="ins-search-input" placeholder="想要查找什么..." x-webkit-speech />
+      <button type="button" class="close ins-close ins-selectable" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+    </div>
+    <div class="ins-section-wrapper">
+      <div class="ins-section-container"></div>
+    </div>
+  </div>
+</div>
+
+
+</div>
+      <button class="navbar-toggle collapsed" type="button" data-toggle="collapse" data-target="#main-navbar" aria-controls="main-navbar" aria-expanded="false">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+    </div>
+    <nav id="main-navbar" class="collapse navbar-collapse" itemscope itemtype="http://schema.org/SiteNavigationElement" role="navigation">
+      <ul class="nav navbar-nav main-nav menu-highlight">
+        
+        
+        <li class="menu-item menu-item-home">
+          <a href="/.">
+            
+            <i class="icon icon-home-fill"></i>
+            
+            <span class="menu-title">首页</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives">
+            
+            <i class="icon icon-archives-fill"></i>
+            
+            <span class="menu-title">归档</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories">
+            
+            <i class="icon icon-folder"></i>
+            
+            <span class="menu-title">分类</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags">
+            
+            <i class="icon icon-tags"></i>
+            
+            <span class="menu-title">标签</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-repository">
+          <a href="/repository">
+            
+            <i class="icon icon-project"></i>
+            
+            <span class="menu-title">项目</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-books">
+          <a href="/books">
+            
+            <i class="icon icon-book-fill"></i>
+            
+            <span class="menu-title">书单</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-links">
+          <a href="/links">
+            
+            <i class="icon icon-friendship"></i>
+            
+            <span class="menu-title">友链</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about">
+            
+            <i class="icon icon-cup-fill"></i>
+            
+            <span class="menu-title">关于</span>
+          </a>
+        </li>
+        
+      </ul>
+      
+	
+    <ul class="social-links">
+    	
+        <li><a href="https://github.com/straysh" target="_blank" title="Github" data-toggle=tooltip data-placement=top><i class="icon icon-github"></i></a></li>
+        
+        <li><a href="https://weibo.com/u/1689171115" target="_blank" title="Weibo" data-toggle=tooltip data-placement=top><i class="icon icon-weibo"></i></a></li>
+        
+        <li><a href="/atom.xml" target="_blank" title="Rss" data-toggle=tooltip data-placement=top><i class="icon icon-rss"></i></a></li>
+        
+    </ul>
+
+    </nav>
+  </div>
+</header>
+
+  
+    <aside class="sidebar" itemscope itemtype="http://schema.org/WPSideBar">
+  <div class="slimContent">
+
+    
+      <ul class="sidebar-nav motion-element" style="text-align:center; opacity: 1; display: block; transform: translateX(0px);">
+        <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+          系统目录
+        </li>
+      </ul>
+      <section class="site-overview-wrap sidebar-panel" style="opacity: 0; display: none;">
+        
+          <div class="widget">
+    <h3 class="widget-title">公告</h3>
+    <div class="widget-body">
+        <div id="board">
+            <div class="content">
+                <p>妳是风中的叶，风起而走，我想去追，怎么抓的住？</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+        
+          
+  <div class="widget">
+    <h3 class="widget-title">分类</h3>
+    <div class="widget-body">
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%8D%9A%E6%96%87/">博文</a><span class="category-list-count">102</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%8D%9A%E6%96%87/%E7%AC%94%E8%AE%B0/">笔记</a><span class="category-list-count">2</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E6%9D%82%E8%AE%B0/">杂记</a><span class="category-list-count">6</span></li></ul>
+    </div>
+  </div>
+
+
+        
+          
+  <div class="widget">
+    <h3 class="widget-title">标签</h3>
+    <div class="widget-body">
+      <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/Algorithm/" rel="tag">Algorithm</a><span class="tag-list-count">13</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Apache/" rel="tag">Apache</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Banbrick/" rel="tag">Banbrick</a><span class="tag-list-count">5</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Docker/" rel="tag">Docker</a><span class="tag-list-count">4</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Golang/" rel="tag">Golang</a><span class="tag-list-count">25</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Javascript/" rel="tag">Javascript</a><span class="tag-list-count">10</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Linux/" rel="tag">Linux</a><span class="tag-list-count">13</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/MySQL/" rel="tag">MySQL</a><span class="tag-list-count">13</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Mysql/" rel="tag">Mysql</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Nginx/" rel="tag">Nginx</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Nodejs/" rel="tag">Nodejs</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/PHP/" rel="tag">PHP</a><span class="tag-list-count">19</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/R/" rel="tag">R</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Redis/" rel="tag">Redis</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/SVN/" rel="tag">SVN</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Sphinx/" rel="tag">Sphinx</a><span class="tag-list-count">5</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Translation/" rel="tag">Translation</a><span class="tag-list-count">18</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Yii/" rel="tag">Yii</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%9D%82/" rel="tag">杂</a><span class="tag-list-count">6</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%B1%87%E7%BC%96/" rel="tag">汇编</a><span class="tag-list-count">1</span></li></ul>
+    </div>
+  </div>
+
+
+        
+          
+  <div class="widget">
+    <h3 class="widget-title">标签云</h3>
+    <div class="widget-body tagcloud">
+      <a href="/tags/Algorithm/" style="font-size: 13.67px;">Algorithm</a> <a href="/tags/Apache/" style="font-size: 13px;">Apache</a> <a href="/tags/Banbrick/" style="font-size: 13.33px;">Banbrick</a> <a href="/tags/Docker/" style="font-size: 13.22px;">Docker</a> <a href="/tags/Golang/" style="font-size: 14px;">Golang</a> <a href="/tags/Javascript/" style="font-size: 13.56px;">Javascript</a> <a href="/tags/Linux/" style="font-size: 13.67px;">Linux</a> <a href="/tags/MySQL/" style="font-size: 13.67px;">MySQL</a> <a href="/tags/Mysql/" style="font-size: 13px;">Mysql</a> <a href="/tags/Nginx/" style="font-size: 13.11px;">Nginx</a> <a href="/tags/Nodejs/" style="font-size: 13px;">Nodejs</a> <a href="/tags/PHP/" style="font-size: 13.89px;">PHP</a> <a href="/tags/R/" style="font-size: 13.11px;">R</a> <a href="/tags/Redis/" style="font-size: 13.11px;">Redis</a> <a href="/tags/SVN/" style="font-size: 13px;">SVN</a> <a href="/tags/Sphinx/" style="font-size: 13.33px;">Sphinx</a> <a href="/tags/Translation/" style="font-size: 13.78px;">Translation</a> <a href="/tags/Yii/" style="font-size: 13.11px;">Yii</a> <a href="/tags/%E6%9D%82/" style="font-size: 13.44px;">杂</a> <a href="/tags/%E6%B1%87%E7%BC%96/" style="font-size: 13px;">汇编</a>
+    </div>
+  </div>
+
+        
+          
+  <div class="widget">
+    <h3 class="widget-title">归档</h3>
+    <div class="widget-body">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/03/">三月 2022</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/03/">三月 2021</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/03/">三月 2020</a><span class="archive-list-count">5</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/02/">二月 2020</a><span class="archive-list-count">26</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/12/">十二月 2019</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/04/">四月 2019</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/09/">九月 2018</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/07/">七月 2016</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/06/">六月 2016</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/11/">十一月 2015</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/10/">十月 2015</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/09/">九月 2015</a><span class="archive-list-count">5</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/08/">八月 2015</a><span class="archive-list-count">13</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/07/">七月 2015</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/11/">十一月 2014</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/03/">三月 2014</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/12/">十二月 2013</a><span class="archive-list-count">8</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/10/">十月 2013</a><span class="archive-list-count">8</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/09/">九月 2013</a><span class="archive-list-count">2</span></li></ul>
+    </div>
+  </div>
+
+
+        
+          
+  <div class="widget">
+    <h3 class="widget-title">最新文章</h3>
+    <div class="widget-body">
+      <ul class="recent-post-list list-unstyled no-thumbnail">
+        
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/%E5%8D%9A%E6%96%87/">博文</a><i class="icon icon-angle-right"></i><a class="category-link" href="/categories/%E5%8D%9A%E6%96%87/%E7%AC%94%E8%AE%B0/">笔记</a>
+              </p>
+              <p class="item-title">
+                <a href="/2022/03/14/%E4%BD%BF%E7%94%A8Go%E6%93%8D%E4%BD%9C%E6%96%87%E4%BB%B6/" class="title">使用Go操作文件</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2022-03-14T12:11:25.000Z" itemprop="datePublished">2022-03-14</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/%E5%8D%9A%E6%96%87/">博文</a>
+              </p>
+              <p class="item-title">
+                <a href="/2022/03/13/Docker%E5%AE%B9%E5%99%A8%E7%BD%91%E7%BB%9C/" class="title">Docker容器网络</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2022-03-13T04:10:09.000Z" itemprop="datePublished">2022-03-13</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/%E5%8D%9A%E6%96%87/">博文</a><i class="icon icon-angle-right"></i><a class="category-link" href="/categories/%E5%8D%9A%E6%96%87/%E7%AC%94%E8%AE%B0/">笔记</a>
+              </p>
+              <p class="item-title">
+                <a href="/2022/03/13/Iptables%E5%92%8C%E5%AE%B9%E5%99%A8/" class="title">Iptables和容器</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2022-03-13T03:01:46.000Z" itemprop="datePublished">2022-03-13</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/%E5%8D%9A%E6%96%87/">博文</a>
+              </p>
+              <p class="item-title">
+                <a href="/2022/03/12/Linux%E7%BD%91%E6%A1%A5%E5%B7%A5%E4%BD%9C%E5%8E%9F%E7%90%86/" class="title">Linux网桥工作原理</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2022-03-12T10:02:29.000Z" itemprop="datePublished">2022-03-12</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/%E5%8D%9A%E6%96%87/">博文</a>
+              </p>
+              <p class="item-title">
+                <a href="/2021/03/16/%E5%B9%B6%E5%8F%91%E5%92%8C%E8%B0%83%E5%BA%A6%E7%9A%84%E5%85%B3%E7%B3%BB/" class="title">并发和调度的关系</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2021-03-16T05:54:13.000Z" itemprop="datePublished">2021-03-16</time>
+              </p>
+            </div>
+          </li>
+          
+      </ul>
+    </div>
+  </div>
+  
+
+        
+      </section>
+
+      <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active" style="opacity: 1; display: block;">
+        <nav id="toc" class="article-toc">
+          <h3 class="toc-title">文章目录</h3>
+          <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E4%BB%80%E4%B9%88%E6%98%AFSphinx"><span class="toc-number">1.</span> <span class="toc-text">什么是Sphinx</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Sphinx-%E7%9A%84%E4%B8%BB%E8%A6%81%E7%89%B9%E6%80%A7%EF%BC%9A"><span class="toc-number">2.</span> <span class="toc-text">Sphinx 的主要特性：</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Sphinx-%E7%9A%84%E8%AF%A6%E7%BB%86%E7%89%B9%E6%80%A7%EF%BC%9A"><span class="toc-number">3.</span> <span class="toc-text">Sphinx 的详细特性：</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E6%95%B0%E6%8D%AE%E6%BA%90"><span class="toc-number">4.</span> <span class="toc-text">数据源</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%B1%9E%E6%80%A7"><span class="toc-number">5.</span> <span class="toc-text">属性</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#MVA-%E5%A4%9A%E5%80%BC%E5%B1%9E%E6%80%A7"><span class="toc-number">6.</span> <span class="toc-text">MVA (多值属性)</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E7%B4%A2%E5%BC%95"><span class="toc-number">7.</span> <span class="toc-text">索引</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%AD%97%E7%AC%A6%E9%9B%86%E3%80%81%E5%A4%A7%E5%B0%8F%E5%86%99%E8%BD%AC%E6%8D%A2%E5%92%8C%E8%BD%AC%E6%8D%A2%E8%A1%A8"><span class="toc-number">8.</span> <span class="toc-text">字符集、大小写转换和转换表</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%AE%9E%E6%97%B6%E7%B4%A2%E5%BC%95%E6%9B%B4%E6%96%B0-%E4%BD%9C%E8%80%85%E6%B3%A8-%E7%84%B6%E5%B9%B6%E5%8D%B5"><span class="toc-number">9.</span> <span class="toc-text">实时索引更新(作者注:然并卵)</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%A2%9E%E9%87%8F%E7%B4%A2%E5%BC%95%E6%9B%B4%E6%96%B0"><span class="toc-number">10.</span> <span class="toc-text">增量索引更新</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E7%B4%A2%E5%BC%95%E5%90%88%E5%B9%B6"><span class="toc-number">11.</span> <span class="toc-text">索引合并</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#RT%E5%AE%9E%E6%97%B6%E7%B4%A2%E5%BC%95"><span class="toc-number">12.</span> <span class="toc-text">RT实时索引</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#RT%E5%AE%9E%E6%97%B6%E7%B4%A2%E5%BC%95%E6%A6%82%E8%A7%88"><span class="toc-number">12.1.</span> <span class="toc-text">RT实时索引概览</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#RT%E5%AE%9E%E6%97%B6%E7%B4%A2%E5%BC%95%E4%BD%BF%E7%94%A8%E6%B3%A8%E6%84%8F%E4%BA%8B%E9%A1%B9"><span class="toc-number">12.2.</span> <span class="toc-text">RT实时索引使用注意事项</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#RT%E5%AE%9E%E6%97%B6%E7%B4%A2%E5%BC%95%E5%8E%9F%E7%90%86"><span class="toc-number">12.3.</span> <span class="toc-text">RT实时索引原理</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BA%8C%E8%BF%9B%E5%88%B6%E6%97%A5%E5%BF%97"><span class="toc-number">12.4.</span> <span class="toc-text">二进制日志</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E6%90%9C%E7%B4%A2"><span class="toc-number">13.</span> <span class="toc-text">搜索##</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#SphinxQL-%E6%8C%87%E5%8D%97-%E4%BD%9C%E8%80%85%E6%B3%A8-%E5%BE%88%E9%87%8D%E8%A6%81-%E6%9B%B4%E4%BD%95%E5%86%B5search%E5%B7%A5%E5%85%B7%E5%9C%A8%E6%96%B0%E7%89%88%E5%90%8E%E4%B8%8D%E8%BF%99%E4%B9%88%E5%A5%BD%E7%94%A8%E4%BA%86"><span class="toc-number">14.</span> <span class="toc-text">SphinxQL 指南(作者注:很重要,更何况search工具在新版后不这么好用了)</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#sphinx-conf-csft-conf-%E9%85%8D%E7%BD%AE%E9%80%89%E9%A1%B9%E5%8F%82%E8%80%83"><span class="toc-number">15.</span> <span class="toc-text">sphinx.conf&#x2F;csft.conf 配置选项参考</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%8F%82%E8%80%83%E8%B5%84%E6%96%99"><span class="toc-number">16.</span> <span class="toc-text">参考资料:</span></a></li></ol>
+        </nav>
+      </section>
+    
+  </div>
+</aside>
+
+  
+  
+<main class="main" role="main">
+  <div class="content">
+  <article id="post-2015-Sphinx基础" class="article article-type-post" itemscope itemtype="http://schema.org/BlogPosting">
+    
+    <div class="article-header">
+      
+        
+  
+    <h1 class="article-title" itemprop="name">
+      Sphinx基础
+    </h1>
+  
+
+
+      
+      <div class="article-meta">
+        
+        <span class="article-date">
+    <i class="icon icon-calendar-check"></i>
+	<a href="/2015/07/16/2015-Sphinx%E5%9F%BA%E7%A1%80/" class="article-date">
+	  <time datetime="2015-07-16T14:00:31.000Z" itemprop="datePublished">2015-07-16</time>
+	</a>
+</span>
+        
+  <span class="article-category">
+    <i class="icon icon-folder"></i>
+    <a class="article-category-link" href="/categories/%E5%8D%9A%E6%96%87/">博文</a>
+  </span>
+
+        
+  <span class="article-tag">
+    <i class="icon icon-tags"></i>
+	<a class="article-tag-link-link" href="/tags/Sphinx/" rel="tag">Sphinx</a>
+  </span>
+
+
+        
+
+        <span class="post-comment"><i class="icon icon-comment"></i> <a href="/2015/07/16/2015-Sphinx%E5%9F%BA%E7%A1%80/#comments" class="article-comment-link">评论</a></span>
+        
+      </div>
+    </div>
+    <div class="article-entry marked-body" itemprop="articleBody">
+      
+        <h1 id="什么是Sphinx"><a href="#什么是Sphinx" class="headerlink" title="什么是Sphinx"></a>什么是Sphinx</h1><p>Sphinx 是SQL Phrase Index的缩写;Sphinx是一个在GPLv2下分发的全文检索引擎;一般而言，Sphinx是一个独立的全文搜索引擎;可以非常容易的与SQL数据库和脚本语言集成;搜索API支持PHP、Python、Perl、Rudy和Java，并且也可以用作MySQL存储引擎.</p>
+<h1 id="Sphinx-的主要特性："><a href="#Sphinx-的主要特性：" class="headerlink" title="Sphinx 的主要特性："></a>Sphinx 的主要特性：</h1><ul>
+<li>索引和搜索性能优异；</li>
+<li>先进的索引和查询工具 (灵活且功能丰富的文本分析器，查询语言，以及多种不同的排序方式等等);</li>
+<li>先进的结果集分析处理 (SELECT 可以使用表达式, WHERE, ORDER BY, GROUP BY 等对全文搜索结果集进行过滤)；</li>
+<li>实践证实可扩展性支持数十亿文档记录，TB级别的数据，以及每秒数千次查询;</li>
+<li>易于集成SQL和XML数据源，并可使用SphinxAPI、SphinxQL或者SphinxSE搜索接口</li>
+<li>易于通过分布式搜索进行扩展</li>
+</ul>
+<h1 id="Sphinx-的详细特性："><a href="#Sphinx-的详细特性：" class="headerlink" title="Sphinx 的详细特性："></a>Sphinx 的详细特性：</h1><ul>
+<li>高速的索引建立(在当代CPU上，峰值性能可达到10 ~ 15MB/秒);</li>
+<li>高性能的搜索 (在1.2G文本，100万条文档上进行搜索，支持高达每秒150~250次查询);</li>
+<li>高扩展性 (最大的索引集群超过30亿条文档，最繁忙时刻的查询峰值达到每天5千万次);</li>
+<li>提供了优秀的相关度算法，基于短语相似度和统计（BM25）的复合Ranking方法;</li>
+<li>支持分布式搜索功能;</li>
+<li>提供文档片段（摘要以及高亮）生成功能;</li>
+<li>内建支持SphinxAPI和SphinxQL搜索箭口，也可作为MySQL的存储引擎提供搜索服务;</li>
+<li>支持布尔、短语、词语相似度等多种检索模式;</li>
+<li>文档支持多个全文检索字段(缺省配置下，最大不超过32个);</li>
+<li>文档支持多个额外的属性信息(例如：分组信息，时间戳等);</li>
+<li>支持查询停止词;</li>
+<li>支持词形学处理;</li>
+<li>支持特殊词汇处理;</li>
+<li>支持单一字节编码和UTF-8编码;</li>
+<li>内建支持英语、俄语、捷克语词干化处理; 对 法语，西班牙语，葡萄牙语，意大利语，罗马尼亚语，德国，荷兰，瑞典，挪威，丹麦，芬兰，匈牙利等语言 的支持可通过第三方的 libstemmer 库 建立);</li>
+<li>原生的MySQL支持(同时支持MyISAM 、InnoDB、NDB、Archive等所有类型的数据表 );</li>
+<li>原生的PostgreSQL 支持;</li>
+<li>原生的ODBC兼容数据库支持 (MS SQL, Oracle, 等) ;</li>
+<li>…多达50多项其他功能没有在此一一列出，请参阅API和配置手册！</li>
+</ul>
+<h1 id="数据源"><a href="#数据源" class="headerlink" title="数据源"></a>数据源</h1><p>索引的数据可以来自各种各样不同的来源：SQL数据库、纯文本、HTML文件、邮件等等。从CoreSeek/Sphinx的视角看，索引数据是一个结构化的文档的集合，其中每个文档是字段的集合，这种结构更利于SQL数据获取，其中每一行代表一个文档，每一列代表一个字段。</p>
+<p>由于数据来源的不同，需要不同的代码来获取数据、处理数据以供CoreSeek/Sphinx进行索引的建立。这种代码被称之为数据源驱动程序（简称：驱动或数据源）。</p>
+<p>在本文撰写时，CoreSeek/Sphinx中包括MySQL和PostgreSQL数据源的驱动程序，这些驱动使用数据库系统提供的C/C++原生接口连接到数据库服务器并获取数据。此外，CoreSeek/Sphinx还提供了额外的被称为xmlpipe的数据源驱动，该驱动运行某个具体的命令，并从该命令的stdout中读入数据。数据的格式在 第 3.8 节 “xmlpipe 数据源” 中有介绍。经过长足的发展，Coreseek还提供了具有特色的Python数据源驱动，可以使用Python编写数据获取脚本自定义数据源，从而得以获取任何已知世界和未知世界的数据。</p>
+<p>如果确有必要，一个索引的数据可以来自多个数据源。这些数据将严格按照配置文件中定义的顺序进行处理。所有从这些数据源获取到的文档将被合并，共同产生一个索引，如同他们来源于同一个数据源一样。</p>
+<h1 id="属性"><a href="#属性" class="headerlink" title="属性"></a>属性</h1><p>属性是附加在每个文档上的额外的信息（值），可以在搜索的时候用于过滤和排序。</p>
+<p>搜索结果通常不仅仅是进行文档的匹配和相关度的排序，经常还需要根据其他与文档相关联的值，对结果进行额外的处理。例如，用户可能需要对新闻检索结果依次按日期和相关度排序，检索特定价格范围内的产品，检索某些特定用户的blog日志，或者将检索结果按月分组。为了高效地完成上述工作，Sphinx允许给文档附加一些额外的属性，并把这些值存储在全文索引中，以便在对全文匹配结果进行过滤、排序或分组时使用。</p>
+<p>属性与字段不同，不会被全文索引。他们仅仅是被存储在索引中，属性进行全文检索式不可能的。如果要对属性进行全文检索，系统将会返回一个错误。</p>
+<p>例如，如果column被设置为属性，就不能使用扩展表达式@column 1去匹配column为1的文档；如果数字字段按照普通的方式被索引，那么就可以这样来匹配。</p>
+<p>属性可用于过滤，或者限制返回的数据，以及排序或者 结果分组; 也有可能是完全基于属性排序的结果, 而没有任何搜索相关功能的参与. 此外, 属性直接从搜索服务程序返回信息, 而被索引的文本内容则没有返回.</p>
+<p>论坛帖子表是一个很好的例子。假设只有帖子的标题和内容这两个字段需要全文检索，但是有时检索结果需要被限制在某个特定的作者的帖子或者属于某个子论坛的帖子中（也就是说，只检索在SQL表的author_id和forum_id这两个列上有特定值的那些行），或者需要按post_date列对匹配的结果排序，或者根据post_date列对帖子按月份分组，并对每组中的帖子计数。</p>
+<p>为实现这些功能，可以将上述各列（除了标题和内容列）作为属性做索引，之后即可使用API调用来设置过滤、排序和分组。以下是一个例子：</p>
+<p>示例： sphinx.conf 片段:</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs conf">...<br>sql_query = SELECT id, title, content, \<br>    author_id, forum_id, post_date FROM my_forum_posts<br>sql_attr_uint = author_id<br>sql_attr_uint = forum_id<br>sql_attr_timestamp = post_date<br>...<br></code></pre></td></tr></table></figure>
+
+<p>示例： 应用程序代码 (使用 PHP):</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs php"><span class="hljs-comment">// 仅搜索ID为123的作者发布的内容</span><br><span class="hljs-variable">$cl</span>-&gt;<span class="hljs-title function_ invoke__">SetFilter</span> ( <span class="hljs-string">&quot;author_id&quot;</span>, <span class="hljs-keyword">array</span> ( <span class="hljs-number">123</span> ) );<br><br><span class="hljs-comment">// 仅在id为1，3，7的子论坛中搜索</span><br><span class="hljs-variable">$cl</span>-&gt;<span class="hljs-title function_ invoke__">SetFilter</span> ( <span class="hljs-string">&quot;forum_id&quot;</span>, <span class="hljs-keyword">array</span> ( <span class="hljs-number">1</span>,<span class="hljs-number">3</span>,<span class="hljs-number">7</span> ) );<br><br><span class="hljs-comment">// 按照发布时间倒序排列获取的结果</span><br><span class="hljs-variable">$cl</span>-&gt;<span class="hljs-title function_ invoke__">SetSortMode</span> ( SPH_SORT_ATTR_DESC, <span class="hljs-string">&quot;post_date&quot;</span> );<br></code></pre></td></tr></table></figure>
+
+<p>可以通过名字来指示特定的属性，并且这个名字是大小写无关的。属性并不会被全文索引，他们只是按原封不动的存储在索引文件中。目前支持的属性类型如下：</p>
+<ul>
+<li>无符号整数（1-32位宽）;</li>
+<li>UNIX 时间戳（timestamps）;</li>
+<li>浮点值（32位，IEEE 754单精度）;</li>
+<li>字符串序列 (专指尤其计算出来的字符串序列整数值);</li>
+<li>字符串 (版本 1.10-beta 开始支持);</li>
+<li>多值属性 MVA(32位无符号整型值的变长序列).</li>
+</ul>
+<p>由各个文档的全部的属性信息构成了一个集合，它也被称为文档信息 docinfo. 文档信息可以按如下两种方式之一存储：</p>
+<ul>
+<li>与全文索引数据分开存储（“外部存储extern”，在.spa文件中存储）, 或者</li>
+<li>在全文索引数据中，每出现一次文档ID 就出现相应的文档信息（“内联存储inline”，在.spd文件中存储）</li>
+</ul>
+<p>在大多数情况下，外部存储可令建立索引和检索的效率都大幅提高。</p>
+<p>检索时，采用外部存储方式产生的的内存需求为 (1+属性总数)<em>文档总数</em>4字节，也就是说，带有两个属性和一个时间戳的1千万篇文档会消耗(1+2+1)<em>10M</em>4 = 160 MB的RAM。这是每个检索的守护进程（PER DAEMON）消耗的量，而不是每次查询，searchd仅在启动时分配160MB的内存，读入数据并在不同的查询之间保持这些数据。子进程并不会对这些数据做额外的拷贝。</p>
+<h1 id="MVA-多值属性"><a href="#MVA-多值属性" class="headerlink" title="MVA (多值属性)"></a>MVA (多值属性)</h1><p>多值属性MVA (multi-valued attributes)是文档属性的一种重要的特例，MVA使得向文档附加一系列的值作为属性的想法成为可能。这对文章的tags，产品类别等等非常有用。MVA属性支持过滤和分组（但不支持分组排序）。</p>
+<p>目前MVA列表项的值被限制为32位无符号整数。列表的长度不受限制，只要有足够的RAM，任意个数的值都可以被附加到文档上（包含MVA值的.spm文件会被searchd预缓冲到RAM中）。MVA的源数据来源既可以是一个单独的查询，也可以是文档属性，参考 sql_attr_multi中的来源类型。在第一种情况中，该查询须返回文档ID和MVA值的序对；而在第二种情况中，该字段被分析为整型值。对于多值属性的输入数据的顺序没有任何限制，在索引过程中这些值会自动按文档ID分组（而相同文档ID下的数据也会排序）。</p>
+<p>在过滤过程中，MVA属性中的任何一个值满足过滤条件，则文档与过滤条件匹配（因此通过排他性过滤的文档不会包含任何被禁止的值）。按MVA属性分组时，一篇文档会被分到与多个不同MVA值对应的多个组。例如，如果文档集只包含一篇文档，它有一个叫做tag的MVA属性，该属性的值是5、7和11，那么按tag的分组操作会产生三个组，它们的@count都是1，@groupby键值分别是5、7和11。还要注意，按MVA分组可能会导致结果集中有重复的文档：因为每篇文文档可能属于不同的组，而且它可能在多个组中被选为最佳结果，这会导致重复的ID。由于历史原因，PHP API对结果集的行进行按文档ID的有序hash，因此用PHP API进行对MVA属性的分组操作时你还需要使用 SetArrayResult().</p>
+<h1 id="索引"><a href="#索引" class="headerlink" title="索引"></a>索引</h1><p>为了快速地相应响应查询，Sphinx需要从文本数据中建立一种为查询做优化的特殊的数据结构。这种数据结构被称为索引（index）；而建立索引的过程也叫做索引或建立索引（indexing）。</p>
+<p>不同的索引类型是为不同的任务设计的。比如，基于磁盘的B-Tree存储结构的索引可以更新起来比较简单（容易向已有的索引插入新的文档），但是搜起来就相当慢。</p>
+<p>目前在Sphinx中实现的唯一一种索引类型是为最优化建立索引和检索的速度而设计的。随之而来的代价是更新索引相当的很慢。理论上讲，更新这种索引甚至可能比从头重建索引还要慢。不过大多数情况下这可以靠建立多个索引来解决索引更新慢的问题，细节请参考 第 3.11 节 “实时索引更新”.</p>
+<p>每个配置文件都可以按需配置足够多的索引。indexer 工具可以将它们同时重新索引（如果使用了–all选项）或者仅更新明确指出的一个。 searchd工具会为所有被指明的索引提供检索服务，而客户端可以在运行时指定使用那些索引进行检索。</p>
+<h1 id="字符集、大小写转换和转换表"><a href="#字符集、大小写转换和转换表" class="headerlink" title="字符集、大小写转换和转换表"></a>字符集、大小写转换和转换表</h1><p>当建立索引时，Sphinx从指定的数据源获得文本文档，将文本分成词的集合，再对每个词做大小写转换，于是“Abc”，“ABC”和“abc”都被当作同一个词（word，或者更学究一点，词项term）</p>
+<p>为了正确完成上述工作，Sphinx需要知道：</p>
+<ul>
+<li>源文本是什么编码的;</li>
+<li>那些字符是字母，哪些不是;</li>
+<li>哪些字符需要被转换，以及被转换成什么.</li>
+</ul>
+<p>这些都可以用 charset_type 和 charset_table 选项为每个索引单独配置. charset_type 指定文档的编码是单字节的（SBCS）还是UTF-8的。在Coreseek中，如果通过charset_dictpath设置中文词典启动了中文分词模式后，不仅可以使用UTF-8编码的，还可以使用GBK及BIG5的编码（需要编译时提供iconv支持）；但是在内部实现中，仍然是预先转换成UTF-8编码在进行处理的. charset_table 则指定了字母类字符到它们的大小写转换版本的对应表，没有在这张表中出现的字符被认为是非字母类字符，并且在建立索引和检索时被当作词的分割符来看待。</p>
+<p>注意，尽管默认的转换表并不包含空格符 (ASCII code 0x20, Unicode U+0020) , 但是这么做是 完全合法的。 这在某些情况下可能有用，比如在对tag云构造索引的时候，这样一个用空格分开的词集就可以被当作一个单独的查询项了.</p>
+<h1 id="实时索引更新-作者注-然并卵"><a href="#实时索引更新-作者注-然并卵" class="headerlink" title="实时索引更新(作者注:然并卵)"></a>实时索引更新(作者注:然并卵)</h1><p>当前主要有两种方法来维护全文索引的内容是最新的。请注意，但是，这两种处理方法 的任务是应对全文数据更新，而不是 属性更新。从版本0.9.8开始支持即时的属性更新。参看 UpdateAttributes() API 调用了解详情。</p>
+<p>方法一，使用基于磁盘的索引，手动分区，然后定期重建较小的分区（被称为“增量”）。通过尽可能的减小重建部分的大小，可以将平均索引滞后时间降低到30~60秒。在0.9.x版本中，这是唯一可用的方法。在一个巨大的文档集上，这可能是最有效的一种方法。参看第 3.12 节 “增量索引更新”了解详情。</p>
+<p>方法二，版本1.x（从版本1.10-beta开始）增加了实时索引（简写为Rt索引）的支持，用于及时更新全文数据。在RT索引上的更新，可以在1~2毫秒（0.001-0.002秒）内出现在搜索结果中。然而，RT实时索引在处理较大数据量的批量索引上效率并不高。参看 第 4 章 RT实时索引 了解详情。</p>
+<h1 id="增量索引更新"><a href="#增量索引更新" class="headerlink" title="增量索引更新"></a>增量索引更新</h1><p>有这么一种常见的情况：整个数据集非常大，以至于难于经常性的重建索引，但是每次新增的记录却相当地少。一个典型的例子是：一个论坛有1000000个已经归档的帖子，但每天只有1000个新帖子。</p>
+<p>在这种情况下可以用所谓的“主索引＋增量索引”（main+delta）模式来实现“近实时”的索引更新。</p>
+<p>这种方法的基本思路是设置两个数据源和两个索引，对很少更新或根本不更新的数据建立主索引，而对新增文档建立增量索引。在上述例子中，那1000000个已经归档的帖子放在主索引中，而每天新增的1000个帖子则放在增量索引中。增量索引更新的频率可以非常快，而文档可以在出现几分种内就可以被检索到。</p>
+<p>确定具体某一文档的分属那个索引的分类工作可以自动完成。一个可选的方案是，建立一个计数表，记录将文档集分成两部分的那个文档ID，而每次重新构建主索引时，这个表都会被更新。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><code class="hljs conf"># in MySQL<br>CREATE TABLE sph_counter<br>(<br>    counter_id INTEGER PRIMARY KEY NOT NULL,<br>    max_doc_id INTEGER NOT NULL<br>);<br><br># in sphinx.conf<br>source main<br>&#123;<br>    # ...<br>    sql_query_pre = SET NAMES utf8<br>    sql_query_pre = REPLACE INTO sph_counter SELECT 1, MAX(id) FROM documents<br>    sql_query = SELECT id, title, body FROM documents \<br>        WHERE id&lt;=( SELECT max_doc_id FROM sph_counter WHERE counter_id=1 )<br>&#125;<br><br>source delta : main<br>&#123;<br>    sql_query_pre = SET NAMES utf8<br>    sql_query = SELECT id, title, body FROM documents \<br>        WHERE id&gt;( SELECT max_doc_id FROM sph_counter WHERE counter_id=1 )<br>&#125;<br><br>index main<br>&#123;<br>    source = main<br>    path = /path/to/main<br>    # ... all the other settings<br>&#125;<br><br># note how all other settings are copied from main,<br># but source and path are overridden (they MUST be)<br>index delta : main<br>&#123;<br>    source = delta<br>    path = /path/to/delta<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>请注意，上例中我们显示设置了数据源delta的sql_query_pre选项，覆盖了全局设置。必须显示地覆盖这个选项，否则对delta做索引的时候也会运行那条REPLACE查询，那样会导致delta源中选出的数据为空。可是简单地将delta的sql_query_pre设置成空也不行，因为在继承来的数据源上第一次运行这个指令的时候，继承来的所有值都会被清空，这样编码设置的部分也会丢失。因此需要再次显式调用编码设置查询。</p>
+<h1 id="索引合并"><a href="#索引合并" class="headerlink" title="索引合并"></a>索引合并</h1><p>合并两个已有的索引比重新对所有数据做索引更有效率，而且有时候必须这样做（例如在“主索引＋增量索引”分区模式中应合并主索引和增量索引，而不是简单地重新索引“主索引对应的数据）。因此indexer有这个选项。合并索引一般比重新索引快，但在大型索引上仍然不是一蹴而就。基本上，待合并的两个索引都会被读入内存一次，而合并后的内容需要写入磁盘一次。例如，合并100GB和1GB的两个索引将导致202GB的IO操作（但很可能还是比重新索引少）</p>
+<p>基本的命令语法如下：  </p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs conf">indexer --merge DSTINDEX SRCINDEX [--rotate]<br></code></pre></td></tr></table></figure>
+
+<p>SRCINDEX的内容被合并到DSTINDEX中，因此只有DSTINDEX索引会被改变。 若DSTINDEX已经被searchd于提供服务，则–rotate参数是必须的。 最初设计的使用模式是，将小量的更新从SRCINDEX合并到DSTINDEX中。 因此，当属性被合并时，一旦出现了重复的文档ID，SRCINDEX中的属性值更优先（会覆盖DSTINDEX中的值）。 不过要注意，“旧的”关键字在这个过程中并不会被自动删除。 例如，在DSTINDEX中有一个叫做“old”的关键字与文档123相关联，而在SRCINDEX中则有关键字“new”与同一个文档相关，那么在合并后用这两个关键字都能找到文档123。 您可以给出一个显式条件来将文档从DSTINDEX中移除，以便应对这种情况，相关的开关是–merge-dst-range:</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs conf">indexer --merge main delta --merge-dst-range deleted 0 0<br></code></pre></td></tr></table></figure>
+
+<p>这个开关允许您在合并过程中对目标索引实施过滤。过滤器可以有多个，只有满足全部过滤条件的文档才会在最终合并后的索引中出现。在上述例子中，过滤器只允许“deleted”为0的那些条件通过，而去除所有标记为已删除（“deleted”）的记录（可以通过调用UpdateAttributes()设置文档的属性）。</p>
+<p>这个开关允许您在合并过程中对目标索引实施过滤。过滤器可以有多个，只有满足全部过滤条件的文档才会在最终合并后的索引中出现。在上述例子中，过滤器只允许“deleted”为0的那些条件通过，而去除所有标记为已删除（“deleted”）的记录（可以通过调用UpdateAttributes()设置文档的属性）。</p>
+<h1 id="RT实时索引"><a href="#RT实时索引" class="headerlink" title="RT实时索引"></a>RT实时索引</h1><h2 id="RT实时索引概览"><a href="#RT实时索引概览" class="headerlink" title="RT实时索引概览"></a>RT实时索引概览</h2><h2 id="RT实时索引使用注意事项"><a href="#RT实时索引使用注意事项" class="headerlink" title="RT实时索引使用注意事项"></a>RT实时索引使用注意事项</h2><h2 id="RT实时索引原理"><a href="#RT实时索引原理" class="headerlink" title="RT实时索引原理"></a>RT实时索引原理</h2><h2 id="二进制日志"><a href="#二进制日志" class="headerlink" title="二进制日志"></a>二进制日志</h2><h1 id="搜索"><a href="#搜索" class="headerlink" title="搜索##"></a>搜索##</h1><h1 id="SphinxQL-指南-作者注-很重要-更何况search工具在新版后不这么好用了"><a href="#SphinxQL-指南-作者注-很重要-更何况search工具在新版后不这么好用了" class="headerlink" title="SphinxQL 指南(作者注:很重要,更何况search工具在新版后不这么好用了)"></a>SphinxQL 指南(作者注:很重要,更何况search工具在新版后不这么好用了)</h1><h1 id="sphinx-conf-csft-conf-配置选项参考"><a href="#sphinx-conf-csft-conf-配置选项参考" class="headerlink" title="sphinx.conf/csft.conf 配置选项参考"></a>sphinx.conf/csft.conf 配置选项参考</h1><hr>
+<h1 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料:"></a>参考资料:</h1><ul>
+<li><a target="_blank" rel="noopener" href="http://sphinxsearch.com/wiki/doku.php?id=sphinx_manual_chinese#%E4%BB%80%E4%B9%88%E6%98%AFsphinx_coreseek">sphinx官方wiki(较老,建议只看介绍部分)</a></li>
+<li><a target="_blank" rel="noopener" href="http://www.coreseek.cn/docs/coreseek_4.1-sphinx_2.0.1-beta.html">CoreSeek中文文档(CoreSeek是基于sphinx的中文分词引擎)</a></li>
+</ul>
+
+      
+    </div>
+    <div class="article-footer">
+      <blockquote class="mt-2x">
+  <ul class="post-copyright list-unstyled">
+    
+    <li class="post-copyright-link hidden-xs">
+      <strong>本文链接：</strong>
+      <a href="https://straysh.github.life/2015/07/16/2015-Sphinx%E5%9F%BA%E7%A1%80/" title="Sphinx基础" target="_blank" rel="external">https://straysh.github.life/2015/07/16/2015-Sphinx%E5%9F%BA%E7%A1%80/</a>
+    </li>
+    
+    <li class="post-copyright-license">
+      <strong>版权声明： </strong> 本博客所有文章除特别声明外，均采用 <a href="http://creativecommons.org/licenses/by/4.0/deed.zh" target="_blank" rel="external">CC BY 4.0 CN协议</a> 许可协议。转载请注明出处！
+    </li>
+  </ul>
+</blockquote>
+
+
+<div class="panel panel-default panel-badger">
+  <div class="panel-body">
+    <figure class="media">
+      <div class="media-left">
+        <a href="https://hexo.straysh.com" target="_blank" class="img-burn thumb-sm visible-lg">
+          <img src="/images/avatar.jpg" class="img-rounded w-full" alt="">
+        </a>
+      </div>
+      <div class="media-body">
+        <h3 class="media-heading"><a href="https://hexo.straysh.com" target="_blank"><span class="text-dark">Straysh</span><small class="ml-1x">野生程序猿</small></a></h3>
+        <div>野生程序猿 &amp; 猫奴。</div>
+      </div>
+    </figure>
+  </div>
+</div>
+
+
+    </div>
+  </article>
+  
+    
+  <section id="comments">
+  	
+      <div id="disqus_thread">
+        <noscript>Please enable JavaScript to view the <a target="_blank" rel="noopener" href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+      </div>
+    
+  </section>
+
+
+  
+</div>
+
+  <nav class="bar bar-footer clearfix" data-stick-bottom>
+  <div class="bar-inner">
+  
+  <ul class="pager pull-left">
+    
+    <li class="prev">
+      <a href="/2015/07/20/2015-Sphinx%E8%BF%9B%E9%98%B6/" title="Sphinx进阶"><i class="icon icon-angle-left" aria-hidden="true"></i><span>&nbsp;&nbsp;上一篇</span></a>
+    </li>
+    
+    
+    <li class="next">
+      <a href="/2014/11/28/2014-oAuth%E6%8E%88%E6%9D%83%E7%9A%84%E8%BF%87%E7%A8%8B/" title="oAuth授权的过程"><span>下一篇&nbsp;&nbsp;</span><i class="icon icon-angle-right" aria-hidden="true"></i></a>
+    </li>
+    
+    
+  </ul>
+  
+  
+  
+  <div class="bar-right">
+    
+    <div class="share-component" data-sites="weibo,qq,wechat,facebook,twitter" data-mobile-sites="weibo,qq,qzone"></div>
+    
+  </div>
+  </div>
+</nav>
+  
+
+
+
+</main>
+
+  <footer class="footer" itemscope itemtype="http://schema.org/WPFooter">
+	
+	
+    <ul class="social-links">
+    	
+        <li><a href="https://github.com/straysh" target="_blank" title="Github" data-toggle=tooltip data-placement=top><i class="icon icon-github"></i></a></li>
+        
+        <li><a href="https://weibo.com/u/1689171115" target="_blank" title="Weibo" data-toggle=tooltip data-placement=top><i class="icon icon-weibo"></i></a></li>
+        
+        <li><a href="/atom.xml" target="_blank" title="Rss" data-toggle=tooltip data-placement=top><i class="icon icon-rss"></i></a></li>
+        
+    </ul>
+
+    <div class="copyright">
+    	
+        &copy; 2022 straysh.com 版权所有。ICP证：鄂ICP备2021016952号-1<!--Straysh-->
+        
+        <div class="publishby">
+        	Theme by <a href="https://github.com/cofess" target="_blank"> cofess </a>base on <a href="https://github.com/cofess/hexo-theme-pure" target="_blank">pure</a>.
+        </div>
+    </div>
+</footer>
+
+  <script src="//cdn.jsdelivr.net/npm/jquery@1.12.4/dist/jquery.min.js"></script>
+<script>
+window.jQuery || document.write('<script src="js/jquery.min.js"><\/script>')
+</script>
+
+<script src="/js/plugin.min.js"></script>
+
+
+<script src="/js/application.js"></script>
+
+
+    <script>
+(function (window) {
+    var INSIGHT_CONFIG = {
+        TRANSLATION: {
+            POSTS: '文章',
+            PAGES: '页面',
+            CATEGORIES: '分类',
+            TAGS: '标签',
+            UNTITLED: '(未命名)',
+        },
+        ROOT_URL: '/',
+        CONTENT_URL: '/content.json',
+    };
+    window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+})(window);
+</script>
+
+<script src="/js/insight.js"></script>
+
+
+
+
+
+
+   
+
+
+
+
+<!--   
+    
+    <script defer>
+    var disqus_config = function () {
+        
+            this.page.url = 'https://straysh.github.life/2015/07/16/2015-Sphinx%E5%9F%BA%E7%A1%80/';
+        
+        this.page.identifier = '2015-Sphinx基础';
+    };
+    (function() { 
+        var d = document, s = d.createElement('script');  
+        s.src = '//' + 'straysh' + '.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+</script>
+
+-->
+
+
+
+
+
+
+
+</body>
+</html>

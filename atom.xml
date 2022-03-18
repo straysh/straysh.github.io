@@ -1,0 +1,553 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+  <title>Straysh的小院</title>
+  
+  
+  <link href="https://straysh.github.life/atom.xml" rel="self"/>
+  
+  <link href="https://straysh.github.life/"/>
+  <updated>2022-03-15T02:23:23.963Z</updated>
+  <id>https://straysh.github.life/</id>
+  
+  <author>
+    <name>Straysh</name>
+    
+  </author>
+  
+  <generator uri="https://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>使用Go操作文件</title>
+    <link href="https://straysh.github.life/2022/03/14/%E4%BD%BF%E7%94%A8Go%E6%93%8D%E4%BD%9C%E6%96%87%E4%BB%B6/"/>
+    <id>https://straysh.github.life/2022/03/14/%E4%BD%BF%E7%94%A8Go%E6%93%8D%E4%BD%9C%E6%96%87%E4%BB%B6/</id>
+    <published>2022-03-14T12:11:25.000Z</published>
+    <updated>2022-03-15T02:23:23.963Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html">&lt;h1 id=&quot;一切皆文件&quot;&gt;&lt;a href=&quot;#一切皆文件&quot; class=&quot;headerlink&quot;</summary>
+        
+      
+    
+    
+    
+    <category term="博文" scheme="https://straysh.github.life/categories/%E5%8D%9A%E6%96%87/"/>
+    
+    <category term="笔记" scheme="https://straysh.github.life/categories/%E5%8D%9A%E6%96%87/%E7%AC%94%E8%AE%B0/"/>
+    
+    
+    <category term="Linux" scheme="https://straysh.github.life/tags/Linux/"/>
+    
+    <category term="Docker" scheme="https://straysh.github.life/tags/Docker/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>Docker容器网络</title>
+    <link href="https://straysh.github.life/2022/03/13/Docker%E5%AE%B9%E5%99%A8%E7%BD%91%E7%BB%9C/"/>
+    <id>https://straysh.github.life/2022/03/13/Docker%E5%AE%B9%E5%99%A8%E7%BD%91%E7%BB%9C/</id>
+    <published>2022-03-13T04:10:09.000Z</published>
+    <updated>2022-03-13T06:27:02.606Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html">&lt;h1 id=&quot;简介&quot;&gt;&lt;a href=&quot;#简介&quot; class=&quot;headerlink&quot; title=&quot;简介&quot;&gt;&lt;/a&gt;简介&lt;/h1&gt;&lt;p&gt;Docker通过网络驱动&lt;code&gt;network</summary>
+        
+      
+    
+    
+    
+    <category term="博文" scheme="https://straysh.github.life/categories/%E5%8D%9A%E6%96%87/"/>
+    
+    
+    <category term="Linux" scheme="https://straysh.github.life/tags/Linux/"/>
+    
+    <category term="Docker" scheme="https://straysh.github.life/tags/Docker/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>Iptables和容器</title>
+    <link href="https://straysh.github.life/2022/03/13/Iptables%E5%92%8C%E5%AE%B9%E5%99%A8/"/>
+    <id>https://straysh.github.life/2022/03/13/Iptables%E5%92%8C%E5%AE%B9%E5%99%A8/</id>
+    <published>2022-03-13T03:01:46.000Z</published>
+    <updated>2022-03-13T07:11:05.880Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html">&lt;h1 id=&quot;复习网络七层模型&quot;&gt;&lt;a href=&quot;#复习网络七层模型&quot; class=&quot;headerlink&quot; title=&quot;复习网络七层模型&quot;&gt;&lt;/a&gt;复习网络七层模型&lt;/h1&gt;&lt;p&gt;&lt;img</summary>
+        
+      
+    
+    
+    
+    <category term="博文" scheme="https://straysh.github.life/categories/%E5%8D%9A%E6%96%87/"/>
+    
+    <category term="笔记" scheme="https://straysh.github.life/categories/%E5%8D%9A%E6%96%87/%E7%AC%94%E8%AE%B0/"/>
+    
+    
+    <category term="Linux" scheme="https://straysh.github.life/tags/Linux/"/>
+    
+    <category term="Docker" scheme="https://straysh.github.life/tags/Docker/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>Linux网桥工作原理</title>
+    <link href="https://straysh.github.life/2022/03/12/Linux%E7%BD%91%E6%A1%A5%E5%B7%A5%E4%BD%9C%E5%8E%9F%E7%90%86/"/>
+    <id>https://straysh.github.life/2022/03/12/Linux%E7%BD%91%E6%A1%A5%E5%B7%A5%E4%BD%9C%E5%8E%9F%E7%90%86/</id>
+    <published>2022-03-12T10:02:29.000Z</published>
+    <updated>2022-03-13T03:46:32.589Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html">&lt;p&gt;Linux网桥是一种使用软件实现的虚拟设备。它将多个网络接口连接起来，一个接口接收到的数据会复制到其他网络接口。&lt;/p&gt;
+&lt;p&gt;&lt;img</summary>
+        
+      
+    
+    
+    
+    <category term="博文" scheme="https://straysh.github.life/categories/%E5%8D%9A%E6%96%87/"/>
+    
+    
+    <category term="Linux" scheme="https://straysh.github.life/tags/Linux/"/>
+    
+    <category term="Docker" scheme="https://straysh.github.life/tags/Docker/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>并发和调度的关系</title>
+    <link href="https://straysh.github.life/2021/03/16/%E5%B9%B6%E5%8F%91%E5%92%8C%E8%B0%83%E5%BA%A6%E7%9A%84%E5%85%B3%E7%B3%BB/"/>
+    <id>https://straysh.github.life/2021/03/16/%E5%B9%B6%E5%8F%91%E5%92%8C%E8%B0%83%E5%BA%A6%E7%9A%84%E5%85%B3%E7%B3%BB/</id>
+    <published>2021-03-16T05:54:13.000Z</published>
+    <updated>2021-03-16T12:33:24.990Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html">&lt;h2 id=&quot;注：该文章基于Go-1-13&quot;&gt;&lt;a href=&quot;#注：该文章基于Go-1-13&quot; class=&quot;headerlink&quot; title=&quot;注：该文章基于Go 1.13&quot;&gt;&lt;/a&gt;注：该文章基于Go 1.13&lt;/h2&gt;&lt;p&gt;&lt;img</summary>
+        
+      
+    
+    
+    
+    <category term="博文" scheme="https://straysh.github.life/categories/%E5%8D%9A%E6%96%87/"/>
+    
+    
+    <category term="Golang" scheme="https://straysh.github.life/tags/Golang/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>gsignal，信号大师</title>
+    <link href="https://straysh.github.life/2021/03/16/gsignal%EF%BC%8C%E4%BF%A1%E5%8F%B7%E5%A4%A7%E5%B8%88/"/>
+    <id>https://straysh.github.life/2021/03/16/gsignal%EF%BC%8C%E4%BF%A1%E5%8F%B7%E5%A4%A7%E5%B8%88/</id>
+    <published>2021-03-16T05:47:25.000Z</published>
+    <updated>2021-03-16T05:52:17.145Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html">&lt;h2 id=&quot;注：该文章基于Go-1-13&quot;&gt;&lt;a href=&quot;#注：该文章基于Go-1-13&quot; class=&quot;headerlink&quot; title=&quot;注：该文章基于Go 1.13&quot;&gt;&lt;/a&gt;注：该文章基于Go</summary>
+        
+      
+    
+    
+    
+    <category term="博文" scheme="https://straysh.github.life/categories/%E5%8D%9A%E6%96%87/"/>
+    
+    
+    <category term="Golang" scheme="https://straysh.github.life/tags/Golang/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>go协程是如何回收的</title>
+    <link href="https://straysh.github.life/2021/03/16/go%E5%8D%8F%E7%A8%8B%E6%98%AF%E5%A6%82%E4%BD%95%E5%9B%9E%E6%94%B6%E7%9A%84/"/>
+    <id>https://straysh.github.life/2021/03/16/go%E5%8D%8F%E7%A8%8B%E6%98%AF%E5%A6%82%E4%BD%95%E5%9B%9E%E6%94%B6%E7%9A%84/</id>
+    <published>2021-03-16T05:46:25.000Z</published>
+    <updated>2021-03-16T05:51:15.957Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html">&lt;h2 id=&quot;注：该文章基于Go-1-13&quot;&gt;&lt;a href=&quot;#注：该文章基于Go-1-13&quot; class=&quot;headerlink&quot; title=&quot;注：该文章基于Go 1.13&quot;&gt;&lt;/a&gt;注：该文章基于Go 1.13&lt;/h2&gt;&lt;p&gt;&lt;img</summary>
+        
+      
+    
+    
+    
+    <category term="博文" scheme="https://straysh.github.life/categories/%E5%8D%9A%E6%96%87/"/>
+    
+    
+    <category term="Golang" scheme="https://straysh.github.life/tags/Golang/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>g0一个特殊的协程.md</title>
+    <link href="https://straysh.github.life/2021/03/16/g0%E4%B8%80%E4%B8%AA%E7%89%B9%E6%AE%8A%E7%9A%84%E5%8D%8F%E7%A8%8B/"/>
+    <id>https://straysh.github.life/2021/03/16/g0%E4%B8%80%E4%B8%AA%E7%89%B9%E6%AE%8A%E7%9A%84%E5%8D%8F%E7%A8%8B/</id>
+    <published>2021-03-16T05:45:25.000Z</published>
+    <updated>2021-03-16T05:49:13.641Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html">&lt;h2 id=&quot;注：该文章基于Go-1-13&quot;&gt;&lt;a href=&quot;#注：该文章基于Go-1-13&quot; class=&quot;headerlink&quot; title=&quot;注：该文章基于Go 1.13&quot;&gt;&lt;/a&gt;注：该文章基于Go</summary>
+        
+      
+    
+    
+    
+    <category term="博文" scheme="https://straysh.github.life/categories/%E5%8D%9A%E6%96%87/"/>
+    
+    
+    <category term="Golang" scheme="https://straysh.github.life/tags/Golang/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>协程切换到底做了啥</title>
+    <link href="https://straysh.github.life/2021/03/16/%E5%8D%8F%E7%A8%8B%E5%88%87%E6%8D%A2%E5%88%B0%E5%BA%95%E5%81%9A%E4%BA%86%E5%95%A5/"/>
+    <id>https://straysh.github.life/2021/03/16/%E5%8D%8F%E7%A8%8B%E5%88%87%E6%8D%A2%E5%88%B0%E5%BA%95%E5%81%9A%E4%BA%86%E5%95%A5/</id>
+    <published>2021-03-16T05:45:25.000Z</published>
+    <updated>2021-03-16T05:50:19.909Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html">&lt;h2 id=&quot;注：该文章基于Go-1-13&quot;&gt;&lt;a href=&quot;#注：该文章基于Go-1-13&quot; class=&quot;headerlink&quot; title=&quot;注：该文章基于Go 1.13&quot;&gt;&lt;/a&gt;注：该文章基于Go</summary>
+        
+      
+    
+    
+    
+    <category term="博文" scheme="https://straysh.github.life/categories/%E5%8D%9A%E6%96%87/"/>
+    
+    
+    <category term="Golang" scheme="https://straysh.github.life/tags/Golang/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>go协程是如何启动和退出的</title>
+    <link href="https://straysh.github.life/2021/03/16/go%E5%8D%8F%E7%A8%8B%E6%98%AF%E5%A6%82%E4%BD%95%E5%90%AF%E5%8A%A8%E5%92%8C%E9%80%80%E5%87%BA%E7%9A%84/"/>
+    <id>https://straysh.github.life/2021/03/16/go%E5%8D%8F%E7%A8%8B%E6%98%AF%E5%A6%82%E4%BD%95%E5%90%AF%E5%8A%A8%E5%92%8C%E9%80%80%E5%87%BA%E7%9A%84/</id>
+    <published>2021-03-16T05:44:25.000Z</published>
+    <updated>2021-03-16T05:48:18.565Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html">&lt;h2 id=&quot;注：该文章基于Go-1-14&quot;&gt;&lt;a href=&quot;#注：该文章基于Go-1-14&quot; class=&quot;headerlink&quot; title=&quot;注：该文章基于Go 1.14&quot;&gt;&lt;/a&gt;注：该文章基于Go</summary>
+        
+      
+    
+    
+    
+    <category term="博文" scheme="https://straysh.github.life/categories/%E5%8D%9A%E6%96%87/"/>
+    
+    
+    <category term="Golang" scheme="https://straysh.github.life/tags/Golang/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>角度变了,很多事情就看懂了!</title>
+    <link href="https://straysh.github.life/2020/03/23/%E8%A7%92%E5%BA%A6%E5%8F%98%E4%BA%86-%E5%BE%88%E5%A4%9A%E4%BA%8B%E6%83%85%E5%B0%B1%E7%9C%8B%E6%87%82%E4%BA%86/"/>
+    <id>https://straysh.github.life/2020/03/23/%E8%A7%92%E5%BA%A6%E5%8F%98%E4%BA%86-%E5%BE%88%E5%A4%9A%E4%BA%8B%E6%83%85%E5%B0%B1%E7%9C%8B%E6%87%82%E4%BA%86/</id>
+    <published>2020-03-23T15:21:45.000Z</published>
+    <updated>2020-03-23T15:36:11.220Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html">&lt;h2 id=&quot;文章来源：微信文章&quot;&gt;&lt;a href=&quot;#文章来源：微信文章&quot; class=&quot;headerlink&quot; title=&quot;文章来源：微信文章&quot;&gt;&lt;/a&gt;文章来源：&lt;a</summary>
+        
+      
+    
+    
+    
+    <category term="杂记" scheme="https://straysh.github.life/categories/%E6%9D%82%E8%AE%B0/"/>
+    
+    
+    <category term="杂" scheme="https://straysh.github.life/tags/%E6%9D%82/"/>
+    
+    <category term="Banbrick" scheme="https://straysh.github.life/tags/Banbrick/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>2019反思</title>
+    <link href="https://straysh.github.life/2020/03/10/2019%E5%8F%8D%E6%80%9D/"/>
+    <id>https://straysh.github.life/2020/03/10/2019%E5%8F%8D%E6%80%9D/</id>
+    <published>2020-03-10T15:35:22.000Z</published>
+    <updated>2020-03-19T10:41:17.714Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html">&lt;p&gt;持续整理中，无法阅读&lt;/p&gt;
+&lt;h1 id=&quot;提现-总结和反思失误&quot;&gt;&lt;a href=&quot;#提现-总结和反思失误&quot; class=&quot;headerlink&quot; title=&quot;提现 - 总结和反思失误&quot;&gt;&lt;/a&gt;提现 - 总结和反思失误&lt;/h1&gt;&lt;h1</summary>
+        
+      
+    
+    
+    
+    <category term="博文" scheme="https://straysh.github.life/categories/%E5%8D%9A%E6%96%87/"/>
+    
+    
+    <category term="PHP" scheme="https://straysh.github.life/tags/PHP/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>BlowFish_https_ssl</title>
+    <link href="https://straysh.github.life/2020/03/10/BlowFish-https-ssl/"/>
+    <id>https://straysh.github.life/2020/03/10/BlowFish-https-ssl/</id>
+    <published>2020-03-10T11:00:20.000Z</published>
+    <updated>2020-03-11T10:30:44.214Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html">&lt;h1 id=&quot;SSL到底用的哪个SSL证书端口&quot;&gt;&lt;a href=&quot;#SSL到底用的哪个SSL证书端口&quot; class=&quot;headerlink&quot; title=&quot;SSL到底用的哪个SSL证书端口&quot;&gt;&lt;/a&gt;SSL到底用的哪个SSL证书端口&lt;/h1&gt;&lt;h1</summary>
+        
+      
+    
+    
+    
+    <category term="博文" scheme="https://straysh.github.life/categories/%E5%8D%9A%E6%96%87/"/>
+    
+    
+    <category term="Linux" scheme="https://straysh.github.life/tags/Linux/"/>
+    
+    <category term="Golang" scheme="https://straysh.github.life/tags/Golang/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>BlowFish_Gin源码阅读</title>
+    <link href="https://straysh.github.life/2020/03/08/BlowFish-Gin%E6%BA%90%E7%A0%81%E9%98%85%E8%AF%BB/"/>
+    <id>https://straysh.github.life/2020/03/08/BlowFish-Gin%E6%BA%90%E7%A0%81%E9%98%85%E8%AF%BB/</id>
+    <published>2020-03-08T10:34:40.000Z</published>
+    <updated>2020-03-12T15:30:34.398Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html">&lt;p&gt;持续整理中，不适合阅读&lt;/p&gt;
+&lt;h1 id=&quot;GIN版本-commithash-a71af9c144f9579f6dbe945341c1df37aaf09c0d&quot;&gt;&lt;a</summary>
+        
+      
+    
+    
+    
+    <category term="博文" scheme="https://straysh.github.life/categories/%E5%8D%9A%E6%96%87/"/>
+    
+    
+    <category term="Golang" scheme="https://straysh.github.life/tags/Golang/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>Golang_汇编基础</title>
+    <link href="https://straysh.github.life/2020/03/01/Golang-%E6%B1%87%E7%BC%96%E5%9F%BA%E7%A1%80/"/>
+    <id>https://straysh.github.life/2020/03/01/Golang-%E6%B1%87%E7%BC%96%E5%9F%BA%E7%A1%80/</id>
+    <published>2020-03-01T12:21:23.000Z</published>
+    <updated>2020-03-01T12:25:29.414Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html">&lt;p&gt;待填坑&lt;/p&gt;
+&lt;hr&gt;
+&lt;p&gt;参考资料&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;&lt;a</summary>
+        
+      
+    
+    
+    
+    <category term="博文" scheme="https://straysh.github.life/categories/%E5%8D%9A%E6%96%87/"/>
+    
+    
+    <category term="Golang" scheme="https://straysh.github.life/tags/Golang/"/>
+    
+    <category term="汇编" scheme="https://straysh.github.life/tags/%E6%B1%87%E7%BC%96/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>健康码是个被忽视的奇点事件</title>
+    <link href="https://straysh.github.life/2020/02/28/%E5%81%A5%E5%BA%B7%E7%A0%81%E6%98%AF%E4%B8%AA%E8%A2%AB%E5%BF%BD%E8%A7%86%E7%9A%84%E5%A5%87%E7%82%B9%E4%BA%8B%E4%BB%B6/"/>
+    <id>https://straysh.github.life/2020/02/28/%E5%81%A5%E5%BA%B7%E7%A0%81%E6%98%AF%E4%B8%AA%E8%A2%AB%E5%BF%BD%E8%A7%86%E7%9A%84%E5%A5%87%E7%82%B9%E4%BA%8B%E4%BB%B6/</id>
+    <published>2020-02-28T13:11:55.000Z</published>
+    <updated>2020-02-28T13:19:28.517Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html">&lt;h2 id=&quot;文章来源：健康码是个被忽视的奇点事件&quot;&gt;&lt;a href=&quot;#文章来源：健康码是个被忽视的奇点事件&quot; class=&quot;headerlink&quot; title=&quot;文章来源：健康码是个被忽视的奇点事件&quot;&gt;&lt;/a&gt;文章来源：&lt;a</summary>
+        
+      
+    
+    
+    
+    <category term="杂记" scheme="https://straysh.github.life/categories/%E6%9D%82%E8%AE%B0/"/>
+    
+    
+    <category term="杂" scheme="https://straysh.github.life/tags/%E6%9D%82/"/>
+    
+    <category term="Banbrick" scheme="https://straysh.github.life/tags/Banbrick/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>杂记_负责任地说，这次疫情已经成为压垮全球化的最后一根稻草</title>
+    <link href="https://straysh.github.life/2020/02/28/%E6%9D%82%E8%AE%B0-%E8%B4%9F%E8%B4%A3%E4%BB%BB%E5%9C%B0%E8%AF%B4%EF%BC%8C%E8%BF%99%E6%AC%A1%E7%96%AB%E6%83%85%E5%B7%B2%E7%BB%8F%E6%88%90%E4%B8%BA%E5%8E%8B%E5%9E%AE%E5%85%A8%E7%90%83%E5%8C%96%E7%9A%84%E6%9C%80%E5%90%8E%E4%B8%80%E6%A0%B9%E7%A8%BB%E8%8D%89/"/>
+    <id>https://straysh.github.life/2020/02/28/%E6%9D%82%E8%AE%B0-%E8%B4%9F%E8%B4%A3%E4%BB%BB%E5%9C%B0%E8%AF%B4%EF%BC%8C%E8%BF%99%E6%AC%A1%E7%96%AB%E6%83%85%E5%B7%B2%E7%BB%8F%E6%88%90%E4%B8%BA%E5%8E%8B%E5%9E%AE%E5%85%A8%E7%90%83%E5%8C%96%E7%9A%84%E6%9C%80%E5%90%8E%E4%B8%80%E6%A0%B9%E7%A8%BB%E8%8D%89/</id>
+    <published>2020-02-28T12:08:54.000Z</published>
+    <updated>2020-02-28T12:47:38.450Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html">&lt;h2 id=&quot;文章来源：反者道之动弱者道之用&quot;&gt;&lt;a href=&quot;#文章来源：反者道之动弱者道之用&quot; class=&quot;headerlink&quot; title=&quot;文章来源：反者道之动弱者道之用&quot;&gt;&lt;/a&gt;文章来源：&lt;a</summary>
+        
+      
+    
+    
+    
+    <category term="杂记" scheme="https://straysh.github.life/categories/%E6%9D%82%E8%AE%B0/"/>
+    
+    
+    <category term="杂" scheme="https://straysh.github.life/tags/%E6%9D%82/"/>
+    
+    <category term="Banbrick" scheme="https://straysh.github.life/tags/Banbrick/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>MySQL_页分裂</title>
+    <link href="https://straysh.github.life/2020/02/28/MySQL-%E9%A1%B5%E5%88%86%E8%A3%82/"/>
+    <id>https://straysh.github.life/2020/02/28/MySQL-%E9%A1%B5%E5%88%86%E8%A3%82/</id>
+    <published>2020-02-28T06:49:54.000Z</published>
+    <updated>2020-02-28T10:41:20.623Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html">&lt;p&gt;文章来源：&lt;a href=&quot;https://www.percona.com/blog/2017/04/10/innodb-page-merging-and-page-splitting/&quot;&gt;InnoDB Page Merging and Page</summary>
+        
+      
+    
+    
+    
+    <category term="博文" scheme="https://straysh.github.life/categories/%E5%8D%9A%E6%96%87/"/>
+    
+    
+    <category term="MySQL" scheme="https://straysh.github.life/tags/MySQL/"/>
+    
+    <category term="Translation" scheme="https://straysh.github.life/tags/Translation/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>MySQL_B+Tree索引</title>
+    <link href="https://straysh.github.life/2020/02/27/MySQL-B-Tree%E7%B4%A2%E5%BC%95/"/>
+    <id>https://straysh.github.life/2020/02/27/MySQL-B-Tree%E7%B4%A2%E5%BC%95/</id>
+    <published>2020-02-27T12:50:08.000Z</published>
+    <updated>2020-02-28T11:13:35.198Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html">&lt;p&gt;索引是提高查询效率的，在MySQL中以B+树索引为主（绝大部分MySQL数据库引擎都是用的Innodb，而Innodb默认使用B+树）。&lt;br&gt;B+树索引又分为聚簇索引和非聚簇索引，本文着重介绍聚簇索引。&lt;/p&gt;
+&lt;h1 id=&quot;聚簇索引&quot;&gt;&lt;a href=&quot;#聚簇索引&quot;</summary>
+        
+      
+    
+    
+    
+    <category term="博文" scheme="https://straysh.github.life/categories/%E5%8D%9A%E6%96%87/"/>
+    
+    
+    <category term="Mysql" scheme="https://straysh.github.life/tags/Mysql/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>杂记_风物长宜放眼量，人间正道是沧桑 - 一位北美留学生的内心独唱</title>
+    <link href="https://straysh.github.life/2020/02/27/%E6%9D%82%E8%AE%B0-%E9%A3%8E%E7%89%A9%E9%95%BF%E5%AE%9C%E6%94%BE%E7%9C%BC%E9%87%8F%EF%BC%8C%E4%BA%BA%E9%97%B4%E6%AD%A3%E9%81%93%E6%98%AF%E6%B2%A7%E6%A1%91-%E4%B8%80%E4%BD%8D%E5%8C%97%E7%BE%8E%E7%95%99%E5%AD%A6%E7%94%9F%E7%9A%84%E5%86%85%E5%BF%83%E7%8B%AC%E5%94%B1/"/>
+    <id>https://straysh.github.life/2020/02/27/%E6%9D%82%E8%AE%B0-%E9%A3%8E%E7%89%A9%E9%95%BF%E5%AE%9C%E6%94%BE%E7%9C%BC%E9%87%8F%EF%BC%8C%E4%BA%BA%E9%97%B4%E6%AD%A3%E9%81%93%E6%98%AF%E6%B2%A7%E6%A1%91-%E4%B8%80%E4%BD%8D%E5%8C%97%E7%BE%8E%E7%95%99%E5%AD%A6%E7%94%9F%E7%9A%84%E5%86%85%E5%BF%83%E7%8B%AC%E5%94%B1/</id>
+    <published>2020-02-27T12:11:09.000Z</published>
+    <updated>2020-03-23T15:35:04.383Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html">&lt;h2 id=&quot;文章来源：微信文章&quot;&gt;&lt;a href=&quot;#文章来源：微信文章&quot; class=&quot;headerlink&quot; title=&quot;文章来源：微信文章&quot;&gt;&lt;/a&gt;文章来源：&lt;a</summary>
+        
+      
+    
+    
+    
+    <category term="杂记" scheme="https://straysh.github.life/categories/%E6%9D%82%E8%AE%B0/"/>
+    
+    
+    <category term="杂" scheme="https://straysh.github.life/tags/%E6%9D%82/"/>
+    
+    <category term="Banbrick" scheme="https://straysh.github.life/tags/Banbrick/"/>
+    
+  </entry>
+  
+</feed>

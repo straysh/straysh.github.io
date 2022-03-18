@@ -1,0 +1,936 @@
+<!DOCTYPE html>
+<html lang=zh>
+<head>
+  <meta charset="utf-8">
+  
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, minimal-ui">
+  <meta name="renderer" content="webkit">
+  <meta http-equiv="Cache-Control" content="no-transform" />
+  <meta http-equiv="Cache-Control" content="no-siteapp" />
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="format-detection" content="telephone=no,email=no,adress=no">
+  <!-- Color theme for statusbar -->
+  <meta name="theme-color" content="#000000" />
+  <!-- 强制页面在当前窗口以独立页面显示,防止别人在框架里调用页面 -->
+  <meta http-equiv="window-target" content="_top" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lxgw-wenkai-webfont@1.1.0/style.css" />
+  
+  
+  <title>Hexo</title>
+  <meta property="og:type" content="website">
+<meta property="og:title" content="Straysh的小院">
+<meta property="og:url" content="https://straysh.github.life/page/4/index.html">
+<meta property="og:site_name" content="Straysh的小院">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:author" content="Straysh">
+<meta name="twitter:card" content="summary">
+  <!-- Canonical links -->
+  <link rel="canonical" href="https://straysh.github.life/page/4/index.html">
+  
+    <link rel="alternate" href="/atom.xml" title="Straysh的小院" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.ico" type="image/x-icon">
+  
+  
+<link rel="stylesheet" href="/css/style.css">
+
+  
+<link rel="stylesheet" href="/css/custom.css">
+
+  
+  
+  
+  
+  
+<meta name="generator" content="Hexo 5.4.1"></head>
+
+
+<body class="main-center theme-green" itemscope itemtype="http://schema.org/WebPage">
+  <header class="header" style="background-image: url(/images/left_images/2.jpg);" itemscope itemtype="http://schema.org/WPHeader">
+  <div class="slimContent" style="height:100%;background-color: rgba(0,0,0,0.7);">
+    <div class="navbar-header">
+      
+      
+      <div class="profile-block text-center">
+        <a id="avatar" href="https://hexo.straysh.com" target="_blank">
+          <img class="img-circle img-rotate" src="/images/avatar.jpg" width="200" height="200">
+        </a>
+        <h2 id="name" class="hidden-xs hidden-sm">Straysh</h2>
+        <h3 id="title" class="hidden-xs hidden-sm hidden-md">野生程序猿</h3>
+        <small id="location" class="text-muted hidden-xs hidden-sm"><i class="icon icon-map-marker"></i> Beijing, China</small>
+      </div>
+      
+      <div class="search" id="search-form-wrap">
+
+    <form class="search-form sidebar-form">
+        <div class="input-group">
+            <input type="text" class="search-form-input form-control" placeholder="搜索" />
+            <span class="input-group-btn">
+                <button type="submit" class="search-form-submit btn btn-flat" onclick="return false;"><i class="icon icon-search"></i></button>
+            </span>
+        </div>
+    </form>
+    <div class="ins-search">
+  <div class="ins-search-mask"></div>
+  <div class="ins-search-container">
+    <div class="ins-input-wrapper">
+      <input type="text" class="ins-search-input" placeholder="想要查找什么..." x-webkit-speech />
+      <button type="button" class="close ins-close ins-selectable" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+    </div>
+    <div class="ins-section-wrapper">
+      <div class="ins-section-container"></div>
+    </div>
+  </div>
+</div>
+
+
+</div>
+      <button class="navbar-toggle collapsed" type="button" data-toggle="collapse" data-target="#main-navbar" aria-controls="main-navbar" aria-expanded="false">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+    </div>
+    <nav id="main-navbar" class="collapse navbar-collapse" itemscope itemtype="http://schema.org/SiteNavigationElement" role="navigation">
+      <ul class="nav navbar-nav main-nav menu-highlight">
+        
+        
+        <li class="menu-item menu-item-home">
+          <a href="/.">
+            
+            <i class="icon icon-home-fill"></i>
+            
+            <span class="menu-title">首页</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives">
+            
+            <i class="icon icon-archives-fill"></i>
+            
+            <span class="menu-title">归档</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories">
+            
+            <i class="icon icon-folder"></i>
+            
+            <span class="menu-title">分类</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags">
+            
+            <i class="icon icon-tags"></i>
+            
+            <span class="menu-title">标签</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-repository">
+          <a href="/repository">
+            
+            <i class="icon icon-project"></i>
+            
+            <span class="menu-title">项目</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-books">
+          <a href="/books">
+            
+            <i class="icon icon-book-fill"></i>
+            
+            <span class="menu-title">书单</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-links">
+          <a href="/links">
+            
+            <i class="icon icon-friendship"></i>
+            
+            <span class="menu-title">友链</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about">
+            
+            <i class="icon icon-cup-fill"></i>
+            
+            <span class="menu-title">关于</span>
+          </a>
+        </li>
+        
+      </ul>
+      
+	
+    <ul class="social-links">
+    	
+        <li><a href="https://github.com/straysh" target="_blank" title="Github" data-toggle=tooltip data-placement=top><i class="icon icon-github"></i></a></li>
+        
+        <li><a href="https://weibo.com/u/1689171115" target="_blank" title="Weibo" data-toggle=tooltip data-placement=top><i class="icon icon-weibo"></i></a></li>
+        
+        <li><a href="/atom.xml" target="_blank" title="Rss" data-toggle=tooltip data-placement=top><i class="icon icon-rss"></i></a></li>
+        
+    </ul>
+
+    </nav>
+  </div>
+</header>
+
+  
+    <aside class="sidebar" itemscope itemtype="http://schema.org/WPSideBar">
+  <div class="slimContent">
+
+    
+        
+          <div class="widget">
+    <h3 class="widget-title">公告</h3>
+    <div class="widget-body">
+        <div id="board">
+            <div class="content">
+                <p>妳是风中的叶，风起而走，我想去追，怎么抓的住？</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+        
+          
+  <div class="widget">
+    <h3 class="widget-title">分类</h3>
+    <div class="widget-body">
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%8D%9A%E6%96%87/">博文</a><span class="category-list-count">102</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%8D%9A%E6%96%87/%E7%AC%94%E8%AE%B0/">笔记</a><span class="category-list-count">2</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E6%9D%82%E8%AE%B0/">杂记</a><span class="category-list-count">6</span></li></ul>
+    </div>
+  </div>
+
+
+        
+          
+  <div class="widget">
+    <h3 class="widget-title">标签</h3>
+    <div class="widget-body">
+      <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/Algorithm/" rel="tag">Algorithm</a><span class="tag-list-count">13</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Apache/" rel="tag">Apache</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Banbrick/" rel="tag">Banbrick</a><span class="tag-list-count">5</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Docker/" rel="tag">Docker</a><span class="tag-list-count">4</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Golang/" rel="tag">Golang</a><span class="tag-list-count">25</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Javascript/" rel="tag">Javascript</a><span class="tag-list-count">10</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Linux/" rel="tag">Linux</a><span class="tag-list-count">13</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/MySQL/" rel="tag">MySQL</a><span class="tag-list-count">13</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Mysql/" rel="tag">Mysql</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Nginx/" rel="tag">Nginx</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Nodejs/" rel="tag">Nodejs</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/PHP/" rel="tag">PHP</a><span class="tag-list-count">19</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/R/" rel="tag">R</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Redis/" rel="tag">Redis</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/SVN/" rel="tag">SVN</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Sphinx/" rel="tag">Sphinx</a><span class="tag-list-count">5</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Translation/" rel="tag">Translation</a><span class="tag-list-count">18</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Yii/" rel="tag">Yii</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%9D%82/" rel="tag">杂</a><span class="tag-list-count">6</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%B1%87%E7%BC%96/" rel="tag">汇编</a><span class="tag-list-count">1</span></li></ul>
+    </div>
+  </div>
+
+
+        
+          
+  <div class="widget">
+    <h3 class="widget-title">标签云</h3>
+    <div class="widget-body tagcloud">
+      <a href="/tags/Algorithm/" style="font-size: 13.67px;">Algorithm</a> <a href="/tags/Apache/" style="font-size: 13px;">Apache</a> <a href="/tags/Banbrick/" style="font-size: 13.33px;">Banbrick</a> <a href="/tags/Docker/" style="font-size: 13.22px;">Docker</a> <a href="/tags/Golang/" style="font-size: 14px;">Golang</a> <a href="/tags/Javascript/" style="font-size: 13.56px;">Javascript</a> <a href="/tags/Linux/" style="font-size: 13.67px;">Linux</a> <a href="/tags/MySQL/" style="font-size: 13.67px;">MySQL</a> <a href="/tags/Mysql/" style="font-size: 13px;">Mysql</a> <a href="/tags/Nginx/" style="font-size: 13.11px;">Nginx</a> <a href="/tags/Nodejs/" style="font-size: 13px;">Nodejs</a> <a href="/tags/PHP/" style="font-size: 13.89px;">PHP</a> <a href="/tags/R/" style="font-size: 13.11px;">R</a> <a href="/tags/Redis/" style="font-size: 13.11px;">Redis</a> <a href="/tags/SVN/" style="font-size: 13px;">SVN</a> <a href="/tags/Sphinx/" style="font-size: 13.33px;">Sphinx</a> <a href="/tags/Translation/" style="font-size: 13.78px;">Translation</a> <a href="/tags/Yii/" style="font-size: 13.11px;">Yii</a> <a href="/tags/%E6%9D%82/" style="font-size: 13.44px;">杂</a> <a href="/tags/%E6%B1%87%E7%BC%96/" style="font-size: 13px;">汇编</a>
+    </div>
+  </div>
+
+        
+          
+  <div class="widget">
+    <h3 class="widget-title">归档</h3>
+    <div class="widget-body">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/03/">三月 2022</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/03/">三月 2021</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/03/">三月 2020</a><span class="archive-list-count">5</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/02/">二月 2020</a><span class="archive-list-count">26</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/12/">十二月 2019</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/04/">四月 2019</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/09/">九月 2018</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/07/">七月 2016</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/06/">六月 2016</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/11/">十一月 2015</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/10/">十月 2015</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/09/">九月 2015</a><span class="archive-list-count">5</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/08/">八月 2015</a><span class="archive-list-count">13</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/07/">七月 2015</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/11/">十一月 2014</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/03/">三月 2014</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/12/">十二月 2013</a><span class="archive-list-count">8</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/10/">十月 2013</a><span class="archive-list-count">8</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/09/">九月 2013</a><span class="archive-list-count">2</span></li></ul>
+    </div>
+  </div>
+
+
+        
+          
+  <div class="widget">
+    <h3 class="widget-title">最新文章</h3>
+    <div class="widget-body">
+      <ul class="recent-post-list list-unstyled no-thumbnail">
+        
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/%E5%8D%9A%E6%96%87/">博文</a><i class="icon icon-angle-right"></i><a class="category-link" href="/categories/%E5%8D%9A%E6%96%87/%E7%AC%94%E8%AE%B0/">笔记</a>
+              </p>
+              <p class="item-title">
+                <a href="/2022/03/14/%E4%BD%BF%E7%94%A8Go%E6%93%8D%E4%BD%9C%E6%96%87%E4%BB%B6/" class="title">使用Go操作文件</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2022-03-14T12:11:25.000Z" itemprop="datePublished">2022-03-14</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/%E5%8D%9A%E6%96%87/">博文</a>
+              </p>
+              <p class="item-title">
+                <a href="/2022/03/13/Docker%E5%AE%B9%E5%99%A8%E7%BD%91%E7%BB%9C/" class="title">Docker容器网络</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2022-03-13T04:10:09.000Z" itemprop="datePublished">2022-03-13</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/%E5%8D%9A%E6%96%87/">博文</a><i class="icon icon-angle-right"></i><a class="category-link" href="/categories/%E5%8D%9A%E6%96%87/%E7%AC%94%E8%AE%B0/">笔记</a>
+              </p>
+              <p class="item-title">
+                <a href="/2022/03/13/Iptables%E5%92%8C%E5%AE%B9%E5%99%A8/" class="title">Iptables和容器</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2022-03-13T03:01:46.000Z" itemprop="datePublished">2022-03-13</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/%E5%8D%9A%E6%96%87/">博文</a>
+              </p>
+              <p class="item-title">
+                <a href="/2022/03/12/Linux%E7%BD%91%E6%A1%A5%E5%B7%A5%E4%BD%9C%E5%8E%9F%E7%90%86/" class="title">Linux网桥工作原理</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2022-03-12T10:02:29.000Z" itemprop="datePublished">2022-03-12</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/%E5%8D%9A%E6%96%87/">博文</a>
+              </p>
+              <p class="item-title">
+                <a href="/2021/03/16/%E5%B9%B6%E5%8F%91%E5%92%8C%E8%B0%83%E5%BA%A6%E7%9A%84%E5%85%B3%E7%B3%BB/" class="title">并发和调度的关系</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2021-03-16T05:54:13.000Z" itemprop="datePublished">2021-03-16</time>
+              </p>
+            </div>
+          </li>
+          
+      </ul>
+    </div>
+  </div>
+  
+
+        
+    
+  </div>
+</aside>
+
+  
+  <main class="main" role="main">
+  
+  <div class="content article-list">
+    
+      
+      <article class="article article-type-post" itemscope itemtype="http://schema.org/BlogPosting">
+  <div class="article-header">
+    
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2020/02/14/%E7%AE%97%E6%B3%95-%E9%9D%9E%E5%9F%BA%E4%BA%8E%E6%AF%94%E8%BE%83%E7%9A%84%E6%8E%92%E5%BA%8F%E7%AE%97%E6%B3%95/"><span style="color:#008e59;">[译]</span>算法_非基于比较的排序算法</a>
+    </h1>
+  
+
+
+  </div>
+  
+  <div class="article-entry text-muted" itemprop="description">
+    <h3 id="非基于比较的排序算法-O-N"><a href="#非基于比较的排序算法-O-N" class="headerlink" title="非基于比较的排序算法 - O(N)"></a>非基于比较的排序算法 - O(N)</h3><ol>
+<li>计数排序</li>
+<li>基数排序</li>
+</ol>
+<p>由于不比较元素对，它们比基于比较的排序最优解<code>O(N log N)</code>还要快。</p>
+  </div>
+  
+  <p class="article-meta">
+    
+    <span class="article-date">
+    <i class="icon icon-calendar-check"></i>
+	<a href="/2020/02/14/%E7%AE%97%E6%B3%95-%E9%9D%9E%E5%9F%BA%E4%BA%8E%E6%AF%94%E8%BE%83%E7%9A%84%E6%8E%92%E5%BA%8F%E7%AE%97%E6%B3%95/" class="article-date">
+	  <time datetime="2020-02-14T03:20:46.000Z" itemprop="datePublished">2月 14</time>
+	</a>
+</span>
+    
+  <span class="article-category">
+    <i class="icon icon-folder"></i>
+    <a class="article-category-link" href="/categories/%E5%8D%9A%E6%96%87/">博文</a>
+  </span>
+
+    
+  <span class="article-tag">
+    <i class="icon icon-tags"></i>
+	<a class="article-tag-link-link" href="/tags/Algorithm/" rel="tag">Algorithm</a>, <a class="article-tag-link-link" href="/tags/Golang/" rel="tag">Golang</a>, <a class="article-tag-link-link" href="/tags/Translation/" rel="tag">Translation</a>
+  </span>
+
+
+    <span class="post-comment"><i class="icon icon-comment"></i> <a href="/2020/02/14/%E7%AE%97%E6%B3%95-%E9%9D%9E%E5%9F%BA%E4%BA%8E%E6%AF%94%E8%BE%83%E7%9A%84%E6%8E%92%E5%BA%8F%E7%AE%97%E6%B3%95/#comments" class="article-comment-link">评论</a></span>
+    
+  </p>
+</article>
+
+      
+    
+      
+      <article class="article article-type-post" itemscope itemtype="http://schema.org/BlogPosting">
+  <div class="article-header">
+    
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2020/02/13/%E7%AE%97%E6%B3%95-%E7%A8%B3%E5%AE%9A%E6%8E%92%E5%BA%8F%E7%AE%97%E6%B3%95/"><span style="color:#008e59;">[译]</span>算法_稳定排序算法</a>
+    </h1>
+  
+
+
+  </div>
+  
+  <div class="article-entry text-muted" itemprop="description">
+    <h3 id="稳定排序算法"><a href="#稳定排序算法" class="headerlink" title="稳定排序算法"></a>稳定排序算法</h3><p>当排序完成之后，值相同的元素的相对为止保持不变的算法，称之为稳定排序算法。</p>
+  </div>
+  
+  <p class="article-meta">
+    
+    <span class="article-date">
+    <i class="icon icon-calendar-check"></i>
+	<a href="/2020/02/13/%E7%AE%97%E6%B3%95-%E7%A8%B3%E5%AE%9A%E6%8E%92%E5%BA%8F%E7%AE%97%E6%B3%95/" class="article-date">
+	  <time datetime="2020-02-13T10:18:50.000Z" itemprop="datePublished">2月 13</time>
+	</a>
+</span>
+    
+  <span class="article-category">
+    <i class="icon icon-folder"></i>
+    <a class="article-category-link" href="/categories/%E5%8D%9A%E6%96%87/">博文</a>
+  </span>
+
+    
+  <span class="article-tag">
+    <i class="icon icon-tags"></i>
+	<a class="article-tag-link-link" href="/tags/Algorithm/" rel="tag">Algorithm</a>, <a class="article-tag-link-link" href="/tags/Golang/" rel="tag">Golang</a>, <a class="article-tag-link-link" href="/tags/Translation/" rel="tag">Translation</a>
+  </span>
+
+
+    <span class="post-comment"><i class="icon icon-comment"></i> <a href="/2020/02/13/%E7%AE%97%E6%B3%95-%E7%A8%B3%E5%AE%9A%E6%8E%92%E5%BA%8F%E7%AE%97%E6%B3%95/#comments" class="article-comment-link">评论</a></span>
+    
+  </p>
+</article>
+
+      
+    
+      
+      <article class="article article-type-post" itemscope itemtype="http://schema.org/BlogPosting">
+  <div class="article-header">
+    
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2020/02/12/%E7%AE%97%E6%B3%95-%E6%8E%92%E5%BA%8F-%E5%9F%BA%E4%BA%8E%E6%AF%94%E8%BE%83%E7%9A%84%E6%8E%92%E5%BA%8F/"><span style="color:#008e59;">[译]</span>算法_排序_基于比较的排序</a>
+    </h1>
+  
+
+
+  </div>
+  
+  <div class="article-entry text-muted" itemprop="description">
+    <h3 id="基于比较的算法-复杂度O-N²"><a href="#基于比较的算法-复杂度O-N²" class="headerlink" title="基于比较的算法 复杂度O(N²)"></a>基于比较的算法 复杂度<code>O(N²)</code></h3><p>我们讨论三种基于比较的算法：</p>
+<ol>
+<li>冒泡</li>
+<li>选择</li>
+<li>插入</li>
+</ol>
+<p>因为这些算法需要比较两个元素以决定是否交换位置，故称基于比较的算法。</p>
+<p>这三种算法最容易实现，但不是最高效的。其时间复杂度是<code>O(N²)</code>。</p>
+  </div>
+  
+  <p class="article-meta">
+    
+    <span class="article-date">
+    <i class="icon icon-calendar-check"></i>
+	<a href="/2020/02/12/%E7%AE%97%E6%B3%95-%E6%8E%92%E5%BA%8F-%E5%9F%BA%E4%BA%8E%E6%AF%94%E8%BE%83%E7%9A%84%E6%8E%92%E5%BA%8F/" class="article-date">
+	  <time datetime="2020-02-12T09:53:18.000Z" itemprop="datePublished">2月 12</time>
+	</a>
+</span>
+    
+  <span class="article-category">
+    <i class="icon icon-folder"></i>
+    <a class="article-category-link" href="/categories/%E5%8D%9A%E6%96%87/">博文</a>
+  </span>
+
+    
+  <span class="article-tag">
+    <i class="icon icon-tags"></i>
+	<a class="article-tag-link-link" href="/tags/Algorithm/" rel="tag">Algorithm</a>, <a class="article-tag-link-link" href="/tags/Golang/" rel="tag">Golang</a>, <a class="article-tag-link-link" href="/tags/Translation/" rel="tag">Translation</a>
+  </span>
+
+
+    <span class="post-comment"><i class="icon icon-comment"></i> <a href="/2020/02/12/%E7%AE%97%E6%B3%95-%E6%8E%92%E5%BA%8F-%E5%9F%BA%E4%BA%8E%E6%AF%94%E8%BE%83%E7%9A%84%E6%8E%92%E5%BA%8F/#comments" class="article-comment-link">评论</a></span>
+    
+  </p>
+</article>
+
+      
+    
+      
+      <article class="article article-type-post" itemscope itemtype="http://schema.org/BlogPosting">
+  <div class="article-header">
+    
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2020/02/12/%E7%AE%97%E6%B3%95-%E6%8E%92%E5%BA%8F-%E5%BC%80%E7%AF%87/"><span style="color:#008e59;">[译]</span>算法_排序_开篇</a>
+    </h1>
+  
+
+
+  </div>
+  
+  <div class="article-entry text-muted" itemprop="description">
+    <h3 id="排序问题和排序算法"><a href="#排序问题和排序算法" class="headerlink" title="排序问题和排序算法"></a>排序问题和排序算法</h3><p>排序是一个经典的重排元素顺序的问题（其元素可以是整型、浮点型、字符串等可比较的类型）。可以重排为递增序列、非递减序列<sup>1</sup>，递减序列，非递增序列<sup>2</sup>。</p>
+<p>排序算法非常多，各有优势与其限制。</p>
+<p>排序通常是大学计算机学科中，介绍算法思想的入门问题。</p>
+<p>不失一般性的，假定在本教学中我们只以非递减顺序排序整型，元素无需排重。</p>
+  </div>
+  
+  <p class="article-meta">
+    
+    <span class="article-date">
+    <i class="icon icon-calendar-check"></i>
+	<a href="/2020/02/12/%E7%AE%97%E6%B3%95-%E6%8E%92%E5%BA%8F-%E5%BC%80%E7%AF%87/" class="article-date">
+	  <time datetime="2020-02-12T08:27:36.000Z" itemprop="datePublished">2月 12</time>
+	</a>
+</span>
+    
+  <span class="article-category">
+    <i class="icon icon-folder"></i>
+    <a class="article-category-link" href="/categories/%E5%8D%9A%E6%96%87/">博文</a>
+  </span>
+
+    
+  <span class="article-tag">
+    <i class="icon icon-tags"></i>
+	<a class="article-tag-link-link" href="/tags/Algorithm/" rel="tag">Algorithm</a>, <a class="article-tag-link-link" href="/tags/Golang/" rel="tag">Golang</a>, <a class="article-tag-link-link" href="/tags/Translation/" rel="tag">Translation</a>
+  </span>
+
+
+    <span class="post-comment"><i class="icon icon-comment"></i> <a href="/2020/02/12/%E7%AE%97%E6%B3%95-%E6%8E%92%E5%BA%8F-%E5%BC%80%E7%AF%87/#comments" class="article-comment-link">评论</a></span>
+    
+  </p>
+</article>
+
+      
+    
+      
+      <article class="article article-type-post" itemscope itemtype="http://schema.org/BlogPosting">
+  <div class="article-header">
+    
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2020/02/12/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84-%E9%98%9F%E5%88%97-%E6%80%BB%E7%BB%93/"><span style="color:#008e59;">[译]</span>数据结构_队列_总结</a>
+    </h1>
+  
+
+
+  </div>
+  
+  <div class="article-entry text-muted" itemprop="description">
+    <p>①链表 ②栈 ③队列 ④双向链表 ⑤双端队列</p>
+<p>这物种结构的插入操作都是相同的，而查找/插入/移除有些微差别。</p>
+<ul>
+<li>栈，只能从头/栈顶执行peek/push/pop操作，都是严格受限的。</li>
+<li>队列，只能从队首peek，从队尾push，从队首pop。</li>
+<li>双端队列，只能从两端peek/enqueue/dequeue，而不能从中间操作。</li>
+</ul>
+<p>顺序链表和双向链表没有上述限制。</p>
+  </div>
+  
+  <p class="article-meta">
+    
+    <span class="article-date">
+    <i class="icon icon-calendar-check"></i>
+	<a href="/2020/02/12/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84-%E9%98%9F%E5%88%97-%E6%80%BB%E7%BB%93/" class="article-date">
+	  <time datetime="2020-02-12T06:57:40.000Z" itemprop="datePublished">2月 12</time>
+	</a>
+</span>
+    
+  <span class="article-category">
+    <i class="icon icon-folder"></i>
+    <a class="article-category-link" href="/categories/%E5%8D%9A%E6%96%87/">博文</a>
+  </span>
+
+    
+  <span class="article-tag">
+    <i class="icon icon-tags"></i>
+	<a class="article-tag-link-link" href="/tags/Algorithm/" rel="tag">Algorithm</a>, <a class="article-tag-link-link" href="/tags/Golang/" rel="tag">Golang</a>, <a class="article-tag-link-link" href="/tags/Translation/" rel="tag">Translation</a>
+  </span>
+
+
+    <span class="post-comment"><i class="icon icon-comment"></i> <a href="/2020/02/12/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84-%E9%98%9F%E5%88%97-%E6%80%BB%E7%BB%93/#comments" class="article-comment-link">评论</a></span>
+    
+  </p>
+</article>
+
+      
+    
+      
+      <article class="article article-type-post" itemscope itemtype="http://schema.org/BlogPosting">
+  <div class="article-header">
+    
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2020/02/12/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84-%E5%8F%8C%E7%AB%AF%E9%98%9F%E5%88%97/"><span style="color:#008e59;">[译]</span>数据结构_双端队列</a>
+    </h1>
+  
+
+
+  </div>
+  
+  <div class="article-entry text-muted" itemprop="description">
+    <p>双端队列——Double-ended queue缩写deque，读作deck。其元素只能两端添加或删除，即只能从头部/尾部添加或删除。</p>
+  </div>
+  
+  <p class="article-meta">
+    
+    <span class="article-date">
+    <i class="icon icon-calendar-check"></i>
+	<a href="/2020/02/12/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84-%E5%8F%8C%E7%AB%AF%E9%98%9F%E5%88%97/" class="article-date">
+	  <time datetime="2020-02-12T06:47:10.000Z" itemprop="datePublished">2月 12</time>
+	</a>
+</span>
+    
+  <span class="article-category">
+    <i class="icon icon-folder"></i>
+    <a class="article-category-link" href="/categories/%E5%8D%9A%E6%96%87/">博文</a>
+  </span>
+
+    
+  <span class="article-tag">
+    <i class="icon icon-tags"></i>
+	<a class="article-tag-link-link" href="/tags/Algorithm/" rel="tag">Algorithm</a>, <a class="article-tag-link-link" href="/tags/Golang/" rel="tag">Golang</a>, <a class="article-tag-link-link" href="/tags/Translation/" rel="tag">Translation</a>
+  </span>
+
+
+    <span class="post-comment"><i class="icon icon-comment"></i> <a href="/2020/02/12/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84-%E5%8F%8C%E7%AB%AF%E9%98%9F%E5%88%97/#comments" class="article-comment-link">评论</a></span>
+    
+  </p>
+</article>
+
+      
+    
+      
+      <article class="article article-type-post" itemscope itemtype="http://schema.org/BlogPosting">
+  <div class="article-header">
+    
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2020/02/12/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84-%E5%8F%8C%E5%90%91%E9%93%BE%E8%A1%A8/"><span style="color:#008e59;">[译]</span>数据结构_双向链表</a>
+    </h1>
+  
+
+
+  </div>
+  
+  <div class="article-entry text-muted" itemprop="description">
+    <p>双向链表和顺序链表99%都是相同的。主要的区别是：每个节点包含两个指针，<code>next</code>指针指向后一个元素（若存在）即a<sub>j</sub>指向a<sub>j+1</sub>，另一个<code>prev</code>指针指向前一个元素，即a<sub>j</sub>指向a<sub>j-1</sub>（若存在）。</p>
+<p><code>prev</code>指针是的双向链表能够反向遍历，但同时也增加了内存的消耗。它解决了顺序链表中移除尾元素的低效问题。</p>
+  </div>
+  
+  <p class="article-meta">
+    
+    <span class="article-date">
+    <i class="icon icon-calendar-check"></i>
+	<a href="/2020/02/12/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84-%E5%8F%8C%E5%90%91%E9%93%BE%E8%A1%A8/" class="article-date">
+	  <time datetime="2020-02-12T05:02:58.000Z" itemprop="datePublished">2月 12</time>
+	</a>
+</span>
+    
+  <span class="article-category">
+    <i class="icon icon-folder"></i>
+    <a class="article-category-link" href="/categories/%E5%8D%9A%E6%96%87/">博文</a>
+  </span>
+
+    
+  <span class="article-tag">
+    <i class="icon icon-tags"></i>
+	<a class="article-tag-link-link" href="/tags/Algorithm/" rel="tag">Algorithm</a>, <a class="article-tag-link-link" href="/tags/Golang/" rel="tag">Golang</a>, <a class="article-tag-link-link" href="/tags/Translation/" rel="tag">Translation</a>
+  </span>
+
+
+    <span class="post-comment"><i class="icon icon-comment"></i> <a href="/2020/02/12/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84-%E5%8F%8C%E5%90%91%E9%93%BE%E8%A1%A8/#comments" class="article-comment-link">评论</a></span>
+    
+  </p>
+</article>
+
+      
+    
+      
+      <article class="article article-type-post" itemscope itemtype="http://schema.org/BlogPosting">
+  <div class="article-header">
+    
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2020/02/12/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84-%E9%98%9F%E5%88%97/"><span style="color:#008e59;">[译]</span>数据结构_队列</a>
+    </h1>
+  
+
+
+  </div>
+  
+  <div class="article-entry text-muted" itemprop="description">
+    <p>队列这种ADT中，元素是<code>有序</code>的，主要操作有<code>enqueue</code>入队和<code>dequeue</code>出队。</p>
+<p>即<code>Fist-In-First-Out</code>(FIFO)。最下进入队列的元素，会最后出队列。<br><img src="/images/ds/queue_illustration.png" alt="queue_illustration"></p>
+  </div>
+  
+  <p class="article-meta">
+    
+    <span class="article-date">
+    <i class="icon icon-calendar-check"></i>
+	<a href="/2020/02/12/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84-%E9%98%9F%E5%88%97/" class="article-date">
+	  <time datetime="2020-02-12T04:00:47.000Z" itemprop="datePublished">2月 12</time>
+	</a>
+</span>
+    
+  <span class="article-category">
+    <i class="icon icon-folder"></i>
+    <a class="article-category-link" href="/categories/%E5%8D%9A%E6%96%87/">博文</a>
+  </span>
+
+    
+  <span class="article-tag">
+    <i class="icon icon-tags"></i>
+	<a class="article-tag-link-link" href="/tags/Algorithm/" rel="tag">Algorithm</a>, <a class="article-tag-link-link" href="/tags/Golang/" rel="tag">Golang</a>, <a class="article-tag-link-link" href="/tags/Translation/" rel="tag">Translation</a>
+  </span>
+
+
+    <span class="post-comment"><i class="icon icon-comment"></i> <a href="/2020/02/12/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84-%E9%98%9F%E5%88%97/#comments" class="article-comment-link">评论</a></span>
+    
+  </p>
+</article>
+
+      
+    
+      
+      <article class="article article-type-post" itemscope itemtype="http://schema.org/BlogPosting">
+  <div class="article-header">
+    
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2020/02/11/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84-%E6%A0%88/"><span style="color:#008e59;">[译]</span>数据结构_栈</a>
+    </h1>
+  
+
+
+  </div>
+  
+  <div class="article-entry text-muted" itemprop="description">
+    <p>Stack栈是一种数据结构，它要求只能从顶部增加元素即<code>push</code>，只能从顶部移除元素即<code>pop</code>。亦即<code>Last-In-First-out</code>(LIFO)。<br><img src="/images/ds/stack_illustration.png" alt="stack_illustration"></p>
+  </div>
+  
+  <p class="article-meta">
+    
+    <span class="article-date">
+    <i class="icon icon-calendar-check"></i>
+	<a href="/2020/02/11/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84-%E6%A0%88/" class="article-date">
+	  <time datetime="2020-02-11T12:00:36.000Z" itemprop="datePublished">2月 11</time>
+	</a>
+</span>
+    
+  <span class="article-category">
+    <i class="icon icon-folder"></i>
+    <a class="article-category-link" href="/categories/%E5%8D%9A%E6%96%87/">博文</a>
+  </span>
+
+    
+  <span class="article-tag">
+    <i class="icon icon-tags"></i>
+	<a class="article-tag-link-link" href="/tags/Algorithm/" rel="tag">Algorithm</a>, <a class="article-tag-link-link" href="/tags/Golang/" rel="tag">Golang</a>, <a class="article-tag-link-link" href="/tags/Translation/" rel="tag">Translation</a>
+  </span>
+
+
+    <span class="post-comment"><i class="icon icon-comment"></i> <a href="/2020/02/11/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84-%E6%A0%88/#comments" class="article-comment-link">评论</a></span>
+    
+  </p>
+</article>
+
+      
+    
+      
+      <article class="article article-type-post" itemscope itemtype="http://schema.org/BlogPosting">
+  <div class="article-header">
+    
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2020/02/10/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84-%E9%93%BE%E8%A1%A8/"><span style="color:#008e59;">[译]</span>数据结构_链表</a>
+    </h1>
+  
+
+
+  </div>
+  
+  <div class="article-entry text-muted" itemprop="description">
+    <h2 id="LL-Stack-Queue-DLL-Deque"><a href="#LL-Stack-Queue-DLL-Deque" class="headerlink" title="LL,Stack,Queue,DLL,Deque"></a>LL,Stack,Queue,DLL,Deque</h2><p>链表（Linked List）是一种数据结构，它由一组<code>节点</code>组成，它们作为一个整体表示一个序列。最简单的情形下，每一个节点由一个值<code>data</code>和指向下序列中一节点的引用<code>link</code>组成。</p>
+<p>在链表中查找数77<br><img src="/images/ds/LL_Search_77.gif" alt="search_77"></p>
+<p>链表及其变体是用来实现列表（List）、栈（Stack）、Queue（队列）、Deque ADTs<sup>1</sup>（双端队列）的底层数据结构。<br><code>Linked List and its variations are used as underlying data structure to implement List, Stack, Queue, and Deque ADTs</code></p>
+<p>下面我们会讨论链表（只包含一个<code>next</code>指针）和它的两个变体：Stack和Queue，还会讨论Doubly Linked List（DLL）（双向链表）（包含<code>next</code>指针和<code>previous</code>指针），及其变体：Deque。</p>
+<h2 id="动机"><a href="#动机" class="headerlink" title="动机"></a>动机</h2><p>链表这个数据结构通常会在大学本科阶段学习，有以下几个原因：</p>
+<ol>
+<li>它是一个简单的线性数据结构。</li>
+<li>作为一个抽象数据类型的列表，它有一系列的应用，例如学生列表，事件列表，任职列表等等（尽管有其他更多高级数据结构能做到同样(甚至更好)）或者作为栈/队列/双端队列的抽象数据类型。</li>
+<li>它有一些有趣的边界用例，指出了数据结构的良好实现的必要。</li>
+<li>它包含多种自定义的选项，因此特别适合使用<code>OOP Programming</code>面向对象编程来实现。</li>
+</ol>
+  </div>
+  
+  <p class="article-meta">
+    
+    <span class="article-date">
+    <i class="icon icon-calendar-check"></i>
+	<a href="/2020/02/10/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84-%E9%93%BE%E8%A1%A8/" class="article-date">
+	  <time datetime="2020-02-10T14:13:00.000Z" itemprop="datePublished">2月 10</time>
+	</a>
+</span>
+    
+  <span class="article-category">
+    <i class="icon icon-folder"></i>
+    <a class="article-category-link" href="/categories/%E5%8D%9A%E6%96%87/">博文</a>
+  </span>
+
+    
+  <span class="article-tag">
+    <i class="icon icon-tags"></i>
+	<a class="article-tag-link-link" href="/tags/Algorithm/" rel="tag">Algorithm</a>, <a class="article-tag-link-link" href="/tags/Golang/" rel="tag">Golang</a>, <a class="article-tag-link-link" href="/tags/Translation/" rel="tag">Translation</a>
+  </span>
+
+
+    <span class="post-comment"><i class="icon icon-comment"></i> <a href="/2020/02/10/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84-%E9%93%BE%E8%A1%A8/#comments" class="article-comment-link">评论</a></span>
+    
+  </p>
+</article>
+
+      
+    
+  </div>
+
+
+  
+    
+    <nav class="bar bar-footer clearfix" data-stick-bottom>
+        <div class="bar-inner">
+        <ul class="pager pull-left">
+            
+            <li class="prev">
+                <a href="/page/3/">
+                    <i class="icon icon-angle-left"></i>
+                    上一页
+                </a>
+            </li>
+            
+            
+            <li class="next">
+                <a href="/page/5/">
+                    下一页
+                    <i class="icon icon-angle-right"></i>
+                </a>
+            </li>
+            
+        </ul>
+        <div class="total-article bar-right">Page 4 of 11</div>
+        </div>
+    </nav>
+    
+ 
+</main>
+
+  <footer class="footer" itemscope itemtype="http://schema.org/WPFooter">
+	
+	
+    <ul class="social-links">
+    	
+        <li><a href="https://github.com/straysh" target="_blank" title="Github" data-toggle=tooltip data-placement=top><i class="icon icon-github"></i></a></li>
+        
+        <li><a href="https://weibo.com/u/1689171115" target="_blank" title="Weibo" data-toggle=tooltip data-placement=top><i class="icon icon-weibo"></i></a></li>
+        
+        <li><a href="/atom.xml" target="_blank" title="Rss" data-toggle=tooltip data-placement=top><i class="icon icon-rss"></i></a></li>
+        
+    </ul>
+
+    <div class="copyright">
+    	
+        &copy; 2022 straysh.com 版权所有。ICP证：鄂ICP备2021016952号-1<!--Straysh-->
+        
+        <div class="publishby">
+        	Theme by <a href="https://github.com/cofess" target="_blank"> cofess </a>base on <a href="https://github.com/cofess/hexo-theme-pure" target="_blank">pure</a>.
+        </div>
+    </div>
+</footer>
+
+  <script src="//cdn.jsdelivr.net/npm/jquery@1.12.4/dist/jquery.min.js"></script>
+<script>
+window.jQuery || document.write('<script src="js/jquery.min.js"><\/script>')
+</script>
+
+<script src="/js/plugin.min.js"></script>
+
+
+<script src="/js/application.js"></script>
+
+
+    <script>
+(function (window) {
+    var INSIGHT_CONFIG = {
+        TRANSLATION: {
+            POSTS: '文章',
+            PAGES: '页面',
+            CATEGORIES: '分类',
+            TAGS: '标签',
+            UNTITLED: '(未命名)',
+        },
+        ROOT_URL: '/',
+        CONTENT_URL: '/content.json',
+    };
+    window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+})(window);
+</script>
+
+<script src="/js/insight.js"></script>
+
+
+
+
+
+
+   
+
+
+
+
+
+
+
+
+
+
+</body>
+</html>

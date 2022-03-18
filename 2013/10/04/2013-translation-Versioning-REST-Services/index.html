@@ -1,0 +1,685 @@
+<!DOCTYPE html>
+<html lang=zh>
+<head>
+  <meta charset="utf-8">
+  
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, minimal-ui">
+  <meta name="renderer" content="webkit">
+  <meta http-equiv="Cache-Control" content="no-transform" />
+  <meta http-equiv="Cache-Control" content="no-siteapp" />
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="format-detection" content="telephone=no,email=no,adress=no">
+  <!-- Color theme for statusbar -->
+  <meta name="theme-color" content="#000000" />
+  <!-- 强制页面在当前窗口以独立页面显示,防止别人在框架里调用页面 -->
+  <meta http-equiv="window-target" content="_top" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lxgw-wenkai-webfont@1.1.0/style.css" />
+  
+  
+  <title>translation_Versioning_REST_Services | Hexo</title>
+  <meta name="description" content="译文Scott Seely解释了何时发人员需要创建一个新的endpoint。这篇高水准的、非语言相关的文章解释了怎样给REST服务打上版本号以及各个选项在何时才有意义。 在一个多层次的应用程序开始过程中，版本号是一个反复出现的问题。无论你正在更新一个远程调用，或改变一个COM对象，或更新一个web服务，在增加新功能的同时你必须考虑到怎么样兼容现有的用户（consumers）(开发人员或用户)。每一">
+<meta property="og:type" content="article">
+<meta property="og:title" content="translation_Versioning_REST_Services">
+<meta property="og:url" content="https://straysh.github.life/2013/10/04/2013-translation-Versioning-REST-Services/index.html">
+<meta property="og:site_name" content="Straysh的小院">
+<meta property="og:description" content="译文Scott Seely解释了何时发人员需要创建一个新的endpoint。这篇高水准的、非语言相关的文章解释了怎样给REST服务打上版本号以及各个选项在何时才有意义。 在一个多层次的应用程序开始过程中，版本号是一个反复出现的问题。无论你正在更新一个远程调用，或改变一个COM对象，或更新一个web服务，在增加新功能的同时你必须考虑到怎么样兼容现有的用户（consumers）(开发人员或用户)。每一">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2013-10-04T03:11:51.000Z">
+<meta property="article:modified_time" content="2019-12-01T10:13:40.064Z">
+<meta property="article:author" content="Straysh">
+<meta property="article:tag" content="Translation">
+<meta name="twitter:card" content="summary">
+  <!-- Canonical links -->
+  <link rel="canonical" href="https://straysh.github.life/2013/10/04/2013-translation-Versioning-REST-Services/index.html">
+  
+    <link rel="alternate" href="/atom.xml" title="Straysh的小院" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.ico" type="image/x-icon">
+  
+  
+<link rel="stylesheet" href="/css/style.css">
+
+  
+<link rel="stylesheet" href="/css/custom.css">
+
+  
+  
+  
+  
+  
+<meta name="generator" content="Hexo 5.4.1"></head>
+
+
+<body class="main-center theme-green" itemscope itemtype="http://schema.org/WebPage">
+  <header class="header" style="background-image: url(/images/left_images/2.jpg);" itemscope itemtype="http://schema.org/WPHeader">
+  <div class="slimContent" style="height:100%;background-color: rgba(0,0,0,0.7);">
+    <div class="navbar-header">
+      
+      
+      <div class="profile-block text-center">
+        <a id="avatar" href="https://hexo.straysh.com" target="_blank">
+          <img class="img-circle img-rotate" src="/images/avatar.jpg" width="200" height="200">
+        </a>
+        <h2 id="name" class="hidden-xs hidden-sm">Straysh</h2>
+        <h3 id="title" class="hidden-xs hidden-sm hidden-md">野生程序猿</h3>
+        <small id="location" class="text-muted hidden-xs hidden-sm"><i class="icon icon-map-marker"></i> Beijing, China</small>
+      </div>
+      
+      <div class="search" id="search-form-wrap">
+
+    <form class="search-form sidebar-form">
+        <div class="input-group">
+            <input type="text" class="search-form-input form-control" placeholder="搜索" />
+            <span class="input-group-btn">
+                <button type="submit" class="search-form-submit btn btn-flat" onclick="return false;"><i class="icon icon-search"></i></button>
+            </span>
+        </div>
+    </form>
+    <div class="ins-search">
+  <div class="ins-search-mask"></div>
+  <div class="ins-search-container">
+    <div class="ins-input-wrapper">
+      <input type="text" class="ins-search-input" placeholder="想要查找什么..." x-webkit-speech />
+      <button type="button" class="close ins-close ins-selectable" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+    </div>
+    <div class="ins-section-wrapper">
+      <div class="ins-section-container"></div>
+    </div>
+  </div>
+</div>
+
+
+</div>
+      <button class="navbar-toggle collapsed" type="button" data-toggle="collapse" data-target="#main-navbar" aria-controls="main-navbar" aria-expanded="false">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+    </div>
+    <nav id="main-navbar" class="collapse navbar-collapse" itemscope itemtype="http://schema.org/SiteNavigationElement" role="navigation">
+      <ul class="nav navbar-nav main-nav menu-highlight">
+        
+        
+        <li class="menu-item menu-item-home">
+          <a href="/.">
+            
+            <i class="icon icon-home-fill"></i>
+            
+            <span class="menu-title">首页</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives">
+            
+            <i class="icon icon-archives-fill"></i>
+            
+            <span class="menu-title">归档</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories">
+            
+            <i class="icon icon-folder"></i>
+            
+            <span class="menu-title">分类</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags">
+            
+            <i class="icon icon-tags"></i>
+            
+            <span class="menu-title">标签</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-repository">
+          <a href="/repository">
+            
+            <i class="icon icon-project"></i>
+            
+            <span class="menu-title">项目</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-books">
+          <a href="/books">
+            
+            <i class="icon icon-book-fill"></i>
+            
+            <span class="menu-title">书单</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-links">
+          <a href="/links">
+            
+            <i class="icon icon-friendship"></i>
+            
+            <span class="menu-title">友链</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about">
+            
+            <i class="icon icon-cup-fill"></i>
+            
+            <span class="menu-title">关于</span>
+          </a>
+        </li>
+        
+      </ul>
+      
+	
+    <ul class="social-links">
+    	
+        <li><a href="https://github.com/straysh" target="_blank" title="Github" data-toggle=tooltip data-placement=top><i class="icon icon-github"></i></a></li>
+        
+        <li><a href="https://weibo.com/u/1689171115" target="_blank" title="Weibo" data-toggle=tooltip data-placement=top><i class="icon icon-weibo"></i></a></li>
+        
+        <li><a href="/atom.xml" target="_blank" title="Rss" data-toggle=tooltip data-placement=top><i class="icon icon-rss"></i></a></li>
+        
+    </ul>
+
+    </nav>
+  </div>
+</header>
+
+  
+    <aside class="sidebar" itemscope itemtype="http://schema.org/WPSideBar">
+  <div class="slimContent">
+
+    
+      <ul class="sidebar-nav motion-element" style="text-align:center; opacity: 1; display: block; transform: translateX(0px);">
+        <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+          系统目录
+        </li>
+      </ul>
+      <section class="site-overview-wrap sidebar-panel" style="opacity: 0; display: none;">
+        
+          <div class="widget">
+    <h3 class="widget-title">公告</h3>
+    <div class="widget-body">
+        <div id="board">
+            <div class="content">
+                <p>妳是风中的叶，风起而走，我想去追，怎么抓的住？</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+        
+          
+  <div class="widget">
+    <h3 class="widget-title">分类</h3>
+    <div class="widget-body">
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%8D%9A%E6%96%87/">博文</a><span class="category-list-count">102</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%8D%9A%E6%96%87/%E7%AC%94%E8%AE%B0/">笔记</a><span class="category-list-count">2</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E6%9D%82%E8%AE%B0/">杂记</a><span class="category-list-count">6</span></li></ul>
+    </div>
+  </div>
+
+
+        
+          
+  <div class="widget">
+    <h3 class="widget-title">标签</h3>
+    <div class="widget-body">
+      <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/Algorithm/" rel="tag">Algorithm</a><span class="tag-list-count">13</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Apache/" rel="tag">Apache</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Banbrick/" rel="tag">Banbrick</a><span class="tag-list-count">5</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Docker/" rel="tag">Docker</a><span class="tag-list-count">4</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Golang/" rel="tag">Golang</a><span class="tag-list-count">25</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Javascript/" rel="tag">Javascript</a><span class="tag-list-count">10</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Linux/" rel="tag">Linux</a><span class="tag-list-count">13</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/MySQL/" rel="tag">MySQL</a><span class="tag-list-count">13</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Mysql/" rel="tag">Mysql</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Nginx/" rel="tag">Nginx</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Nodejs/" rel="tag">Nodejs</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/PHP/" rel="tag">PHP</a><span class="tag-list-count">19</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/R/" rel="tag">R</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Redis/" rel="tag">Redis</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/SVN/" rel="tag">SVN</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Sphinx/" rel="tag">Sphinx</a><span class="tag-list-count">5</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Translation/" rel="tag">Translation</a><span class="tag-list-count">18</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Yii/" rel="tag">Yii</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%9D%82/" rel="tag">杂</a><span class="tag-list-count">6</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%B1%87%E7%BC%96/" rel="tag">汇编</a><span class="tag-list-count">1</span></li></ul>
+    </div>
+  </div>
+
+
+        
+          
+  <div class="widget">
+    <h3 class="widget-title">标签云</h3>
+    <div class="widget-body tagcloud">
+      <a href="/tags/Algorithm/" style="font-size: 13.67px;">Algorithm</a> <a href="/tags/Apache/" style="font-size: 13px;">Apache</a> <a href="/tags/Banbrick/" style="font-size: 13.33px;">Banbrick</a> <a href="/tags/Docker/" style="font-size: 13.22px;">Docker</a> <a href="/tags/Golang/" style="font-size: 14px;">Golang</a> <a href="/tags/Javascript/" style="font-size: 13.56px;">Javascript</a> <a href="/tags/Linux/" style="font-size: 13.67px;">Linux</a> <a href="/tags/MySQL/" style="font-size: 13.67px;">MySQL</a> <a href="/tags/Mysql/" style="font-size: 13px;">Mysql</a> <a href="/tags/Nginx/" style="font-size: 13.11px;">Nginx</a> <a href="/tags/Nodejs/" style="font-size: 13px;">Nodejs</a> <a href="/tags/PHP/" style="font-size: 13.89px;">PHP</a> <a href="/tags/R/" style="font-size: 13.11px;">R</a> <a href="/tags/Redis/" style="font-size: 13.11px;">Redis</a> <a href="/tags/SVN/" style="font-size: 13px;">SVN</a> <a href="/tags/Sphinx/" style="font-size: 13.33px;">Sphinx</a> <a href="/tags/Translation/" style="font-size: 13.78px;">Translation</a> <a href="/tags/Yii/" style="font-size: 13.11px;">Yii</a> <a href="/tags/%E6%9D%82/" style="font-size: 13.44px;">杂</a> <a href="/tags/%E6%B1%87%E7%BC%96/" style="font-size: 13px;">汇编</a>
+    </div>
+  </div>
+
+        
+          
+  <div class="widget">
+    <h3 class="widget-title">归档</h3>
+    <div class="widget-body">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/03/">三月 2022</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/03/">三月 2021</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/03/">三月 2020</a><span class="archive-list-count">5</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/02/">二月 2020</a><span class="archive-list-count">26</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/12/">十二月 2019</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/04/">四月 2019</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/09/">九月 2018</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/07/">七月 2016</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/06/">六月 2016</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/11/">十一月 2015</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/10/">十月 2015</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/09/">九月 2015</a><span class="archive-list-count">5</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/08/">八月 2015</a><span class="archive-list-count">13</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/07/">七月 2015</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/11/">十一月 2014</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/03/">三月 2014</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/12/">十二月 2013</a><span class="archive-list-count">8</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/10/">十月 2013</a><span class="archive-list-count">8</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/09/">九月 2013</a><span class="archive-list-count">2</span></li></ul>
+    </div>
+  </div>
+
+
+        
+          
+  <div class="widget">
+    <h3 class="widget-title">最新文章</h3>
+    <div class="widget-body">
+      <ul class="recent-post-list list-unstyled no-thumbnail">
+        
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/%E5%8D%9A%E6%96%87/">博文</a><i class="icon icon-angle-right"></i><a class="category-link" href="/categories/%E5%8D%9A%E6%96%87/%E7%AC%94%E8%AE%B0/">笔记</a>
+              </p>
+              <p class="item-title">
+                <a href="/2022/03/14/%E4%BD%BF%E7%94%A8Go%E6%93%8D%E4%BD%9C%E6%96%87%E4%BB%B6/" class="title">使用Go操作文件</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2022-03-14T12:11:25.000Z" itemprop="datePublished">2022-03-14</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/%E5%8D%9A%E6%96%87/">博文</a>
+              </p>
+              <p class="item-title">
+                <a href="/2022/03/13/Docker%E5%AE%B9%E5%99%A8%E7%BD%91%E7%BB%9C/" class="title">Docker容器网络</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2022-03-13T04:10:09.000Z" itemprop="datePublished">2022-03-13</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/%E5%8D%9A%E6%96%87/">博文</a><i class="icon icon-angle-right"></i><a class="category-link" href="/categories/%E5%8D%9A%E6%96%87/%E7%AC%94%E8%AE%B0/">笔记</a>
+              </p>
+              <p class="item-title">
+                <a href="/2022/03/13/Iptables%E5%92%8C%E5%AE%B9%E5%99%A8/" class="title">Iptables和容器</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2022-03-13T03:01:46.000Z" itemprop="datePublished">2022-03-13</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/%E5%8D%9A%E6%96%87/">博文</a>
+              </p>
+              <p class="item-title">
+                <a href="/2022/03/12/Linux%E7%BD%91%E6%A1%A5%E5%B7%A5%E4%BD%9C%E5%8E%9F%E7%90%86/" class="title">Linux网桥工作原理</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2022-03-12T10:02:29.000Z" itemprop="datePublished">2022-03-12</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/%E5%8D%9A%E6%96%87/">博文</a>
+              </p>
+              <p class="item-title">
+                <a href="/2021/03/16/%E5%B9%B6%E5%8F%91%E5%92%8C%E8%B0%83%E5%BA%A6%E7%9A%84%E5%85%B3%E7%B3%BB/" class="title">并发和调度的关系</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2021-03-16T05:54:13.000Z" itemprop="datePublished">2021-03-16</time>
+              </p>
+            </div>
+          </li>
+          
+      </ul>
+    </div>
+  </div>
+  
+
+        
+      </section>
+
+      <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active" style="opacity: 1; display: block;">
+        <nav id="toc" class="article-toc">
+          <h3 class="toc-title">文章目录</h3>
+          <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E8%AF%91%E6%96%87"><span class="toc-number">1.</span> <span class="toc-text">译文</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#toc_0.1"><span class="toc-number">1.1.</span> <span class="toc-text">NOTE</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#toc_0.2"><span class="toc-number">1.2.</span> <span class="toc-text">Summary</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%8E%9F%E6%96%87"><span class="toc-number">2.</span> <span class="toc-text">原文</span></a></li></ol>
+        </nav>
+      </section>
+    
+  </div>
+</aside>
+
+  
+  
+<main class="main" role="main">
+  <div class="content">
+  <article id="post-2013-translation-Versioning-REST-Services" class="article article-type-post" itemscope itemtype="http://schema.org/BlogPosting">
+    
+    <div class="article-header">
+      
+        
+  
+    <h1 class="article-title" itemprop="name">
+      <span style="color:#008e59;">[译]</span>translation_Versioning_REST_Services
+    </h1>
+  
+
+
+      
+      <div class="article-meta">
+        
+        <span class="article-date">
+    <i class="icon icon-calendar-check"></i>
+	<a href="/2013/10/04/2013-translation-Versioning-REST-Services/" class="article-date">
+	  <time datetime="2013-10-04T03:11:51.000Z" itemprop="datePublished">2013-10-04</time>
+	</a>
+</span>
+        
+  <span class="article-category">
+    <i class="icon icon-folder"></i>
+    <a class="article-category-link" href="/categories/%E5%8D%9A%E6%96%87/">博文</a>
+  </span>
+
+        
+  <span class="article-tag">
+    <i class="icon icon-tags"></i>
+	<a class="article-tag-link-link" href="/tags/Translation/" rel="tag">Translation</a>
+  </span>
+
+
+        
+
+        <span class="post-comment"><i class="icon icon-comment"></i> <a href="/2013/10/04/2013-translation-Versioning-REST-Services/#comments" class="article-comment-link">评论</a></span>
+        
+      </div>
+    </div>
+    <div class="article-entry marked-body" itemprop="articleBody">
+      
+        <h1 id="译文"><a href="#译文" class="headerlink" title="译文"></a>译文</h1><p>Scott Seely解释了何时发人员需要创建一个新的<a target="_blank" rel="noopener" href="http://en.wikipedia.org/wiki/Endpoint">endpoint</a>。这篇高水准的、非语言相关的文章解释了怎样给REST服务打上版本号以及各个选项在何时才有意义。</p>
+<p>在一个多层次的应用程序开始过程中，版本号是一个反复出现的问题。无论你正在更新一个远程调用，或改变一个COM对象，或更新一个web服务，在增加新功能的同时你必须考虑到怎么样兼容现有的用户（consumers）(开发人员或用户)。每一项新的技术的提出都促使我们重新定制版本号并提出处理系统变更的建议。</p>
+<p>在这篇文章中，我们着眼于这些事件类型，它们促使REST服务中新版本号的生成。我们只考虑HTTP协议的REST。REST可以在多种不同的协议上以建筑学的风格来实现。在实践中，大部分人选择HTTP技术作为REST架构的基石。</p>
+<p>在创建一个REST服务时，在项目的首轮迭代中通常将次原开放为只读的。在HTTP术语中，这意味着项目支持通过URL的GET方式被请求。之后，你可能会增加通过POST添加诸如资源的方法,通过PUT方法修改资源，通过DELTE方法删除资源。支持更多HTTP方法的同时，你不能中断现有的用户。换句话说，支持DELETE方法删除资源的同时，不能改变旧有的GET获取资源的功能。</p>
+<p>那么，哪些事件类型会破坏现有的客户端？</p>
+<p>从数据类型中移除字段会破坏现有客户端。客户端应用的开发人员应该处理丢失的值，但事实上他们很少这么做。结果他们的代码失效了，产生各种bug。</p>
+<p>对现有的字段排序或者新增字段会破坏依赖字段位置的客户端。例如，客户端依赖于FirstName这个字段，而这个字段在位置0上，但是布局把FirstName更改成了其它位置，客户端崩溃了，用户抱怨（系统不能正常工作）。再次声明：客户端代码要基于名字查找，虽然基于索引的代码更容易编写。</p>
+<p>重命名一个存在的字段也会导致客户端崩溃。将FirstName修改成firstname会使大小写敏感的客户端崩溃。大多数人使用XML或者JSON传递数据，它们都是大小写敏感的。若你使用其它方式（非大小写敏感）传递数据，牢记这一点尤为重要。</p>
+<p>更改URL结构同样导致客户端崩溃。在你移动的资源之后，客户端将无法使用旧的url请求到它们。</p>
+<p>处理以上问题的最简单的方式是改变URL结构。”正确”的处理方式是使用HTTP状态码301，表示永久重定向。这么做通过响应HTTP Location头信息会告诉请求端（通常是浏览器）资源的新位置。</p>
+<p>这么说吧，闭关不是所有的HTTP客户端都足够智能到自动跟随跳转。如果你无法控制现有的HTTP客户但，一些，通常是许多，会被写成禁止跟随跳转。在这个例子中，我建议尼保留旧的URL架构不动同时用代码来实现基本的新旧URL结构。旧的URL结构能被网络设备处理，同时也能被代码处理。如果你们有IT部门，跟负责负载均衡和web服务器的团队合作找到正确的方案。</p>
+<p>在重命名，重排序，新增，或者删除字段上，我有两个建议，很大程度上取决于谁在使用你们的服务。我们首先看看REST主义者：他们阅读过Roy Fielding的博士论文而且真正懂得Web的工作原理。第二条建议着重于怎么处理版本控制，当你的目标客户对简单的实现更感兴趣而不是最大化互联网架构的使用。</p>
+<p>一种学派支持所谓的HATEOAS：超媒体（Hypermedia）或者说应用引擎状态（Engine of Application State）。HATEOAS学派认为应该使用HTTP Accept和Content-Type头信息来处理和描述版本控制下的数据。Accept信息描述了请求这需要的内容的类型。而HTTP 消息（HTTP message）包含了数据，Content-Type描述了消息中数据的类型。</p>
+<p>这些头部信息的值是<a target="_blank" rel="noopener" href="http://en.wikipedia.org/wiki/MIME">MIME类型</a>,互联网名称与数字地址分配机构维护着可接收的MIME类型列表。作为供应商，你也可以使用vnd前缀创建自己的MIME类型。例如，假设尼打算暴露foo这个数据类型，并且你的域名是example.com，你可以为该数据定义如下的MIME类型：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">vnd.example-com.foo+xml 在XML中表示foo这个数据<br>vnd.example-com.foo+json 在JSON中表示foo这个数据<br></code></pre></td></tr></table></figure>
+<p>之后，任何人在请求你的服务时，只要他们建立了HTTP连接并且设置了正确的Accept头部MIME类型，以用户请求的格式返回的响应内容中会包含foo值。如果你对foo数据做了版本控制，那么MIME类型中就包含版本信息。</p>
+<p>例如，对于版本1.0,1.1和1.2，JSON格式的foo数据需要参照如下方式设置Accept/Content-type头信息：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">1.0:vnd.example-com.foo+json;version=1.0<br>1.1:vnd.example-com.foo+json;version=1.1<br>2.0:vnd.example-com.foo+json;version=2.0<br></code></pre></td></tr></table></figure>
+<p>所有的HTTP协议栈（HTTP stacks）都有读写HTTP Accept和Content-Type头信息的技术。例如，jQuery中我会这么写来请求版本1.1的foo数据JSON对象:</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs js">$.<span class="hljs-title function_">ajax</span>(&#123;<br>    <span class="hljs-attr">beforeSend</span>: <span class="hljs-keyword">function</span>(<span class="hljs-params">req</span>)&#123;<br>        req.<span class="hljs-title function_">setRequestHeader</span>(<span class="hljs-string">&#x27;Accept&#x27;</span>, <span class="hljs-string">&#x27;vnd.example-com-foo+json;version=1.1&#x27;</span>);<br>    &#125;,<br>    <span class="hljs-attr">type</span>: <span class="hljs-string">&#x27;GET&#x27;</span>,<br>    <span class="hljs-attr">url</span>: <span class="hljs-string">&#x27;http://http:/~/12&#x27;</span>,<br>    <span class="hljs-attr">success</span>: <span class="hljs-keyword">function</span>(<span class="hljs-params">data</span>)&#123;<br>        <span class="hljs-comment">/* code elided */</span><br>    &#125;,<br>    <span class="hljs-attr">dataType</span>: <span class="hljs-string">&#x27;json&#x27;</span><br>&#125;);<br></code></pre></td></tr></table></figure>
+
+<p>在服务端，你的代码需要查看accept类型并根据指定的请求版本写出客户端期望的字段。服务端必须基于URL和返回的Content-Type设置vary header来说明响应是可缓存的，例如：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">Vary: Content-Type<br></code></pre></td></tr></table></figure>
+
+<p>通过使用Vary header，确保互联网架构能够精确的缓存响应。否则，依赖这种架构的服务器会缓存XML表现形式并在用户请求JSON的时候返回它。使用MIME类型，你可以处理任何版本的资源表现形式，仅需要在一个url上支持一个大家都知道的MIME类型。在你变更实现方式的时候，接收端（receiving endpoint）需要知道怎样读写返回的表现形式。</p>
+<p>不幸的是，这最后一个bit对代码相当的敏感。用来接收的应用程序需要深入哇据HTTP Accept头并决定以何种格式书写响应。在一次请求中，在解码数据之前，例如在PUT或POST时，接收端需要检查Content-Type。</p>
+<h2 id="toc_0.1">NOTE</h2>
+只发送一种Accept类型的消息发送者通常不许要设置Accept类型，因为响应的Content-Type中应该包含了Accept type。
+
+<p>多数常用的web框架例如Django，Microsoft ASP.NET, Microsoft WCF,以及基于PHP的框架，没有这样的技术来自动处理基于Content-Type的序列操作(<a target="_blank" rel="noopener" href="http://en.wikipedia.org/wiki/Serialization">serialization</a>)。作为替换手段，开发人员不得不手写那些代码。客户端框架来发送和接收消息也成为可能，但设置HTTP Accept头不总是简单的,但设置url确实简单多了。</p>
+<p>这是我们回到我的第二个建议上 —— 易用至上。URL最大。</p>
+<p>创建web services的第二种方式是保持URL至上（TUK原则）。遵循这一模式的开发者称他为REST，因为他们听说过REST并且在一定程序上它和HTTP相关，但他们并不烦恼于阅读Fielding论文。幸运的是，这个学派唯一的过错在于把他们所做的东西叫做REST。为避免刺激REST主义者，我称之为TUK。</p>
+<p>在TUK中，也需要通过url在标识资源。在管理资源时，使用表转的HTTP方法：读取使用GET，新建使用POST，更新使用PUT，删除使用DELETE</p>
+<p>在这一点上，和REST是不同的。我们诸如上文提到的因改而产生的崩溃（breaking changes）。新增，删除，重排序，和重命名字段造成了一个某处的更改崩溃（breaking change）。你在这个世界创建一个新的版本，要更改URL结构。通常，你需要同时对大量成块的（largely chunks of）对象做版本控制。相应的，foo对象的1.0，1.1，2.0版本长的像这样：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">1.0 http://www.example.com/~/foo<br>1.1 http://www.example.com/~/foo<br>2.0 http://www.example.com/~/foo<br></code></pre></td></tr></table></figure>
+<p>对本版号来说，一个可接受的选择是使用时间戳。如果你们使用时间来做版本控制，这样的结构也可以工作：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">June 2008: http://www.example.com/~/foo<br>October 2009: http://www.example.com/~/foo<br>February 2010: http://www.example.com/~/foo<br></code></pre></td></tr></table></figure>
+<p>如果你使用时间做版本控制，记住把年放在月的前面，并使用2个数字的月份。这样对版本排序会简单的多。</p>
+<p>TUK风格有另外一个特征：Accept很少使用。相反，终端（endpoint）依赖查询字符串中的特定的格式来决定请求的Content-Type和期望返回的Content-Type。</p>
+<p>为了便利，默认的格式是JSON。例如：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">Request the resource as XML: http://www.example.com/~/foo?format=xml<br>Request the resource as JSON: http://www.example.com/~/foo?format=json<br></code></pre></td></tr></table></figure>
+<p><a target="_blank" rel="noopener" href="http://en.wikipedia.org/wiki/Portable_Contacts">Portable Contacts</a>和开放社区都使用这种模式，因为理解起来十分简单。</p>
+<p>开发人员倾向于使用url做版本控制。在url上标记版本使人一眼就能知道当前使用的服务版本号。只需要看一下请求的http url，什么都清楚了。</p>
+<p>在实现你的代码的时候，应该在一个中心区域来实现业务逻辑。不同版本的监听者应该知道在对象的业务逻辑表现形式和对外的表现形式之间进行转换。简而言之，保持HTTP部分的简洁以便统一的修改代码和更容易支持完全不同的客户端</p>
+<h2 id="toc_0.2">Summary</h2>
+在你重排序，重命名，新增或删除字段时，需要新建版本。通过改变表现形式，使得用户原有的解析数据的方式失效了。如果你的客户有结构话的想法并且对REST很了解，你应该使用应用程序接收的MIME类型对数据的表现形式做版本控制。如果你的客户将url作为最重要的一面，将url的设计作为版本控制的核心。那么熟悉WS-* web services的人倾向于在变更版本时改变url。
+
+<p>两种技术都是可行的。你要了解你的客户以便选中哪一种方式。一句话，企业和学术范倾向于REST版本控制。如果你的客户是小型业务，而用户都是hacker心理的人，追随TUK的道路。</p>
+<h1 id="原文"><a href="#原文" class="headerlink" title="原文"></a>原文</h1><p><a target="_blank" rel="noopener" href='http://www.informit.com/articles/article.aspx?p=1566460'>Versioning REST Services</a><br /><br>Scott Seely explains when developers need to create a new endpoint versus just adding data. This higher level, non-language specific article explains how to version REST services and when each choice makes sense.</p>
+<p>Versioning is a perennial issue in the development of multi-tier applications. Whether you are updating a remote procedure call, changing a COM object, or updating a Web service, you need to think about how to support existing consumers while providing new functionality. With each new technology, we have to revisit versioning and come up with new recommendations for how to handle change.</p>
+<p>In this article, we look at the types of events that cause you to create a new version in a REST service. We then look at two approaches to deploying versions. We only consider HTTP REST. REST can be implemented as an architectural style on many different protocols. As a practical matter, most of us choose HTTP technology as a cornerstone in our REST architectures.<br>Creating New Versions</p>
+<p>When creating a REST service, the first iteration in the project likely exposes the resource as read-only. In HTTP terms, this means that the project called for you to support GET on the URL. Later on, you might add the ability to add new resources through POST, update resources through PUT, and delete resources through DELETE. By supporting more HTTP methods, you cannot break existing clients. Put another way, the act of supporting DELETE does not change an older client’s ability to GET the resource.</p>
+<p>What types of events do break existing clients, then?</p>
+<blockquote>
+<p>Removing a field from a data type breaks clients. Developers who write client apps should handle missing values, but they frequently don’t. Their code breaks. And they file bugs against you.<br>  Repositioning existing fields or adding a field to a data type. This will break existing clients that rely on the field position. For example, if the client relies on the field FirstName being in position 0 and a layout changes that field to any other position, clients break and users complain. Again: The client code should do name-based lookups, but code that uses indexes may be easier to write for some folks.<br>  Renaming an existing field. Changing FirstName to firstName will break clients that rely on case sensitivity. Most of you transmit data as XML or JSON; both of these are case sensitive. If you transmit data in some other (non-case sensitive) form, this is even more important to keep In mind.<br>  Updating your URL structure. If you move the resource, existing clients won’t be able to get to them.</p>
+</blockquote>
+<p>The easiest one of these to handle is changes to URL structure. The “right way” to handle this is to use the HTTP status code 301, Moved Permanently. Doing so tells the caller the new home for the resource via the HTTP Location header in the response.</p>
+<p>That said, not all HTTP clients are smart enough to automatically follow redirects. If you do not control the existing HTTP clients, some, perhaps many, were written to not follow redirects. In this case, I advise you to keep the old URL structure in place and write the underlying implementation to handle the old and new URL structure with the same code. The old URL structure can be handled with networking equipment as well as with code. If you have an IT department to call on, work with the teams that own the load balancer and web servers to get the right rules in place.</p>
+<p>I have two recommendations for renaming, reordering, adding, or deleting fields. They largely depend on who consumes your service. We first look at the RESTafarians: folks who read Roy Fielding’s PhD dissertation and really understand how the Web works. The second recommendation addresses how to handle versioning when your target clients are more interested in simplicity of implementation than in maximizing their use of the architecture of the Internet.<br>Hypermedia as the Engine of Application State</p>
+<p>One school of thought follows what is called HATEOAS: Hypermedia as the Engine of Application State. HATEOAS says that you should use the HTTP Accept and Content-Type headers to handle versioning of data as well as describing data. Accept states the type of content the requester would like to get. When an HTTP message contains data, Content-Type states the type of content in that message.</p>
+<p>The values in these headers are Multipurpose Internet Mail Extensions (MIME) types. The Internet Corporation for Assigned Names and Numbers maintains the list of accepted MIME types. As a vendor, you can also create your own MIME types using the vnd prefix. For example, if you are exposing the foo data type and your company is example.com, you can define the following MIME types for the data:</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">vnd.example-com.foo+xml for the XML representation of foo data<br>vnd.example-com.foo+json for the JSON representation of foo data<br></code></pre></td></tr></table></figure>
+
+<p>Then, whenever anyone requests data from your service, they create an HTTP request and set the Accept header to the correct MIME type. The response contains the data in the user requested format. As you version the foo data type, allow for the MIME type information to include version data.</p>
+<p>For example, for versions 1.0, 1.1, and 2.0 of the foo data type as JSON set the Accept/Content-Type header as follows:</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">1.0: vnd.example-com.foo+json; version=1.0<br>1.1: vnd.example-com.foo+json; version=1.1<br>2.0: vnd.example-com.foo+json; version=2.0<br></code></pre></td></tr></table></figure>
+
+<p>All the HTTP stacks have a mechanism to read and set the HTTP Accept and Content-Type headers. For example, in jQuery I would write the following to request version 1.1 of the foo object as JSON:</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs js">$.<span class="hljs-title function_">ajax</span>(&#123;<br>  <span class="hljs-attr">beforeSend</span>: <span class="hljs-keyword">function</span> (<span class="hljs-params">req</span>) &#123;<br>    req.<span class="hljs-title function_">setRequestHeader</span>(<span class="hljs-string">&quot;Accept&quot;</span>, <span class="hljs-string">&quot;vnd.example-com.foo+json; version=1.1&quot;</span>); <br>  &#125;,<br>  <span class="hljs-attr">type</span>: <span class="hljs-string">&quot;GET&quot;</span>,<br>  <span class="hljs-attr">url</span>: <span class="hljs-string">&quot;&lt;a href=&#x27;http://http://www.example.com/foo/12&#x27;&quot;</span>,<br>  <span class="hljs-attr">success</span>: <span class="hljs-keyword">function</span> (<span class="hljs-params">data</span>) &#123;<br>    <span class="hljs-comment">/* code elided */</span><br>  &#125;,<br>  <span class="hljs-attr">dataType</span>: <span class="hljs-string">&quot;json&quot;</span><br>&#125;);<br></code></pre></td></tr></table></figure>
+
+<p>On the server, your code needs to look at the accept type and handle writing out only the fields that the client expects, depending on which version of foo was requested. The server has to set the HTTP Vary header to say that the response is cacheable based on the URL plus the returned Content-Type, as follows:</p>
+<p>Vary: Content-Type </p>
+<p>By using the Vary header, you make sure that the Internet architecture can accurately cache the response. Otherwise, servers that rely on the architecture could cache the XML representation and return that when the caller asks for JSON. Using the MIME type, you can handle any version a resource representation by supporting a well know set of MIME types on a single URL. As you change the implementation, the receiving endpoint needs to know how to read and write the representations as requested.</p>
+<p>Unfortunately, this last bit can be fairly code intensive. The receiving application needs to dig into the HTTP Accept header and determine which formatting should be used to write the response. Before decoding data in a request, such as in a PUT or POST, the receiver needs to look at the Content-Type.</p>
+<p>NOTE</p>
+<p>a message sender that only sends one Accept type typically does not need to do this, since the response Content-Type should match the Accept type.</p>
+<p>Many popular web frameworks such as Django, Microsoft ASP.NET, Microsoft WCF, and those built on PHP do not have mechanisms to handle serialization based on Content-Type automatically. Instead, the developer has to write that code. The client frameworks to send and receive messages also make it possible, but not always simple, to set the HTTP Accept header. They do make it easy to set the URL.</p>
+<p>This brings us to my second recommendation – where ease of use is paramount.<br>The URL is King</p>
+<p>A second way to create Web services is to observe that The URL is King (TUK). Developers who follow this pattern call it REST because they heard that REST and HTTP are somehow related, but they couldn’t be bothered to read the Fielding dissertation. Fortunately, the only thing this school is guilty of is calling what they do REST. So as to not incite the RESTafarians, I call it TUK.</p>
+<p>In TUK, you still identify resources by their URLs. When manipulating resources, use the standard HTTP methods:</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">GET to read<br>POST to create<br>PUT to update<br>DELETE to remove<br></code></pre></td></tr></table></figure>
+
+<p>At this point, we depart from REST. We have the same breaking changes as before. Adding, removing, reordering, and renaming fields constitutes a breaking change for someone somewhere. When you create a new version in this world, change the URL structure. Typically, you version large chunks of your objects at a time. Our foo object version for 1.0, 1.1, and 2.0 looks like this, instead:</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">1.0: &lt;a href=&quot;http://www.example.com/app/1.0/foo&quot;&gt;http://www.example.com/app/1.0/foo&lt;/a&gt;<br>1.1: &lt;a href=&quot;http://www.example.com/app/1.1/foo&quot;&gt;http://www.example.com/app/1.1/foo&lt;/a&gt;<br>2.0: &lt;a href=&quot;http://www.example.com/app/2.0/foo&quot;&gt;http://www.example.com/app/2.0/foo&lt;/a&gt;<br></code></pre></td></tr></table></figure>
+
+<p>An acceptable alternative to version numbers are date stamps. If your organization handles versioning by date, the following would also work:</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">June 2008: &lt;a href=&quot;http://www.example.com/app/2008/06/foo&quot;&gt;http://www.example.com/app/2008/06/foo&lt;/a&gt;<br>October 2009: &lt;a href=&quot;http://www.example.com/app/2009/10/foo&quot;&gt;http://www.example.com/app/2009/10/foo&lt;/a&gt;<br>February 2010: &lt;a href=&quot;http://www.example.com/app/2010/02/foo&quot;&gt;http://www.example.com/app/2010/02/foo&lt;/a&gt;<br></code></pre></td></tr></table></figure>
+
+<p>If you version by date, always put the year before the month, and use two digit months. This makes it easy to sort the versions visually.</p>
+<p>The TUK style has another characteristic: Accept is used rarely, if ever. Instead, endpoints rely on a format parameter in the query string to determine the content type of the request and the desired response content type.</p>
+<p>By convention, the default value for format is json. Examples:</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">Request the resource as XML: &lt;a href=&quot;http://www.example.com/app/1.0/foo?format=xml&quot;&gt;http://www.example.com/app/1.0/foo?format=xml&lt;/a&gt;<br>Request the resource as JSON: &lt;a href=&quot;http://www.example.com/app/1.0/foo?format=json&quot;&gt;http://www.example.com/app/1.0/foo?format=json&lt;/a&gt;<br></code></pre></td></tr></table></figure>
+
+<p>Both Portable Contacts and OpenSocial use this pattern because it is so easy for people to understand.</p>
+<p>Developers tend to prefer versioning by URL. Versioning by URL allows them to figure out which version of the service is in use at a glance. Just look at the HTTP request URL, and you know everything!</p>
+<p>When implementing your code, you should keep the business logic in one central location. The various listeners for each version should know how to transpose between the business logic representation of the object and the external representation. In general, keep the HTTP part fairly thin and simple so that you can fix code centrally and support disparate clients easily.<br>Summary</p>
+<p>You have a new version of your service whenever you reorder, rename, add, or delete fields. By changing the representation, you invalidate the assumptions consumers have already made about how to interpret the data. If your audience is architecturally minded and aware of REST, you should version data representations in the MIME types your application accepts. If your clients view the URL as the most important facet, make the URL the center of your versioning efforts. Folks who are familiar with versioning with WS-* Web services tend to be more comfortable with changing the URL when versions change.</p>
+<p>Both mechanisms are valid. You need to know your consumer to know which path to follow. In general, working with enterprises and academically-minded folks tends to point developers towards REST versioning. If your clients are smaller businesses and users with a hacker mentality, follow the TUK approach. </p>
+
+      
+    </div>
+    <div class="article-footer">
+      <blockquote class="mt-2x">
+  <ul class="post-copyright list-unstyled">
+    
+    <li class="post-copyright-link hidden-xs">
+      <strong>本文链接：</strong>
+      <a href="https://straysh.github.life/2013/10/04/2013-translation-Versioning-REST-Services/" title="translation_Versioning_REST_Services" target="_blank" rel="external">https://straysh.github.life/2013/10/04/2013-translation-Versioning-REST-Services/</a>
+    </li>
+    
+    <li class="post-copyright-license">
+      <strong>版权声明： </strong> 本博客所有文章除特别声明外，均采用 <a href="http://creativecommons.org/licenses/by/4.0/deed.zh" target="_blank" rel="external">CC BY 4.0 CN协议</a> 许可协议。转载请注明出处！
+    </li>
+  </ul>
+</blockquote>
+
+
+<div class="panel panel-default panel-badger">
+  <div class="panel-body">
+    <figure class="media">
+      <div class="media-left">
+        <a href="https://hexo.straysh.com" target="_blank" class="img-burn thumb-sm visible-lg">
+          <img src="/images/avatar.jpg" class="img-rounded w-full" alt="">
+        </a>
+      </div>
+      <div class="media-body">
+        <h3 class="media-heading"><a href="https://hexo.straysh.com" target="_blank"><span class="text-dark">Straysh</span><small class="ml-1x">野生程序猿</small></a></h3>
+        <div>野生程序猿 &amp; 猫奴。</div>
+      </div>
+    </figure>
+  </div>
+</div>
+
+
+    </div>
+  </article>
+  
+    
+  <section id="comments">
+  	
+      <div id="disqus_thread">
+        <noscript>Please enable JavaScript to view the <a target="_blank" rel="noopener" href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+      </div>
+    
+  </section>
+
+
+  
+</div>
+
+  <nav class="bar bar-footer clearfix" data-stick-bottom>
+  <div class="bar-inner">
+  
+  <ul class="pager pull-left">
+    
+    <li class="prev">
+      <a href="/2013/10/04/2013-Yii-Fragment-Caching/" title="Yii_Fragment_Caching"><i class="icon icon-angle-left" aria-hidden="true"></i><span>&nbsp;&nbsp;上一篇</span></a>
+    </li>
+    
+    
+    <li class="next">
+      <a href="/2013/10/03/2013-mysql-MySQL%E6%9D%83%E5%A8%81%E6%8C%87%E5%8D%97%E7%AC%94%E8%AE%B0%EF%BC%88%E4%BA%8C%EF%BC%89/" title="mysql_MySQL权威指南笔记（二）"><span>下一篇&nbsp;&nbsp;</span><i class="icon icon-angle-right" aria-hidden="true"></i></a>
+    </li>
+    
+    
+  </ul>
+  
+  
+  
+  <div class="bar-right">
+    
+    <div class="share-component" data-sites="weibo,qq,wechat,facebook,twitter" data-mobile-sites="weibo,qq,qzone"></div>
+    
+  </div>
+  </div>
+</nav>
+  
+
+
+
+</main>
+
+  <footer class="footer" itemscope itemtype="http://schema.org/WPFooter">
+	
+	
+    <ul class="social-links">
+    	
+        <li><a href="https://github.com/straysh" target="_blank" title="Github" data-toggle=tooltip data-placement=top><i class="icon icon-github"></i></a></li>
+        
+        <li><a href="https://weibo.com/u/1689171115" target="_blank" title="Weibo" data-toggle=tooltip data-placement=top><i class="icon icon-weibo"></i></a></li>
+        
+        <li><a href="/atom.xml" target="_blank" title="Rss" data-toggle=tooltip data-placement=top><i class="icon icon-rss"></i></a></li>
+        
+    </ul>
+
+    <div class="copyright">
+    	
+        &copy; 2022 straysh.com 版权所有。ICP证：鄂ICP备2021016952号-1<!--Straysh-->
+        
+        <div class="publishby">
+        	Theme by <a href="https://github.com/cofess" target="_blank"> cofess </a>base on <a href="https://github.com/cofess/hexo-theme-pure" target="_blank">pure</a>.
+        </div>
+    </div>
+</footer>
+
+  <script src="//cdn.jsdelivr.net/npm/jquery@1.12.4/dist/jquery.min.js"></script>
+<script>
+window.jQuery || document.write('<script src="js/jquery.min.js"><\/script>')
+</script>
+
+<script src="/js/plugin.min.js"></script>
+
+
+<script src="/js/application.js"></script>
+
+
+    <script>
+(function (window) {
+    var INSIGHT_CONFIG = {
+        TRANSLATION: {
+            POSTS: '文章',
+            PAGES: '页面',
+            CATEGORIES: '分类',
+            TAGS: '标签',
+            UNTITLED: '(未命名)',
+        },
+        ROOT_URL: '/',
+        CONTENT_URL: '/content.json',
+    };
+    window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+})(window);
+</script>
+
+<script src="/js/insight.js"></script>
+
+
+
+
+
+
+   
+
+
+
+
+<!--   
+    
+    <script defer>
+    var disqus_config = function () {
+        
+            this.page.url = 'https://straysh.github.life/2013/10/04/2013-translation-Versioning-REST-Services/';
+        
+        this.page.identifier = '2013-translation-Versioning-REST-Services';
+    };
+    (function() { 
+        var d = document, s = d.createElement('script');  
+        s.src = '//' + 'straysh' + '.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+</script>
+
+-->
+
+
+
+
+
+
+
+</body>
+</html>

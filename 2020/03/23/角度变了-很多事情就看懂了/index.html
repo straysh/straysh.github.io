@@ -1,0 +1,656 @@
+<!DOCTYPE html>
+<html lang=zh>
+<head>
+  <meta charset="utf-8">
+  
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, minimal-ui">
+  <meta name="renderer" content="webkit">
+  <meta http-equiv="Cache-Control" content="no-transform" />
+  <meta http-equiv="Cache-Control" content="no-siteapp" />
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="format-detection" content="telephone=no,email=no,adress=no">
+  <!-- Color theme for statusbar -->
+  <meta name="theme-color" content="#000000" />
+  <!-- 强制页面在当前窗口以独立页面显示,防止别人在框架里调用页面 -->
+  <meta http-equiv="window-target" content="_top" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lxgw-wenkai-webfont@1.1.0/style.css" />
+  
+  
+  <title>角度变了,很多事情就看懂了! | Hexo</title>
+  <meta name="description" content="文章来源：微信文章角度变了，很多事情就看懂了！普通人和高手之间的差距在哪里？   在于能不能拥有自己独立清晰的判断和观点。不盲目跟风，不人云亦云。 这是从 1 楼爬到 10 楼，从普通到优秀。 那高手和顶尖高手的差距在哪里？ 在于能不能同时拥有自己和他人的观点，把自己放进别人的鞋子里，不以自我为中心。 这是从10楼爬到100楼，从优秀到极致。 两幅地图最近，疫情继续在全球扩散。   我们常听新闻里">
+<meta property="og:type" content="article">
+<meta property="og:title" content="角度变了,很多事情就看懂了!">
+<meta property="og:url" content="https://straysh.github.life/2020/03/23/%E8%A7%92%E5%BA%A6%E5%8F%98%E4%BA%86-%E5%BE%88%E5%A4%9A%E4%BA%8B%E6%83%85%E5%B0%B1%E7%9C%8B%E6%87%82%E4%BA%86/index.html">
+<meta property="og:site_name" content="Straysh的小院">
+<meta property="og:description" content="文章来源：微信文章角度变了，很多事情就看懂了！普通人和高手之间的差距在哪里？   在于能不能拥有自己独立清晰的判断和观点。不盲目跟风，不人云亦云。 这是从 1 楼爬到 10 楼，从普通到优秀。 那高手和顶尖高手的差距在哪里？ 在于能不能同时拥有自己和他人的观点，把自己放进别人的鞋子里，不以自我为中心。 这是从10楼爬到100楼，从优秀到极致。 两幅地图最近，疫情继续在全球扩散。   我们常听新闻里">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://straysh.github.life/images/misc/worldmap001.jpg">
+<meta property="og:image" content="https://straysh.github.life/images/misc/worldmap002.jpg">
+<meta property="og:image" content="https://straysh.github.life/images/misc/trump_twitter_001.jpg">
+<meta property="article:published_time" content="2020-03-23T15:21:45.000Z">
+<meta property="article:modified_time" content="2020-03-23T15:36:11.220Z">
+<meta property="article:author" content="Straysh">
+<meta property="article:tag" content="杂">
+<meta property="article:tag" content="Banbrick">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://straysh.github.life/images/misc/worldmap001.jpg">
+  <!-- Canonical links -->
+  <link rel="canonical" href="https://straysh.github.life/2020/03/23/%E8%A7%92%E5%BA%A6%E5%8F%98%E4%BA%86-%E5%BE%88%E5%A4%9A%E4%BA%8B%E6%83%85%E5%B0%B1%E7%9C%8B%E6%87%82%E4%BA%86/index.html">
+  
+    <link rel="alternate" href="/atom.xml" title="Straysh的小院" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.ico" type="image/x-icon">
+  
+  
+<link rel="stylesheet" href="/css/style.css">
+
+  
+<link rel="stylesheet" href="/css/custom.css">
+
+  
+  
+<link rel="stylesheet" href="/css/misc.css">
+
+  
+  
+  
+  
+  
+<meta name="generator" content="Hexo 5.4.1"></head>
+
+
+<body class="main-center theme-green no-sidebar" itemscope itemtype="http://schema.org/WebPage">
+  <header class="header" style="background-image: url(/images/left_images/2.jpg);" itemscope itemtype="http://schema.org/WPHeader">
+  <div class="slimContent" style="height:100%;background-color: rgba(0,0,0,0.7);">
+    <div class="navbar-header">
+      
+      
+      <div class="profile-block text-center">
+        <a id="avatar" href="https://hexo.straysh.com" target="_blank">
+          <img class="img-circle img-rotate" src="/images/avatar.jpg" width="200" height="200">
+        </a>
+        <h2 id="name" class="hidden-xs hidden-sm">Straysh</h2>
+        <h3 id="title" class="hidden-xs hidden-sm hidden-md">野生程序猿</h3>
+        <small id="location" class="text-muted hidden-xs hidden-sm"><i class="icon icon-map-marker"></i> Beijing, China</small>
+      </div>
+      
+      <div class="search" id="search-form-wrap">
+
+    <form class="search-form sidebar-form">
+        <div class="input-group">
+            <input type="text" class="search-form-input form-control" placeholder="搜索" />
+            <span class="input-group-btn">
+                <button type="submit" class="search-form-submit btn btn-flat" onclick="return false;"><i class="icon icon-search"></i></button>
+            </span>
+        </div>
+    </form>
+    <div class="ins-search">
+  <div class="ins-search-mask"></div>
+  <div class="ins-search-container">
+    <div class="ins-input-wrapper">
+      <input type="text" class="ins-search-input" placeholder="想要查找什么..." x-webkit-speech />
+      <button type="button" class="close ins-close ins-selectable" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+    </div>
+    <div class="ins-section-wrapper">
+      <div class="ins-section-container"></div>
+    </div>
+  </div>
+</div>
+
+
+</div>
+      <button class="navbar-toggle collapsed" type="button" data-toggle="collapse" data-target="#main-navbar" aria-controls="main-navbar" aria-expanded="false">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+    </div>
+    <nav id="main-navbar" class="collapse navbar-collapse" itemscope itemtype="http://schema.org/SiteNavigationElement" role="navigation">
+      <ul class="nav navbar-nav main-nav menu-highlight">
+        
+        
+        <li class="menu-item menu-item-home">
+          <a href="/.">
+            
+            <i class="icon icon-home-fill"></i>
+            
+            <span class="menu-title">首页</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives">
+            
+            <i class="icon icon-archives-fill"></i>
+            
+            <span class="menu-title">归档</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories">
+            
+            <i class="icon icon-folder"></i>
+            
+            <span class="menu-title">分类</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags">
+            
+            <i class="icon icon-tags"></i>
+            
+            <span class="menu-title">标签</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-repository">
+          <a href="/repository">
+            
+            <i class="icon icon-project"></i>
+            
+            <span class="menu-title">项目</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-books">
+          <a href="/books">
+            
+            <i class="icon icon-book-fill"></i>
+            
+            <span class="menu-title">书单</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-links">
+          <a href="/links">
+            
+            <i class="icon icon-friendship"></i>
+            
+            <span class="menu-title">友链</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about">
+            
+            <i class="icon icon-cup-fill"></i>
+            
+            <span class="menu-title">关于</span>
+          </a>
+        </li>
+        
+      </ul>
+      
+	
+    <ul class="social-links">
+    	
+        <li><a href="https://github.com/straysh" target="_blank" title="Github" data-toggle=tooltip data-placement=top><i class="icon icon-github"></i></a></li>
+        
+        <li><a href="https://weibo.com/u/1689171115" target="_blank" title="Weibo" data-toggle=tooltip data-placement=top><i class="icon icon-weibo"></i></a></li>
+        
+        <li><a href="/atom.xml" target="_blank" title="Rss" data-toggle=tooltip data-placement=top><i class="icon icon-rss"></i></a></li>
+        
+    </ul>
+
+    </nav>
+  </div>
+</header>
+
+  
+    <aside class="sidebar" itemscope itemtype="http://schema.org/WPSideBar">
+  <div class="slimContent">
+
+    
+      <ul class="sidebar-nav motion-element" style="text-align:center; opacity: 1; display: block; transform: translateX(0px);">
+        <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+          系统目录
+        </li>
+      </ul>
+      <section class="site-overview-wrap sidebar-panel" style="opacity: 0; display: none;">
+        
+          <div class="widget">
+    <h3 class="widget-title">公告</h3>
+    <div class="widget-body">
+        <div id="board">
+            <div class="content">
+                <p>妳是风中的叶，风起而走，我想去追，怎么抓的住？</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+        
+          
+  <div class="widget">
+    <h3 class="widget-title">分类</h3>
+    <div class="widget-body">
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%8D%9A%E6%96%87/">博文</a><span class="category-list-count">102</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%8D%9A%E6%96%87/%E7%AC%94%E8%AE%B0/">笔记</a><span class="category-list-count">2</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E6%9D%82%E8%AE%B0/">杂记</a><span class="category-list-count">6</span></li></ul>
+    </div>
+  </div>
+
+
+        
+          
+  <div class="widget">
+    <h3 class="widget-title">标签</h3>
+    <div class="widget-body">
+      <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/Algorithm/" rel="tag">Algorithm</a><span class="tag-list-count">13</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Apache/" rel="tag">Apache</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Banbrick/" rel="tag">Banbrick</a><span class="tag-list-count">5</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Docker/" rel="tag">Docker</a><span class="tag-list-count">4</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Golang/" rel="tag">Golang</a><span class="tag-list-count">25</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Javascript/" rel="tag">Javascript</a><span class="tag-list-count">10</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Linux/" rel="tag">Linux</a><span class="tag-list-count">13</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/MySQL/" rel="tag">MySQL</a><span class="tag-list-count">13</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Mysql/" rel="tag">Mysql</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Nginx/" rel="tag">Nginx</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Nodejs/" rel="tag">Nodejs</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/PHP/" rel="tag">PHP</a><span class="tag-list-count">19</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/R/" rel="tag">R</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Redis/" rel="tag">Redis</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/SVN/" rel="tag">SVN</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Sphinx/" rel="tag">Sphinx</a><span class="tag-list-count">5</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Translation/" rel="tag">Translation</a><span class="tag-list-count">18</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Yii/" rel="tag">Yii</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%9D%82/" rel="tag">杂</a><span class="tag-list-count">6</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%B1%87%E7%BC%96/" rel="tag">汇编</a><span class="tag-list-count">1</span></li></ul>
+    </div>
+  </div>
+
+
+        
+          
+  <div class="widget">
+    <h3 class="widget-title">标签云</h3>
+    <div class="widget-body tagcloud">
+      <a href="/tags/Algorithm/" style="font-size: 13.67px;">Algorithm</a> <a href="/tags/Apache/" style="font-size: 13px;">Apache</a> <a href="/tags/Banbrick/" style="font-size: 13.33px;">Banbrick</a> <a href="/tags/Docker/" style="font-size: 13.22px;">Docker</a> <a href="/tags/Golang/" style="font-size: 14px;">Golang</a> <a href="/tags/Javascript/" style="font-size: 13.56px;">Javascript</a> <a href="/tags/Linux/" style="font-size: 13.67px;">Linux</a> <a href="/tags/MySQL/" style="font-size: 13.67px;">MySQL</a> <a href="/tags/Mysql/" style="font-size: 13px;">Mysql</a> <a href="/tags/Nginx/" style="font-size: 13.11px;">Nginx</a> <a href="/tags/Nodejs/" style="font-size: 13px;">Nodejs</a> <a href="/tags/PHP/" style="font-size: 13.89px;">PHP</a> <a href="/tags/R/" style="font-size: 13.11px;">R</a> <a href="/tags/Redis/" style="font-size: 13.11px;">Redis</a> <a href="/tags/SVN/" style="font-size: 13px;">SVN</a> <a href="/tags/Sphinx/" style="font-size: 13.33px;">Sphinx</a> <a href="/tags/Translation/" style="font-size: 13.78px;">Translation</a> <a href="/tags/Yii/" style="font-size: 13.11px;">Yii</a> <a href="/tags/%E6%9D%82/" style="font-size: 13.44px;">杂</a> <a href="/tags/%E6%B1%87%E7%BC%96/" style="font-size: 13px;">汇编</a>
+    </div>
+  </div>
+
+        
+          
+  <div class="widget">
+    <h3 class="widget-title">归档</h3>
+    <div class="widget-body">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/03/">三月 2022</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/03/">三月 2021</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/03/">三月 2020</a><span class="archive-list-count">5</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/02/">二月 2020</a><span class="archive-list-count">26</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/12/">十二月 2019</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/04/">四月 2019</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/09/">九月 2018</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/07/">七月 2016</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/06/">六月 2016</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/11/">十一月 2015</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/10/">十月 2015</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/09/">九月 2015</a><span class="archive-list-count">5</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/08/">八月 2015</a><span class="archive-list-count">13</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/07/">七月 2015</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/11/">十一月 2014</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/03/">三月 2014</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/12/">十二月 2013</a><span class="archive-list-count">8</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/10/">十月 2013</a><span class="archive-list-count">8</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/09/">九月 2013</a><span class="archive-list-count">2</span></li></ul>
+    </div>
+  </div>
+
+
+        
+          
+  <div class="widget">
+    <h3 class="widget-title">最新文章</h3>
+    <div class="widget-body">
+      <ul class="recent-post-list list-unstyled no-thumbnail">
+        
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/%E5%8D%9A%E6%96%87/">博文</a><i class="icon icon-angle-right"></i><a class="category-link" href="/categories/%E5%8D%9A%E6%96%87/%E7%AC%94%E8%AE%B0/">笔记</a>
+              </p>
+              <p class="item-title">
+                <a href="/2022/03/14/%E4%BD%BF%E7%94%A8Go%E6%93%8D%E4%BD%9C%E6%96%87%E4%BB%B6/" class="title">使用Go操作文件</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2022-03-14T12:11:25.000Z" itemprop="datePublished">2022-03-14</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/%E5%8D%9A%E6%96%87/">博文</a>
+              </p>
+              <p class="item-title">
+                <a href="/2022/03/13/Docker%E5%AE%B9%E5%99%A8%E7%BD%91%E7%BB%9C/" class="title">Docker容器网络</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2022-03-13T04:10:09.000Z" itemprop="datePublished">2022-03-13</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/%E5%8D%9A%E6%96%87/">博文</a><i class="icon icon-angle-right"></i><a class="category-link" href="/categories/%E5%8D%9A%E6%96%87/%E7%AC%94%E8%AE%B0/">笔记</a>
+              </p>
+              <p class="item-title">
+                <a href="/2022/03/13/Iptables%E5%92%8C%E5%AE%B9%E5%99%A8/" class="title">Iptables和容器</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2022-03-13T03:01:46.000Z" itemprop="datePublished">2022-03-13</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/%E5%8D%9A%E6%96%87/">博文</a>
+              </p>
+              <p class="item-title">
+                <a href="/2022/03/12/Linux%E7%BD%91%E6%A1%A5%E5%B7%A5%E4%BD%9C%E5%8E%9F%E7%90%86/" class="title">Linux网桥工作原理</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2022-03-12T10:02:29.000Z" itemprop="datePublished">2022-03-12</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/%E5%8D%9A%E6%96%87/">博文</a>
+              </p>
+              <p class="item-title">
+                <a href="/2021/03/16/%E5%B9%B6%E5%8F%91%E5%92%8C%E8%B0%83%E5%BA%A6%E7%9A%84%E5%85%B3%E7%B3%BB/" class="title">并发和调度的关系</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2021-03-16T05:54:13.000Z" itemprop="datePublished">2021-03-16</time>
+              </p>
+            </div>
+          </li>
+          
+      </ul>
+    </div>
+  </div>
+  
+
+        
+      </section>
+
+      <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active" style="opacity: 1; display: block;">
+        <nav id="toc" class="article-toc">
+          <h3 class="toc-title">文章目录</h3>
+          <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%96%87%E7%AB%A0%E6%9D%A5%E6%BA%90%EF%BC%9A%E5%BE%AE%E4%BF%A1%E6%96%87%E7%AB%A0"><span class="toc-number">1.</span> <span class="toc-text">文章来源：微信文章</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%A7%92%E5%BA%A6%E5%8F%98%E4%BA%86%EF%BC%8C%E5%BE%88%E5%A4%9A%E4%BA%8B%E6%83%85%E5%B0%B1%E7%9C%8B%E6%87%82%E4%BA%86%EF%BC%81"><span class="toc-number">2.</span> <span class="toc-text">角度变了，很多事情就看懂了！</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E4%B8%A4%E5%B9%85%E5%9C%B0%E5%9B%BE"><span class="toc-number"></span> <span class="toc-text">两幅地图</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E4%B8%80%E6%AC%A1%E8%BE%A9%E8%AE%BA"><span class="toc-number"></span> <span class="toc-text">一次辩论</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E4%B8%89%E4%B8%AA%E5%9C%BA%E6%99%AF"><span class="toc-number"></span> <span class="toc-text">三个场景</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E6%9C%80%E5%90%8E%E7%9A%84%E8%AF%9D"><span class="toc-number"></span> <span class="toc-text">最后的话</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%96%87%E7%AB%A0%E6%9D%A5%E6%BA%90%EF%BC%9A%E5%BE%AE%E4%BF%A1%E6%96%87%E7%AB%A0-1"><span class="toc-number">1.</span> <span class="toc-text">文章来源：微信文章</span></a></li></ol>
+        </nav>
+      </section>
+    
+  </div>
+</aside>
+
+  
+  
+<main class="main" role="main">
+  <div class="content">
+  <article id="page-角度变了-很多事情就看懂了" class="article article-type-page" itemscope itemtype="http://schema.org/BlogPosting">
+    
+    <div class="article-header">
+      
+        
+  
+    <h1 class="article-title" itemprop="name">
+      <span style="color:#008e59;">[搬]</span>角度变了,很多事情就看懂了!
+    </h1>
+  
+
+
+      
+      <div class="article-meta">
+        
+        <span class="article-date">
+    <i class="icon icon-calendar-check"></i>
+	<a href="/2020/03/23/%E8%A7%92%E5%BA%A6%E5%8F%98%E4%BA%86-%E5%BE%88%E5%A4%9A%E4%BA%8B%E6%83%85%E5%B0%B1%E7%9C%8B%E6%87%82%E4%BA%86/" class="article-date">
+	  <time datetime="2020-03-23T15:21:45.000Z" itemprop="datePublished">2020-03-23</time>
+	</a>
+</span>
+        
+  <span class="article-category">
+    <i class="icon icon-folder"></i>
+    <a class="article-category-link" href="/categories/%E6%9D%82%E8%AE%B0/">杂记</a>
+  </span>
+
+        
+  <span class="article-tag">
+    <i class="icon icon-tags"></i>
+	<a class="article-tag-link-link" href="/tags/Banbrick/" rel="tag">Banbrick</a>, <a class="article-tag-link-link" href="/tags/%E6%9D%82/" rel="tag">杂</a>
+  </span>
+
+
+        
+
+        <span class="post-comment"><i class="icon icon-comment"></i> <a href="/2020/03/23/%E8%A7%92%E5%BA%A6%E5%8F%98%E4%BA%86-%E5%BE%88%E5%A4%9A%E4%BA%8B%E6%83%85%E5%B0%B1%E7%9C%8B%E6%87%82%E4%BA%86/#comments" class="article-comment-link">评论</a></span>
+        
+      </div>
+    </div>
+    <div class="article-entry marked-body" itemprop="articleBody">
+      
+        <h2 id="文章来源：微信文章"><a href="#文章来源：微信文章" class="headerlink" title="文章来源：微信文章"></a>文章来源：<a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s?__biz=MzA4NTQwNDcyMA==&mid=2650666921&idx=1&sn=99efa7e4ceec8d179e4d3b14351fdef6&chksm=87d12af6b0a6a3e055f188f1f25bd84d2997ac3dfe2a9e01e7127ba970a2f3188c1f8cd6457a&mpshare=1&scene=1&srcid=&sharer_sharetime=1584807056213&sharer_shareid=0a5f0581869913747e54ca097f77ea2b&key=0a52bed5812f2e139f428d868bc5a59089131145dcbe1c1bbcd3bc511c4d7c31697721c88161cdc21136a87dc0522d31a09fc8f8cc55b9471199daaf31baad61bc1d50b139aac5fc00768f7bc63e274c&ascene=1&uin=MTA4MTU0ODIyMg==&devicetype=Windows+7&version=62080079&lang=zh_CN&exportkey=ASZxqHRl2ASG0aajhOB17Oo=&pass_ticket=le0oG8vyJ1XPN9ydtkj7TXWbI8Qkd0456twleOdS/KfVRqLjCTA9U9sENC6F2DaZ">微信文章</a></h2><h2 id="角度变了，很多事情就看懂了！"><a href="#角度变了，很多事情就看懂了！" class="headerlink" title="角度变了，很多事情就看懂了！"></a>角度变了，很多事情就看懂了！</h2><p>普通人和高手之间的差距在哪里？  </p>
+<p>在于能不能拥有自己独立清晰的判断和观点。不盲目跟风，不人云亦云。</p>
+<p>这是从 1 楼爬到 10 楼，从普通到优秀。</p>
+<p>那高手和顶尖高手的差距在哪里？</p>
+<p>在于能不能同时拥有自己和他人的观点，把自己放进别人的鞋子里，不以自我为中心。</p>
+<p>这是从10楼爬到100楼，从优秀到极致。</p>
+<h1 id="两幅地图"><a href="#两幅地图" class="headerlink" title="两幅地图"></a><strong>两幅地图</strong></h1><p>最近，疫情继续在全球扩散。  </p>
+<p>我们常听新闻里说，欧美等“西方国家”情况危急，像中国这样的“远东国家”，疫情得到了有效控制。</p>
+<p>但是你有没有想过，为什么？</p>
+<p>为什么欧美是“西方”，中国是“远东”？</p>
+<p>如果我们看地图，明明美国在地图最右侧，更偏“东方”啊！</p>
+<p>为什么美国不是“东方国家”，而是“西方国家”？</p>
+<p><img src="/images/misc/worldmap001.jpg" alt="worldmap001"><br>答案，其实也在我们使用的世界地图里。</p>
+<p>各国使用的世界地图基本是两种：</p>
+<p>一种是以太平洋为中心的世界地图，亚洲的一些国家，大多使用的是这种世界地图。</p>
+<p>另一种是以大西洋为中心的世界地图，西方和美洲国家，大多使用这种世界地图。</p>
+<p>亚洲一些国家以太平洋为中心来绘制世界地图，这样这些国家就处于地图的中央，象征着世界的中心。</p>
+<p>同样，欧美国家以大西洋为中心来绘制世界地图，这样他们就处于地图的中央，象征着他们是世界的中心。</p>
+<p>回到开头的问题，为什么美国是“西方国家”？</p>
+<p>因为我们中国人，其实也是站在大西洋为中心的世界地图角度来看的：</p>
+<p>在这张地图上，美国不在中国的东面，而在西面。</p>
+<p><img src="/images/misc/worldmap002.jpg" alt="worldmap002"><br>明白这个道理，就知道很多时候我们喜欢以自己为中心审视问题、价值取舍、处理矛盾。</p>
+<p>所以，英国的“群体免疫”，意大利的“全国封城”，美国宣布进入“紧急状态”，站在我们的角度可能是不合理的，站在他们的角度，也许是有原因的。</p>
+<p>再比如，特朗普发了推特，把新冠病毒称为“中国病毒”。为什么？</p>
+<p>他完全以自我为中心，这一招把内部矛盾，转移为外部矛盾，果然迎来了很多民族主义者的点赞。但实际上，这招太阴损，太恶毒了。</p>
+<p><img src="/images/misc/trump_twitter_001.jpg" alt="trump_twitter_001"><br>（图片来自网络）</p>
+<h1 id="一次辩论"><a href="#一次辩论" class="headerlink" title="一次辩论"></a><strong>一次辩论</strong></h1><p>我目睹过一次辩论，一身冷汗。  </p>
+<p>张伟俊老师是中国第一位私人董事会教练。有一次，他受邀主持了一场企业家辩论会。</p>
+<p>这些平常在自己公司永远伟大、光荣、正确的企业家们坐在一起，谁都不能说服谁。</p>
+<p>他们越辩越激动，辩得脸红脖子粗，我看差点就快打起来了。</p>
+<p>然后，然后，张伟俊突然叫停辩论，说：</p>
+<p>“下一个环节，交换观点，继续辩论。”</p>
+<p>听完之后，人都傻了。</p>
+<p>稍微停顿后，大家又唇枪舌剑起来，开始帮对方自圆其说，又差点要打起来。</p>
+<p>这对在场的企业家们，是深刻的一课。</p>
+<p>你是以自我为中心，还是能换个角度站在他人的立场去考虑问题？</p>
+<p>你捍卫的是自己的观点，还仅仅是自己的尊严？</p>
+<p>你捍卫的是自己的屁股，还是脑袋？</p>
+<p>换个角度看世界，你会看到完全不一样的世界。</p>
+<h1 id="三个场景"><a href="#三个场景" class="headerlink" title="三个场景"></a><strong>三个场景</strong></h1><p>所以，设计产品、亲密关系、教育孩子，都是如此。  </p>
+<p>我们总爱站在自己的视角来解决问题，而不是真正站在用户的视角来解决需求。</p>
+<p>我们总爱站在自己的视角说多喝热水，而不是真正站在对方的视角来嘘寒问暖。</p>
+<p>我们总爱站在自己的视角来决定爱好，而不是真正站在孩子的视角问是否喜欢。</p>
+<p>这也是为什么，世界上总有“自嗨”的产品，教不好的“坏小孩”，和永远教不会的“直男”。</p>
+<p>这是非常容易犯的错误，不能实现自己想要的结果。</p>
+<p>即使实现了，也极大造成成本的剧烈攀升。</p>
+<p>如果能换个角度看问题，是提升，更是跃升。视角不同，视野不同，结果也会天差地别。</p>
+<h1 id="最后的话"><a href="#最后的话" class="headerlink" title="最后的话"></a><strong>最后的话</strong></h1><p>人和人之间的差距在哪里？  </p>
+<p>在于是站在 1 楼，还是 10 楼，还是 100 楼看事物。</p>
+<p>有的人终其一生的努力，都只是站在 1 楼的视角看外面，看到的都是细节，自己附近那点东西，市井吵架，违章停车。</p>
+<p>有的人努力向上攀登，站在 10 楼的视角看外面，开始能逐渐看到局部，轮廓关联浮现。</p>
+<p>有的人比你更优秀，还比你更勤奋更努力，他爬到了 100 楼看世界。</p>
+<p>他看到的是全局，开始体会自然资源的分布，城市设计的气概和俯瞰世界的万丈豪情。</p>
+<p>站在 100 楼视角审视天下的人，可以决定一场战争的走向。</p>
+<p>站在 10 楼视角观察天下的人，可以决定一场战役的胜负。</p>
+<p>站在 1 楼视角面对天下的人，可以决定一场战斗的起止。</p>
+<p>当你在 1 楼时，要更愿意主动跑到 5 楼、8 楼、10 楼，去看看都能望到些什么。再回到 1 楼执行时，会更理解不同角度看待问题的深度，并且不会遗忘细节。</p>
+<p>希望你能拥有上帝视角，能瞬间把自己拉到空中俯视全局。希望你能拥有操盘手技能，能瞬间俯冲到地面死磕细节。希望你能知道什么时候该在空中，什么时候该在地面。</p>
+<p>人与人之间的差距，在于看事物的角度不同。角度变了，视野变了，很多事情就看懂了。看懂了，也就知道该怎么做了。</p>
+<hr>
+<h2 id="文章来源：微信文章-1"><a href="#文章来源：微信文章-1" class="headerlink" title="文章来源：微信文章"></a>文章来源：<a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s?__biz=MzA4NTQwNDcyMA==&mid=2650666921&idx=1&sn=99efa7e4ceec8d179e4d3b14351fdef6&chksm=87d12af6b0a6a3e055f188f1f25bd84d2997ac3dfe2a9e01e7127ba970a2f3188c1f8cd6457a&mpshare=1&scene=1&srcid=&sharer_sharetime=1584807056213&sharer_shareid=0a5f0581869913747e54ca097f77ea2b&key=0a52bed5812f2e139f428d868bc5a59089131145dcbe1c1bbcd3bc511c4d7c31697721c88161cdc21136a87dc0522d31a09fc8f8cc55b9471199daaf31baad61bc1d50b139aac5fc00768f7bc63e274c&ascene=1&uin=MTA4MTU0ODIyMg==&devicetype=Windows+7&version=62080079&lang=zh_CN&exportkey=ASZxqHRl2ASG0aajhOB17Oo=&pass_ticket=le0oG8vyJ1XPN9ydtkj7TXWbI8Qkd0456twleOdS/KfVRqLjCTA9U9sENC6F2DaZ">微信文章</a></h2>
+      
+    </div>
+    <div class="article-footer">
+      <blockquote class="mt-2x">
+  <ul class="post-copyright list-unstyled">
+    
+    <li class="post-copyright-link hidden-xs">
+      <strong>本文链接：</strong>
+      <a href="https://straysh.github.life/2020/03/23/%E8%A7%92%E5%BA%A6%E5%8F%98%E4%BA%86-%E5%BE%88%E5%A4%9A%E4%BA%8B%E6%83%85%E5%B0%B1%E7%9C%8B%E6%87%82%E4%BA%86/" title="角度变了,很多事情就看懂了!" target="_blank" rel="external">https://straysh.github.life/2020/03/23/%E8%A7%92%E5%BA%A6%E5%8F%98%E4%BA%86-%E5%BE%88%E5%A4%9A%E4%BA%8B%E6%83%85%E5%B0%B1%E7%9C%8B%E6%87%82%E4%BA%86/</a>
+    </li>
+    
+    <li class="post-copyright-license">
+      <strong>版权声明： </strong> 本博客所有文章除特别声明外，均采用 <a href="http://creativecommons.org/licenses/by/4.0/deed.zh" target="_blank" rel="external">CC BY 4.0 CN协议</a> 许可协议。转载请注明出处！
+    </li>
+  </ul>
+</blockquote>
+
+
+<div class="panel panel-default panel-badger">
+  <div class="panel-body">
+    <figure class="media">
+      <div class="media-left">
+        <a href="https://hexo.straysh.com" target="_blank" class="img-burn thumb-sm visible-lg">
+          <img src="/images/avatar.jpg" class="img-rounded w-full" alt="">
+        </a>
+      </div>
+      <div class="media-body">
+        <h3 class="media-heading"><a href="https://hexo.straysh.com" target="_blank"><span class="text-dark">Straysh</span><small class="ml-1x">野生程序猿</small></a></h3>
+        <div>野生程序猿 &amp; 猫奴。</div>
+      </div>
+    </figure>
+  </div>
+</div>
+
+
+    </div>
+  </article>
+  
+    
+  <section id="comments">
+  	
+      <div id="disqus_thread">
+        <noscript>Please enable JavaScript to view the <a target="_blank" rel="noopener" href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+      </div>
+    
+  </section>
+
+
+  
+</div>
+
+  <nav class="bar bar-footer clearfix" data-stick-bottom>
+  <div class="bar-inner">
+  
+  <ul class="pager pull-left">
+    
+    <li class="prev">
+      <a href="/2021/03/16/go%E5%8D%8F%E7%A8%8B%E6%98%AF%E5%A6%82%E4%BD%95%E5%90%AF%E5%8A%A8%E5%92%8C%E9%80%80%E5%87%BA%E7%9A%84/" title="go协程是如何启动和退出的"><i class="icon icon-angle-left" aria-hidden="true"></i><span>&nbsp;&nbsp;上一篇</span></a>
+    </li>
+    
+    
+    <li class="next">
+      <a href="/2020/03/10/2019%E5%8F%8D%E6%80%9D/" title="2019反思"><span>下一篇&nbsp;&nbsp;</span><i class="icon icon-angle-right" aria-hidden="true"></i></a>
+    </li>
+    
+    
+  </ul>
+  
+  
+  
+  <div class="bar-right">
+    
+    <div class="share-component" data-sites="weibo,qq,wechat,facebook,twitter" data-mobile-sites="weibo,qq,qzone"></div>
+    
+  </div>
+  </div>
+</nav>
+  
+
+
+
+</main>
+
+  <footer class="footer" itemscope itemtype="http://schema.org/WPFooter">
+	
+	
+    <ul class="social-links">
+    	
+        <li><a href="https://github.com/straysh" target="_blank" title="Github" data-toggle=tooltip data-placement=top><i class="icon icon-github"></i></a></li>
+        
+        <li><a href="https://weibo.com/u/1689171115" target="_blank" title="Weibo" data-toggle=tooltip data-placement=top><i class="icon icon-weibo"></i></a></li>
+        
+        <li><a href="/atom.xml" target="_blank" title="Rss" data-toggle=tooltip data-placement=top><i class="icon icon-rss"></i></a></li>
+        
+    </ul>
+
+    <div class="copyright">
+    	
+        &copy; 2022 straysh.com 版权所有。ICP证：鄂ICP备2021016952号-1<!--Straysh-->
+        
+        <div class="publishby">
+        	Theme by <a href="https://github.com/cofess" target="_blank"> cofess </a>base on <a href="https://github.com/cofess/hexo-theme-pure" target="_blank">pure</a>.
+        </div>
+    </div>
+</footer>
+
+  <script src="//cdn.jsdelivr.net/npm/jquery@1.12.4/dist/jquery.min.js"></script>
+<script>
+window.jQuery || document.write('<script src="js/jquery.min.js"><\/script>')
+</script>
+
+<script src="/js/plugin.min.js"></script>
+
+
+<script src="/js/application.js"></script>
+
+
+    <script>
+(function (window) {
+    var INSIGHT_CONFIG = {
+        TRANSLATION: {
+            POSTS: '文章',
+            PAGES: '页面',
+            CATEGORIES: '分类',
+            TAGS: '标签',
+            UNTITLED: '(未命名)',
+        },
+        ROOT_URL: '/',
+        CONTENT_URL: '/content.json',
+    };
+    window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+})(window);
+</script>
+
+<script src="/js/insight.js"></script>
+
+
+
+
+
+
+   
+
+
+
+
+<!--   
+    
+    <script defer>
+    var disqus_config = function () {
+        
+            this.page.url = 'https://straysh.github.life/2020/03/23/%E8%A7%92%E5%BA%A6%E5%8F%98%E4%BA%86-%E5%BE%88%E5%A4%9A%E4%BA%8B%E6%83%85%E5%B0%B1%E7%9C%8B%E6%87%82%E4%BA%86/';
+        
+        this.page.identifier = '角度变了-很多事情就看懂了';
+    };
+    (function() { 
+        var d = document, s = d.createElement('script');  
+        s.src = '//' + 'straysh' + '.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+</script>
+
+-->
+
+
+
+
+
+
+
+</body>
+</html>

@@ -1,0 +1,611 @@
+<!DOCTYPE html>
+<html lang=zh>
+<head>
+  <meta charset="utf-8">
+  
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, minimal-ui">
+  <meta name="renderer" content="webkit">
+  <meta http-equiv="Cache-Control" content="no-transform" />
+  <meta http-equiv="Cache-Control" content="no-siteapp" />
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="format-detection" content="telephone=no,email=no,adress=no">
+  <!-- Color theme for statusbar -->
+  <meta name="theme-color" content="#000000" />
+  <!-- 强制页面在当前窗口以独立页面显示,防止别人在框架里调用页面 -->
+  <meta http-equiv="window-target" content="_top" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lxgw-wenkai-webfont@1.1.0/style.css" />
+  
+  
+  <title>源码编译coreseek4_1 | Hexo</title>
+  <meta name="description" content="准备工作1$yum install make gcc g++ gcc-c++ libtool autoconf automake imake mysql-devel libxml2-devel expat-devel  下载源代码12345$wget http:&#x2F;&#x2F;www.coreseek.cn&#x2F;uploads&#x2F;csft&#x2F;4.0&#x2F;coreseek-4.1-beta.tar.gz$tar zxf c">
+<meta property="og:type" content="article">
+<meta property="og:title" content="源码编译coreseek4_1">
+<meta property="og:url" content="https://straysh.github.life/2015/09/07/2015-%E6%BA%90%E7%A0%81%E7%BC%96%E8%AF%91coreseek4-1/index.html">
+<meta property="og:site_name" content="Straysh的小院">
+<meta property="og:description" content="准备工作1$yum install make gcc g++ gcc-c++ libtool autoconf automake imake mysql-devel libxml2-devel expat-devel  下载源代码12345$wget http:&#x2F;&#x2F;www.coreseek.cn&#x2F;uploads&#x2F;csft&#x2F;4.0&#x2F;coreseek-4.1-beta.tar.gz$tar zxf c">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2015-09-07T05:49:53.000Z">
+<meta property="article:modified_time" content="2019-12-01T10:13:40.476Z">
+<meta property="article:author" content="Straysh">
+<meta property="article:tag" content="Sphinx">
+<meta name="twitter:card" content="summary">
+  <!-- Canonical links -->
+  <link rel="canonical" href="https://straysh.github.life/2015/09/07/2015-%E6%BA%90%E7%A0%81%E7%BC%96%E8%AF%91coreseek4-1/index.html">
+  
+    <link rel="alternate" href="/atom.xml" title="Straysh的小院" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.ico" type="image/x-icon">
+  
+  
+<link rel="stylesheet" href="/css/style.css">
+
+  
+<link rel="stylesheet" href="/css/custom.css">
+
+  
+  
+  
+  
+  
+<meta name="generator" content="Hexo 5.4.1"></head>
+
+
+<body class="main-center theme-green" itemscope itemtype="http://schema.org/WebPage">
+  <header class="header" style="background-image: url(/images/left_images/2.jpg);" itemscope itemtype="http://schema.org/WPHeader">
+  <div class="slimContent" style="height:100%;background-color: rgba(0,0,0,0.7);">
+    <div class="navbar-header">
+      
+      
+      <div class="profile-block text-center">
+        <a id="avatar" href="https://hexo.straysh.com" target="_blank">
+          <img class="img-circle img-rotate" src="/images/avatar.jpg" width="200" height="200">
+        </a>
+        <h2 id="name" class="hidden-xs hidden-sm">Straysh</h2>
+        <h3 id="title" class="hidden-xs hidden-sm hidden-md">野生程序猿</h3>
+        <small id="location" class="text-muted hidden-xs hidden-sm"><i class="icon icon-map-marker"></i> Beijing, China</small>
+      </div>
+      
+      <div class="search" id="search-form-wrap">
+
+    <form class="search-form sidebar-form">
+        <div class="input-group">
+            <input type="text" class="search-form-input form-control" placeholder="搜索" />
+            <span class="input-group-btn">
+                <button type="submit" class="search-form-submit btn btn-flat" onclick="return false;"><i class="icon icon-search"></i></button>
+            </span>
+        </div>
+    </form>
+    <div class="ins-search">
+  <div class="ins-search-mask"></div>
+  <div class="ins-search-container">
+    <div class="ins-input-wrapper">
+      <input type="text" class="ins-search-input" placeholder="想要查找什么..." x-webkit-speech />
+      <button type="button" class="close ins-close ins-selectable" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+    </div>
+    <div class="ins-section-wrapper">
+      <div class="ins-section-container"></div>
+    </div>
+  </div>
+</div>
+
+
+</div>
+      <button class="navbar-toggle collapsed" type="button" data-toggle="collapse" data-target="#main-navbar" aria-controls="main-navbar" aria-expanded="false">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+    </div>
+    <nav id="main-navbar" class="collapse navbar-collapse" itemscope itemtype="http://schema.org/SiteNavigationElement" role="navigation">
+      <ul class="nav navbar-nav main-nav menu-highlight">
+        
+        
+        <li class="menu-item menu-item-home">
+          <a href="/.">
+            
+            <i class="icon icon-home-fill"></i>
+            
+            <span class="menu-title">首页</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives">
+            
+            <i class="icon icon-archives-fill"></i>
+            
+            <span class="menu-title">归档</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories">
+            
+            <i class="icon icon-folder"></i>
+            
+            <span class="menu-title">分类</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags">
+            
+            <i class="icon icon-tags"></i>
+            
+            <span class="menu-title">标签</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-repository">
+          <a href="/repository">
+            
+            <i class="icon icon-project"></i>
+            
+            <span class="menu-title">项目</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-books">
+          <a href="/books">
+            
+            <i class="icon icon-book-fill"></i>
+            
+            <span class="menu-title">书单</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-links">
+          <a href="/links">
+            
+            <i class="icon icon-friendship"></i>
+            
+            <span class="menu-title">友链</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about">
+            
+            <i class="icon icon-cup-fill"></i>
+            
+            <span class="menu-title">关于</span>
+          </a>
+        </li>
+        
+      </ul>
+      
+	
+    <ul class="social-links">
+    	
+        <li><a href="https://github.com/straysh" target="_blank" title="Github" data-toggle=tooltip data-placement=top><i class="icon icon-github"></i></a></li>
+        
+        <li><a href="https://weibo.com/u/1689171115" target="_blank" title="Weibo" data-toggle=tooltip data-placement=top><i class="icon icon-weibo"></i></a></li>
+        
+        <li><a href="/atom.xml" target="_blank" title="Rss" data-toggle=tooltip data-placement=top><i class="icon icon-rss"></i></a></li>
+        
+    </ul>
+
+    </nav>
+  </div>
+</header>
+
+  
+    <aside class="sidebar" itemscope itemtype="http://schema.org/WPSideBar">
+  <div class="slimContent">
+
+    
+      <ul class="sidebar-nav motion-element" style="text-align:center; opacity: 1; display: block; transform: translateX(0px);">
+        <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+          系统目录
+        </li>
+      </ul>
+      <section class="site-overview-wrap sidebar-panel" style="opacity: 0; display: none;">
+        
+          <div class="widget">
+    <h3 class="widget-title">公告</h3>
+    <div class="widget-body">
+        <div id="board">
+            <div class="content">
+                <p>妳是风中的叶，风起而走，我想去追，怎么抓的住？</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+        
+          
+  <div class="widget">
+    <h3 class="widget-title">分类</h3>
+    <div class="widget-body">
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%8D%9A%E6%96%87/">博文</a><span class="category-list-count">102</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%8D%9A%E6%96%87/%E7%AC%94%E8%AE%B0/">笔记</a><span class="category-list-count">2</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E6%9D%82%E8%AE%B0/">杂记</a><span class="category-list-count">6</span></li></ul>
+    </div>
+  </div>
+
+
+        
+          
+  <div class="widget">
+    <h3 class="widget-title">标签</h3>
+    <div class="widget-body">
+      <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/Algorithm/" rel="tag">Algorithm</a><span class="tag-list-count">13</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Apache/" rel="tag">Apache</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Banbrick/" rel="tag">Banbrick</a><span class="tag-list-count">5</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Docker/" rel="tag">Docker</a><span class="tag-list-count">4</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Golang/" rel="tag">Golang</a><span class="tag-list-count">25</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Javascript/" rel="tag">Javascript</a><span class="tag-list-count">10</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Linux/" rel="tag">Linux</a><span class="tag-list-count">13</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/MySQL/" rel="tag">MySQL</a><span class="tag-list-count">13</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Mysql/" rel="tag">Mysql</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Nginx/" rel="tag">Nginx</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Nodejs/" rel="tag">Nodejs</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/PHP/" rel="tag">PHP</a><span class="tag-list-count">19</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/R/" rel="tag">R</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Redis/" rel="tag">Redis</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/SVN/" rel="tag">SVN</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Sphinx/" rel="tag">Sphinx</a><span class="tag-list-count">5</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Translation/" rel="tag">Translation</a><span class="tag-list-count">18</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Yii/" rel="tag">Yii</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%9D%82/" rel="tag">杂</a><span class="tag-list-count">6</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%B1%87%E7%BC%96/" rel="tag">汇编</a><span class="tag-list-count">1</span></li></ul>
+    </div>
+  </div>
+
+
+        
+          
+  <div class="widget">
+    <h3 class="widget-title">标签云</h3>
+    <div class="widget-body tagcloud">
+      <a href="/tags/Algorithm/" style="font-size: 13.67px;">Algorithm</a> <a href="/tags/Apache/" style="font-size: 13px;">Apache</a> <a href="/tags/Banbrick/" style="font-size: 13.33px;">Banbrick</a> <a href="/tags/Docker/" style="font-size: 13.22px;">Docker</a> <a href="/tags/Golang/" style="font-size: 14px;">Golang</a> <a href="/tags/Javascript/" style="font-size: 13.56px;">Javascript</a> <a href="/tags/Linux/" style="font-size: 13.67px;">Linux</a> <a href="/tags/MySQL/" style="font-size: 13.67px;">MySQL</a> <a href="/tags/Mysql/" style="font-size: 13px;">Mysql</a> <a href="/tags/Nginx/" style="font-size: 13.11px;">Nginx</a> <a href="/tags/Nodejs/" style="font-size: 13px;">Nodejs</a> <a href="/tags/PHP/" style="font-size: 13.89px;">PHP</a> <a href="/tags/R/" style="font-size: 13.11px;">R</a> <a href="/tags/Redis/" style="font-size: 13.11px;">Redis</a> <a href="/tags/SVN/" style="font-size: 13px;">SVN</a> <a href="/tags/Sphinx/" style="font-size: 13.33px;">Sphinx</a> <a href="/tags/Translation/" style="font-size: 13.78px;">Translation</a> <a href="/tags/Yii/" style="font-size: 13.11px;">Yii</a> <a href="/tags/%E6%9D%82/" style="font-size: 13.44px;">杂</a> <a href="/tags/%E6%B1%87%E7%BC%96/" style="font-size: 13px;">汇编</a>
+    </div>
+  </div>
+
+        
+          
+  <div class="widget">
+    <h3 class="widget-title">归档</h3>
+    <div class="widget-body">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/03/">三月 2022</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/03/">三月 2021</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/03/">三月 2020</a><span class="archive-list-count">5</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/02/">二月 2020</a><span class="archive-list-count">26</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/12/">十二月 2019</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/04/">四月 2019</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/09/">九月 2018</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/07/">七月 2016</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/06/">六月 2016</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/11/">十一月 2015</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/10/">十月 2015</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/09/">九月 2015</a><span class="archive-list-count">5</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/08/">八月 2015</a><span class="archive-list-count">13</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/07/">七月 2015</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/11/">十一月 2014</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/03/">三月 2014</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/12/">十二月 2013</a><span class="archive-list-count">8</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/10/">十月 2013</a><span class="archive-list-count">8</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/09/">九月 2013</a><span class="archive-list-count">2</span></li></ul>
+    </div>
+  </div>
+
+
+        
+          
+  <div class="widget">
+    <h3 class="widget-title">最新文章</h3>
+    <div class="widget-body">
+      <ul class="recent-post-list list-unstyled no-thumbnail">
+        
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/%E5%8D%9A%E6%96%87/">博文</a><i class="icon icon-angle-right"></i><a class="category-link" href="/categories/%E5%8D%9A%E6%96%87/%E7%AC%94%E8%AE%B0/">笔记</a>
+              </p>
+              <p class="item-title">
+                <a href="/2022/03/14/%E4%BD%BF%E7%94%A8Go%E6%93%8D%E4%BD%9C%E6%96%87%E4%BB%B6/" class="title">使用Go操作文件</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2022-03-14T12:11:25.000Z" itemprop="datePublished">2022-03-14</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/%E5%8D%9A%E6%96%87/">博文</a>
+              </p>
+              <p class="item-title">
+                <a href="/2022/03/13/Docker%E5%AE%B9%E5%99%A8%E7%BD%91%E7%BB%9C/" class="title">Docker容器网络</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2022-03-13T04:10:09.000Z" itemprop="datePublished">2022-03-13</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/%E5%8D%9A%E6%96%87/">博文</a><i class="icon icon-angle-right"></i><a class="category-link" href="/categories/%E5%8D%9A%E6%96%87/%E7%AC%94%E8%AE%B0/">笔记</a>
+              </p>
+              <p class="item-title">
+                <a href="/2022/03/13/Iptables%E5%92%8C%E5%AE%B9%E5%99%A8/" class="title">Iptables和容器</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2022-03-13T03:01:46.000Z" itemprop="datePublished">2022-03-13</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/%E5%8D%9A%E6%96%87/">博文</a>
+              </p>
+              <p class="item-title">
+                <a href="/2022/03/12/Linux%E7%BD%91%E6%A1%A5%E5%B7%A5%E4%BD%9C%E5%8E%9F%E7%90%86/" class="title">Linux网桥工作原理</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2022-03-12T10:02:29.000Z" itemprop="datePublished">2022-03-12</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/%E5%8D%9A%E6%96%87/">博文</a>
+              </p>
+              <p class="item-title">
+                <a href="/2021/03/16/%E5%B9%B6%E5%8F%91%E5%92%8C%E8%B0%83%E5%BA%A6%E7%9A%84%E5%85%B3%E7%B3%BB/" class="title">并发和调度的关系</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2021-03-16T05:54:13.000Z" itemprop="datePublished">2021-03-16</time>
+              </p>
+            </div>
+          </li>
+          
+      </ul>
+    </div>
+  </div>
+  
+
+        
+      </section>
+
+      <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active" style="opacity: 1; display: block;">
+        <nav id="toc" class="article-toc">
+          <h3 class="toc-title">文章目录</h3>
+          <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%87%86%E5%A4%87%E5%B7%A5%E4%BD%9C"><span class="toc-number">1.</span> <span class="toc-text">准备工作</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E4%B8%8B%E8%BD%BD%E6%BA%90%E4%BB%A3%E7%A0%81"><span class="toc-number">2.</span> <span class="toc-text">下载源代码</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%AE%89%E8%A3%85mmseg"><span class="toc-number">3.</span> <span class="toc-text">安装mmseg</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%AE%89%E8%A3%85coreseek"><span class="toc-number">4.</span> <span class="toc-text">安装coreseek</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E6%B5%8B%E8%AF%95mmseg%E5%88%86%E8%AF%8D-coreseek%E6%90%9C%E7%B4%A2"><span class="toc-number">5.</span> <span class="toc-text">测试mmseg分词, coreseek搜索</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%BC%80%E5%8F%91%E7%8E%AF%E5%A2%83%E6%A0%B7%E6%9C%AC%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6"><span class="toc-number">6.</span> <span class="toc-text">开发环境样本配置文件</span></a></li></ol>
+        </nav>
+      </section>
+    
+  </div>
+</aside>
+
+  
+  
+<main class="main" role="main">
+  <div class="content">
+  <article id="post-2015-源码编译coreseek4-1" class="article article-type-post" itemscope itemtype="http://schema.org/BlogPosting">
+    
+    <div class="article-header">
+      
+        
+  
+    <h1 class="article-title" itemprop="name">
+      源码编译coreseek4_1
+    </h1>
+  
+
+
+      
+      <div class="article-meta">
+        
+        <span class="article-date">
+    <i class="icon icon-calendar-check"></i>
+	<a href="/2015/09/07/2015-%E6%BA%90%E7%A0%81%E7%BC%96%E8%AF%91coreseek4-1/" class="article-date">
+	  <time datetime="2015-09-07T05:49:53.000Z" itemprop="datePublished">2015-09-07</time>
+	</a>
+</span>
+        
+  <span class="article-category">
+    <i class="icon icon-folder"></i>
+    <a class="article-category-link" href="/categories/%E5%8D%9A%E6%96%87/">博文</a>
+  </span>
+
+        
+  <span class="article-tag">
+    <i class="icon icon-tags"></i>
+	<a class="article-tag-link-link" href="/tags/Sphinx/" rel="tag">Sphinx</a>
+  </span>
+
+
+        
+
+        <span class="post-comment"><i class="icon icon-comment"></i> <a href="/2015/09/07/2015-%E6%BA%90%E7%A0%81%E7%BC%96%E8%AF%91coreseek4-1/#comments" class="article-comment-link">评论</a></span>
+        
+      </div>
+    </div>
+    <div class="article-entry marked-body" itemprop="articleBody">
+      
+        <h1 id="准备工作"><a href="#准备工作" class="headerlink" title="准备工作"></a>准备工作</h1><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-variable">$yum</span> install make gcc g++ gcc-c++ libtool autoconf automake imake mysql-devel libxml2-devel expat-devel<br></code></pre></td></tr></table></figure>
+
+<h1 id="下载源代码"><a href="#下载源代码" class="headerlink" title="下载源代码"></a>下载源代码</h1><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-variable">$wget</span> http://www.coreseek.cn/uploads/csft/4.0/coreseek-4.1-beta.tar.gz<br><span class="hljs-variable">$tar</span> zxf coreseek-4.1-beta.tar.gz<br><span class="hljs-variable">$cd</span> coreseek-4.1-beta<br>$<span class="hljs-variable">$ls</span><br>csft-4.1  mmseg-3.2.14  README.txt  testpack<br></code></pre></td></tr></table></figure>
+
+<h1 id="安装mmseg"><a href="#安装mmseg" class="headerlink" title="安装mmseg"></a>安装mmseg</h1><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-variable">$cd</span> mmseg-3.2.14<br>$./bootstrap    <span class="hljs-comment">#输出的warning信息可以忽略，如果出现error则需要解决</span><br>$./configure --prefix=/usr/local/mmseg3<br><span class="hljs-variable">$make</span><br><span class="hljs-variable">$make</span> install<br><span class="hljs-variable">$cd</span> ..<br></code></pre></td></tr></table></figure>
+
+<h1 id="安装coreseek"><a href="#安装coreseek" class="headerlink" title="安装coreseek"></a>安装coreseek</h1><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-variable">$cd</span> csft-4.1<br><span class="hljs-variable">$sh</span> buildconf.sh <span class="hljs-comment">#按照官方文档执行该命令会报错.需要做以下修改:</span><br></code></pre></td></tr></table></figure>
+
+<ol>
+<li>vim buildconf.sh, 将 <code>&amp;&amp; automake --foreign \</code> 修改为 <code>&amp;&amp; automake --foreign --add-missing \</code></li>
+<li>vim configure.ac,<br>将 <code>AM_INIT_AUTOMAKE([-Wall -Werror foreign])</code> 修改为 <code>AM_INIT_AUTOMAKE([-Wall foreign])</code>, 即删除 <code>-Werror</code><br>并在 <code>AC_PROG_RANLIB</code> 的下一行加上 <code>AM_PROG_AR</code></li>
+<li>vim src/sphinxexpr.cpp<br>将 <code>T val = ExprEval ( this-&gt;m_pArg, tMatch );</code> 修改为 <code>T val = this-&gt;ExprEval ( this-&gt;m_pArg, tMatch );</code>, 需修改3处</li>
+<li>重新执行 <code>sh buildconf.sh</code></li>
+</ol>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs bash">$./configure --prefix=/usr/local/coreseek  --without-unixodbc --with-mmseg --with-mmseg-includes=/usr/local/mmseg3/include/mmseg/ --with-mmseg-libs=/usr/local/mmseg3/lib/ --with-mysql<br><span class="hljs-variable">$make</span> <br><span class="hljs-variable">$make</span> install<br><span class="hljs-variable">$cd</span> ..<br></code></pre></td></tr></table></figure>
+
+<h1 id="测试mmseg分词-coreseek搜索"><a href="#测试mmseg分词-coreseek搜索" class="headerlink" title="测试mmseg分词, coreseek搜索"></a>测试mmseg分词, coreseek搜索</h1><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-variable">$cd</span> testpack<br><span class="hljs-variable">$cat</span> var/test/test/xml <span class="hljs-comment">#应该正确显示中文,否则需要设置字符集zh_CN.UTF-8</span><br><span class="hljs-variable">$mmseg</span> -d /usr/local/mmseg3/etc var/test/test.xml <span class="hljs-comment">#注意确保mmseg3/etc下有uni.lib, 且此处测试时test.xml引用的是相对路径</span><br><span class="hljs-variable">$indexer</span> -c etc/csft.conf --all<br><span class="hljs-variable">$search</span> -c etc/csft.conf 网络搜索<br>Coreseek Fulltext 4.1 [ Sphinx 2.0.2-dev (r2922)]<br>Copyright (c) 2007-2011,<br>Beijing Choice Software Technologies Inc (http://www.coreseek.com)<br><br> using config file <span class="hljs-string">&#x27;etc/csft.conf&#x27;</span>...<br>index <span class="hljs-string">&#x27;xml&#x27;</span>: query <span class="hljs-string">&#x27;网络搜索 &#x27;</span>: returned 1 matches of 1 total <span class="hljs-keyword">in</span> 0.000 sec<br><br>displaying matches:<br>1. document=1, weight=1590, published=Thu Apr  1 22:20:07 2010, author_id=1<br><br>words:<br>1. <span class="hljs-string">&#x27;网络&#x27;</span>: 1 documents, 1 hits<br>2. <span class="hljs-string">&#x27;搜索&#x27;</span>: 2 documents, 5 hits<br></code></pre></td></tr></table></figure>
+
+<h1 id="开发环境样本配置文件"><a href="#开发环境样本配置文件" class="headerlink" title="开发环境样本配置文件"></a>开发环境样本配置文件</h1><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br><span class="line">157</span><br><span class="line">158</span><br><span class="line">159</span><br><span class="line">160</span><br><span class="line">161</span><br><span class="line">162</span><br><span class="line">163</span><br><span class="line">164</span><br><span class="line">165</span><br><span class="line">166</span><br><span class="line">167</span><br><span class="line">168</span><br><span class="line">169</span><br><span class="line">170</span><br><span class="line">171</span><br><span class="line">172</span><br><span class="line">173</span><br><span class="line">174</span><br><span class="line">175</span><br><span class="line">176</span><br><span class="line">177</span><br><span class="line">178</span><br><span class="line">179</span><br><span class="line">180</span><br><span class="line">181</span><br><span class="line">182</span><br><span class="line">183</span><br><span class="line">184</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-comment">#</span><br><span class="hljs-comment"># Sphinx configuration file sample</span><br><span class="hljs-comment">#</span><br><span class="hljs-comment"># WARNING! While this sample file mentions all available options,</span><br><span class="hljs-comment"># it contains (very) short helper descriptions only. Please refer to</span><br><span class="hljs-comment"># doc/sphinx.html for details.</span><br><span class="hljs-comment">#</span><br><br><span class="hljs-comment">#############################################################################</span><br><span class="hljs-comment">## 商家索引 data source definition</span><br><span class="hljs-comment">#############################################################################</span><br><br><span class="hljs-built_in">source</span> restaurant_src<br>&#123;<br>    <span class="hljs-built_in">type</span>			= mysql<br>    sql_host		= localhost<br>    sql_user		= root<br>    sql_pass		= 123456<br>    sql_db			= lifemenu_restaurant<br>    sql_port		= 3306	<span class="hljs-comment"># optional, default is 3306</span><br>    sql_query_pre   = SET NAMES UTF8<br><br>    sql_query_range = SELECT MIN(<span class="hljs-built_in">id</span>),MAX(<span class="hljs-built_in">id</span>) FROM restaurant_sphinx<br>    sql_range_step  = 10000<br><span class="hljs-comment">#                    CONCAT(suburb, &#x27; &#x27;, postcode) as suburb_postcode \</span><br>    sql_query = select <span class="hljs-built_in">id</span>, <span class="hljs-built_in">id</span> as restaurant_id, restaurant_name, phone, price, rating,  \<br>                    city_id, address \<br>                from restaurant_sphinx \<br>                WHERE <span class="hljs-built_in">id</span>&gt;=<span class="hljs-variable">$start</span> AND <span class="hljs-built_in">id</span>&lt;=<span class="hljs-variable">$end</span><br><br>    sql_field_string   = restaurant_name<br>    sql_field_string   = phone<br><br><span class="hljs-comment">#    sql_attr_multi = uint cuisine from ranged-query; \</span><br><span class="hljs-comment">#        SELECT restaurant_id as id, cuisine_id as cuisine FROM restaurant_cuisine WHERE id&gt;=$start AND id&lt;=$end; \</span><br><span class="hljs-comment">#        SELECT MIN(id), MAX(id) FROM restaurant_cuisine;</span><br><span class="hljs-comment">#    sql_attr_uint      = country_id</span><br><span class="hljs-comment">#    sql_attr_uint      = state_id</span><br>    sql_attr_uint      = city_id<br><span class="hljs-comment">#    sql_attr_string    = suburb_postcode</span><br>    sql_attr_uint      = price<br>    sql_attr_float     = rating<br>    sql_attr_string    = address<br><span class="hljs-comment">#    sql_attr_uint      = collected_amount</span><br><span class="hljs-comment">#    sql_attr_uint      = tabletalk_amount</span><br>&#125;<br><br><span class="hljs-comment">#############################################################################</span><br><span class="hljs-comment">## index definition</span><br><span class="hljs-comment">#############################################################################</span><br><br>index restaurant_index<br>&#123;<br>    <span class="hljs-built_in">source</span> = restaurant_src<br>    path = /usr/local/coreseek/var/data/restaurant<br>    docinfo = extern<br>    mlock = 0<br>    morphology   = none<br>    min_word_len = 1<br>    dict=crc<br>    html_strip   = 0<br><br>    <span class="hljs-comment">#以下配置为中文分词核心配置</span><br>    <span class="hljs-comment">#stopwords = /path/to/stopwords.txt</span><br>    <span class="hljs-comment">#uni.lib词典的制作 http://www.coreseek.cn/opensource/mmseg/</span><br>    charset_dictpath = /usr/local/mmseg3/etc/<br>    charset_type = zh_cn.utf-8<br>    <span class="hljs-comment"># 中文分词中以下两行必须严格一致</span><br>    <span class="hljs-comment">#charset_table = ...</span><br>    ngram_len = 0<br>&#125;<br><br><br><span class="hljs-comment">#############################################################################</span><br><span class="hljs-comment">## indexer settings</span><br><span class="hljs-comment">#############################################################################</span><br><br>indexer<br>&#123;<br>    <span class="hljs-comment"># memory limit, in bytes, kiloytes (16384K) or megabytes (256M)</span><br>    <span class="hljs-comment"># optional, default is 128M, max is 2047M, recommended is 256M to 1024M</span><br>    mem_limit		= 1024M<br><br>    <span class="hljs-comment"># maximum IO calls per second (for I/O throttling)</span><br>    <span class="hljs-comment"># optional, default is 0 (unlimited)</span><br>    <span class="hljs-comment">#</span><br>    <span class="hljs-comment"># max_iops		= 40</span><br><br><br>    <span class="hljs-comment"># maximum IO call size, bytes (for I/O throttling)</span><br>    <span class="hljs-comment"># optional, default is 0 (unlimited)</span><br>    <span class="hljs-comment">#</span><br>    <span class="hljs-comment"># max_iosize		= 1048576</span><br><br><br>    <span class="hljs-comment"># maximum xmlpipe2 field length, bytes</span><br>    <span class="hljs-comment"># optional, default is 2M</span><br>    <span class="hljs-comment">#</span><br>    <span class="hljs-comment"># max_xmlpipe2_field	= 4M</span><br><br><br>    <span class="hljs-comment"># write buffer size, bytes</span><br>    <span class="hljs-comment"># several (currently up to 4) buffers will be allocated</span><br>    <span class="hljs-comment"># write buffers are allocated in addition to mem_limit</span><br>    <span class="hljs-comment"># optional, default is 1M</span><br>    <span class="hljs-comment">#</span><br>    <span class="hljs-comment"># write_buffer		= 1M</span><br><br><br>    <span class="hljs-comment"># maximum file field adaptive buffer size</span><br>    <span class="hljs-comment"># optional, default is 8M, minimum is 1M</span><br>    <span class="hljs-comment">#</span><br>    <span class="hljs-comment"># max_file_field_buffer	= 32M</span><br><br><br>    <span class="hljs-comment"># how to handle IO errors in file fields</span><br>    <span class="hljs-comment"># known values are &#x27;ignore_field&#x27;, &#x27;skip_document&#x27;, and &#x27;fail_index&#x27;</span><br>    <span class="hljs-comment"># optional, default is &#x27;ignore_field&#x27;</span><br>    <span class="hljs-comment">#</span><br>    <span class="hljs-comment"># on_file_field_error = skip_document</span><br><br><br>    <span class="hljs-comment"># how to handle syntax errors in JSON attributes</span><br>    <span class="hljs-comment"># known values are &#x27;ignore_attr&#x27; and &#x27;fail_index&#x27;</span><br>    <span class="hljs-comment"># optional, default is &#x27;ignore_attr&#x27;</span><br>    <span class="hljs-comment">#</span><br>    <span class="hljs-comment"># on_json_attr_error = fail_index</span><br><br><br>    <span class="hljs-comment"># whether to auto-convert numeric values from strings in JSON attributes</span><br>    <span class="hljs-comment"># with auto-conversion, string value with actually numeric data</span><br>    <span class="hljs-comment"># (as in &#123;&quot;key&quot;:&quot;12345&quot;&#125;) gets stored as a number, rather than string</span><br>    <span class="hljs-comment"># optional, allowed values are 0 and 1, default is 0 (do not convert)</span><br>    <span class="hljs-comment">#</span><br>    <span class="hljs-comment"># json_autoconv_numbers = 1</span><br><br><br>    <span class="hljs-comment"># whether and how to auto-convert key names in JSON attributes</span><br>    <span class="hljs-comment"># known value is &#x27;lowercase&#x27;</span><br>    <span class="hljs-comment"># optional, default is unspecified (do nothing)</span><br>    <span class="hljs-comment">#</span><br>    <span class="hljs-comment"># json_autoconv_keynames = lowercase</span><br><br><br>    <span class="hljs-comment"># lemmatizer cache size</span><br>    <span class="hljs-comment"># improves the indexing time when the lemmatization is enabled</span><br>    <span class="hljs-comment"># optional, default is 256K</span><br>    <span class="hljs-comment">#</span><br>    <span class="hljs-comment"># lemmatizer_cache = 512M</span><br>&#125;<br><br><span class="hljs-comment">#############################################################################</span><br><span class="hljs-comment">## searchd settings</span><br><span class="hljs-comment">#############################################################################</span><br><br>searchd<br>&#123;<br>    listen              = 9312<br>    listen                = 127.0.0.1:9306:mysql41<br>    listen                = 192.168.1.125:9307:mysql41<br>    read_timeout        = 5<br>    max_children        = 30<br>    max_matches         = 1000<br>    seamless_rotate     = 0<br>    preopen_indexes     = 0<br>    unlink_old          = 1<br><br>    <span class="hljs-comment">#query_log_format    = sphinxql</span><br><br>    pid_file            = /usr/local/coreseek/var/log/searchd.pid<br>    <span class="hljs-built_in">log</span>                 = /usr/local/coreseek/var/log/searchd.log<br>    query_log           = /usr/local/coreseek/var/log/query.log<br>    binlog_path         = <span class="hljs-comment"># disable binlog</span><br><br>    <span class="hljs-comment">#覆盖默认参数,因为以下参数已经废弃</span><br>    compat_sphinxql_magics = 0<br>&#125;<br><br><span class="hljs-comment">#############################################################################</span><br><span class="hljs-comment">## common settings</span><br><span class="hljs-comment">#############################################################################</span><br><br><span class="hljs-comment"># --eof--</span><br><br></code></pre></td></tr></table></figure>
+
+<p>参考资料:</p>
+<ul>
+<li><a target="_blank" rel="noopener" href="http://www.coreseek.cn/products-install/faq/#qa1">coreseek常见问题</a></li>
+</ul>
+
+      
+    </div>
+    <div class="article-footer">
+      <blockquote class="mt-2x">
+  <ul class="post-copyright list-unstyled">
+    
+    <li class="post-copyright-link hidden-xs">
+      <strong>本文链接：</strong>
+      <a href="https://straysh.github.life/2015/09/07/2015-%E6%BA%90%E7%A0%81%E7%BC%96%E8%AF%91coreseek4-1/" title="源码编译coreseek4_1" target="_blank" rel="external">https://straysh.github.life/2015/09/07/2015-%E6%BA%90%E7%A0%81%E7%BC%96%E8%AF%91coreseek4-1/</a>
+    </li>
+    
+    <li class="post-copyright-license">
+      <strong>版权声明： </strong> 本博客所有文章除特别声明外，均采用 <a href="http://creativecommons.org/licenses/by/4.0/deed.zh" target="_blank" rel="external">CC BY 4.0 CN协议</a> 许可协议。转载请注明出处！
+    </li>
+  </ul>
+</blockquote>
+
+
+<div class="panel panel-default panel-badger">
+  <div class="panel-body">
+    <figure class="media">
+      <div class="media-left">
+        <a href="https://hexo.straysh.com" target="_blank" class="img-burn thumb-sm visible-lg">
+          <img src="/images/avatar.jpg" class="img-rounded w-full" alt="">
+        </a>
+      </div>
+      <div class="media-body">
+        <h3 class="media-heading"><a href="https://hexo.straysh.com" target="_blank"><span class="text-dark">Straysh</span><small class="ml-1x">野生程序猿</small></a></h3>
+        <div>野生程序猿 &amp; 猫奴。</div>
+      </div>
+    </figure>
+  </div>
+</div>
+
+
+    </div>
+  </article>
+  
+    
+  <section id="comments">
+  	
+      <div id="disqus_thread">
+        <noscript>Please enable JavaScript to view the <a target="_blank" rel="noopener" href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+      </div>
+    
+  </section>
+
+
+  
+</div>
+
+  <nav class="bar bar-footer clearfix" data-stick-bottom>
+  <div class="bar-inner">
+  
+  <ul class="pager pull-left">
+    
+    <li class="prev">
+      <a href="/2015/09/07/2015-%E7%BD%91%E7%AB%99icon/" title="网站icon"><i class="icon icon-angle-left" aria-hidden="true"></i><span>&nbsp;&nbsp;上一篇</span></a>
+    </li>
+    
+    
+    <li class="next">
+      <a href="/2015/08/29/2015-Flexbox/" title="Flexbox"><span>下一篇&nbsp;&nbsp;</span><i class="icon icon-angle-right" aria-hidden="true"></i></a>
+    </li>
+    
+    
+  </ul>
+  
+  
+  
+  <div class="bar-right">
+    
+    <div class="share-component" data-sites="weibo,qq,wechat,facebook,twitter" data-mobile-sites="weibo,qq,qzone"></div>
+    
+  </div>
+  </div>
+</nav>
+  
+
+
+
+</main>
+
+  <footer class="footer" itemscope itemtype="http://schema.org/WPFooter">
+	
+	
+    <ul class="social-links">
+    	
+        <li><a href="https://github.com/straysh" target="_blank" title="Github" data-toggle=tooltip data-placement=top><i class="icon icon-github"></i></a></li>
+        
+        <li><a href="https://weibo.com/u/1689171115" target="_blank" title="Weibo" data-toggle=tooltip data-placement=top><i class="icon icon-weibo"></i></a></li>
+        
+        <li><a href="/atom.xml" target="_blank" title="Rss" data-toggle=tooltip data-placement=top><i class="icon icon-rss"></i></a></li>
+        
+    </ul>
+
+    <div class="copyright">
+    	
+        &copy; 2022 straysh.com 版权所有。ICP证：鄂ICP备2021016952号-1<!--Straysh-->
+        
+        <div class="publishby">
+        	Theme by <a href="https://github.com/cofess" target="_blank"> cofess </a>base on <a href="https://github.com/cofess/hexo-theme-pure" target="_blank">pure</a>.
+        </div>
+    </div>
+</footer>
+
+  <script src="//cdn.jsdelivr.net/npm/jquery@1.12.4/dist/jquery.min.js"></script>
+<script>
+window.jQuery || document.write('<script src="js/jquery.min.js"><\/script>')
+</script>
+
+<script src="/js/plugin.min.js"></script>
+
+
+<script src="/js/application.js"></script>
+
+
+    <script>
+(function (window) {
+    var INSIGHT_CONFIG = {
+        TRANSLATION: {
+            POSTS: '文章',
+            PAGES: '页面',
+            CATEGORIES: '分类',
+            TAGS: '标签',
+            UNTITLED: '(未命名)',
+        },
+        ROOT_URL: '/',
+        CONTENT_URL: '/content.json',
+    };
+    window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+})(window);
+</script>
+
+<script src="/js/insight.js"></script>
+
+
+
+
+
+
+   
+
+
+
+
+<!--   
+    
+    <script defer>
+    var disqus_config = function () {
+        
+            this.page.url = 'https://straysh.github.life/2015/09/07/2015-%E6%BA%90%E7%A0%81%E7%BC%96%E8%AF%91coreseek4-1/';
+        
+        this.page.identifier = '2015-源码编译coreseek4-1';
+    };
+    (function() { 
+        var d = document, s = d.createElement('script');  
+        s.src = '//' + 'straysh' + '.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+</script>
+
+-->
+
+
+
+
+
+
+
+</body>
+</html>

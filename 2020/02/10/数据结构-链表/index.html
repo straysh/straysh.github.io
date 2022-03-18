@@ -1,0 +1,793 @@
+<!DOCTYPE html>
+<html lang=zh>
+<head>
+  <meta charset="utf-8">
+  
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, minimal-ui">
+  <meta name="renderer" content="webkit">
+  <meta http-equiv="Cache-Control" content="no-transform" />
+  <meta http-equiv="Cache-Control" content="no-siteapp" />
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="format-detection" content="telephone=no,email=no,adress=no">
+  <!-- Color theme for statusbar -->
+  <meta name="theme-color" content="#000000" />
+  <!-- 强制页面在当前窗口以独立页面显示,防止别人在框架里调用页面 -->
+  <meta http-equiv="window-target" content="_top" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lxgw-wenkai-webfont@1.1.0/style.css" />
+  
+  
+  <title>数据结构_链表 | Hexo</title>
+  <meta name="description" content="LL,Stack,Queue,DLL,Deque链表（Linked List）是一种数据结构，它由一组节点组成，它们作为一个整体表示一个序列。最简单的情形下，每一个节点由一个值data和指向下序列中一节点的引用link组成。 在链表中查找数77 链表及其变体是用来实现列表（List）、栈（Stack）、Queue（队列）、Deque ADTs1（双端队列）的底层数据结构。Linked List a">
+<meta property="og:type" content="article">
+<meta property="og:title" content="数据结构_链表">
+<meta property="og:url" content="https://straysh.github.life/2020/02/10/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84-%E9%93%BE%E8%A1%A8/index.html">
+<meta property="og:site_name" content="Straysh的小院">
+<meta property="og:description" content="LL,Stack,Queue,DLL,Deque链表（Linked List）是一种数据结构，它由一组节点组成，它们作为一个整体表示一个序列。最简单的情形下，每一个节点由一个值data和指向下序列中一节点的引用link组成。 在链表中查找数77 链表及其变体是用来实现列表（List）、栈（Stack）、Queue（队列）、Deque ADTs1（双端队列）的底层数据结构。Linked List a">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://straysh.github.life/images/ds/LL_Search_77.gif">
+<meta property="og:image" content="https://straysh.github.life/images/ds/compactarray_illustration.png">
+<meta property="og:image" content="https://straysh.github.life/images/ds/ll_illustration.png">
+<meta property="og:image" content="https://straysh.github.life/images/ds/LL_Search_77.gif">
+<meta property="og:image" content="https://straysh.github.life/images/ds/LL_Search_7.gif">
+<meta property="og:image" content="https://straysh.github.life/images/ds/LL_Insert_0_50.gif">
+<meta property="og:image" content="https://straysh.github.life/images/ds/LL_Insert_3_44.gif">
+<meta property="og:image" content="https://straysh.github.life/images/ds/LL_Insert_6_55.gif">
+<meta property="article:published_time" content="2020-02-10T14:13:00.000Z">
+<meta property="article:modified_time" content="2020-02-27T05:04:44.642Z">
+<meta property="article:author" content="Straysh">
+<meta property="article:tag" content="Translation">
+<meta property="article:tag" content="Golang">
+<meta property="article:tag" content="Algorithm">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://straysh.github.life/images/ds/LL_Search_77.gif">
+  <!-- Canonical links -->
+  <link rel="canonical" href="https://straysh.github.life/2020/02/10/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84-%E9%93%BE%E8%A1%A8/index.html">
+  
+    <link rel="alternate" href="/atom.xml" title="Straysh的小院" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.ico" type="image/x-icon">
+  
+  
+<link rel="stylesheet" href="/css/style.css">
+
+  
+<link rel="stylesheet" href="/css/custom.css">
+
+  
+  
+  
+  
+  
+<meta name="generator" content="Hexo 5.4.1"></head>
+
+
+<body class="main-center theme-green" itemscope itemtype="http://schema.org/WebPage">
+  <header class="header" style="background-image: url(/images/left_images/2.jpg);" itemscope itemtype="http://schema.org/WPHeader">
+  <div class="slimContent" style="height:100%;background-color: rgba(0,0,0,0.7);">
+    <div class="navbar-header">
+      
+      
+      <div class="profile-block text-center">
+        <a id="avatar" href="https://hexo.straysh.com" target="_blank">
+          <img class="img-circle img-rotate" src="/images/avatar.jpg" width="200" height="200">
+        </a>
+        <h2 id="name" class="hidden-xs hidden-sm">Straysh</h2>
+        <h3 id="title" class="hidden-xs hidden-sm hidden-md">野生程序猿</h3>
+        <small id="location" class="text-muted hidden-xs hidden-sm"><i class="icon icon-map-marker"></i> Beijing, China</small>
+      </div>
+      
+      <div class="search" id="search-form-wrap">
+
+    <form class="search-form sidebar-form">
+        <div class="input-group">
+            <input type="text" class="search-form-input form-control" placeholder="搜索" />
+            <span class="input-group-btn">
+                <button type="submit" class="search-form-submit btn btn-flat" onclick="return false;"><i class="icon icon-search"></i></button>
+            </span>
+        </div>
+    </form>
+    <div class="ins-search">
+  <div class="ins-search-mask"></div>
+  <div class="ins-search-container">
+    <div class="ins-input-wrapper">
+      <input type="text" class="ins-search-input" placeholder="想要查找什么..." x-webkit-speech />
+      <button type="button" class="close ins-close ins-selectable" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+    </div>
+    <div class="ins-section-wrapper">
+      <div class="ins-section-container"></div>
+    </div>
+  </div>
+</div>
+
+
+</div>
+      <button class="navbar-toggle collapsed" type="button" data-toggle="collapse" data-target="#main-navbar" aria-controls="main-navbar" aria-expanded="false">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+    </div>
+    <nav id="main-navbar" class="collapse navbar-collapse" itemscope itemtype="http://schema.org/SiteNavigationElement" role="navigation">
+      <ul class="nav navbar-nav main-nav menu-highlight">
+        
+        
+        <li class="menu-item menu-item-home">
+          <a href="/.">
+            
+            <i class="icon icon-home-fill"></i>
+            
+            <span class="menu-title">首页</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives">
+            
+            <i class="icon icon-archives-fill"></i>
+            
+            <span class="menu-title">归档</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories">
+            
+            <i class="icon icon-folder"></i>
+            
+            <span class="menu-title">分类</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags">
+            
+            <i class="icon icon-tags"></i>
+            
+            <span class="menu-title">标签</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-repository">
+          <a href="/repository">
+            
+            <i class="icon icon-project"></i>
+            
+            <span class="menu-title">项目</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-books">
+          <a href="/books">
+            
+            <i class="icon icon-book-fill"></i>
+            
+            <span class="menu-title">书单</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-links">
+          <a href="/links">
+            
+            <i class="icon icon-friendship"></i>
+            
+            <span class="menu-title">友链</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about">
+            
+            <i class="icon icon-cup-fill"></i>
+            
+            <span class="menu-title">关于</span>
+          </a>
+        </li>
+        
+      </ul>
+      
+	
+    <ul class="social-links">
+    	
+        <li><a href="https://github.com/straysh" target="_blank" title="Github" data-toggle=tooltip data-placement=top><i class="icon icon-github"></i></a></li>
+        
+        <li><a href="https://weibo.com/u/1689171115" target="_blank" title="Weibo" data-toggle=tooltip data-placement=top><i class="icon icon-weibo"></i></a></li>
+        
+        <li><a href="/atom.xml" target="_blank" title="Rss" data-toggle=tooltip data-placement=top><i class="icon icon-rss"></i></a></li>
+        
+    </ul>
+
+    </nav>
+  </div>
+</header>
+
+  
+    <aside class="sidebar" itemscope itemtype="http://schema.org/WPSideBar">
+  <div class="slimContent">
+
+    
+      <ul class="sidebar-nav motion-element" style="text-align:center; opacity: 1; display: block; transform: translateX(0px);">
+        <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+          系统目录
+        </li>
+      </ul>
+      <section class="site-overview-wrap sidebar-panel" style="opacity: 0; display: none;">
+        
+          <div class="widget">
+    <h3 class="widget-title">公告</h3>
+    <div class="widget-body">
+        <div id="board">
+            <div class="content">
+                <p>妳是风中的叶，风起而走，我想去追，怎么抓的住？</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+        
+          
+  <div class="widget">
+    <h3 class="widget-title">分类</h3>
+    <div class="widget-body">
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%8D%9A%E6%96%87/">博文</a><span class="category-list-count">102</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%8D%9A%E6%96%87/%E7%AC%94%E8%AE%B0/">笔记</a><span class="category-list-count">2</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E6%9D%82%E8%AE%B0/">杂记</a><span class="category-list-count">6</span></li></ul>
+    </div>
+  </div>
+
+
+        
+          
+  <div class="widget">
+    <h3 class="widget-title">标签</h3>
+    <div class="widget-body">
+      <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/Algorithm/" rel="tag">Algorithm</a><span class="tag-list-count">13</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Apache/" rel="tag">Apache</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Banbrick/" rel="tag">Banbrick</a><span class="tag-list-count">5</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Docker/" rel="tag">Docker</a><span class="tag-list-count">4</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Golang/" rel="tag">Golang</a><span class="tag-list-count">25</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Javascript/" rel="tag">Javascript</a><span class="tag-list-count">10</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Linux/" rel="tag">Linux</a><span class="tag-list-count">13</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/MySQL/" rel="tag">MySQL</a><span class="tag-list-count">13</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Mysql/" rel="tag">Mysql</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Nginx/" rel="tag">Nginx</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Nodejs/" rel="tag">Nodejs</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/PHP/" rel="tag">PHP</a><span class="tag-list-count">19</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/R/" rel="tag">R</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Redis/" rel="tag">Redis</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/SVN/" rel="tag">SVN</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Sphinx/" rel="tag">Sphinx</a><span class="tag-list-count">5</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Translation/" rel="tag">Translation</a><span class="tag-list-count">18</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Yii/" rel="tag">Yii</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%9D%82/" rel="tag">杂</a><span class="tag-list-count">6</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%B1%87%E7%BC%96/" rel="tag">汇编</a><span class="tag-list-count">1</span></li></ul>
+    </div>
+  </div>
+
+
+        
+          
+  <div class="widget">
+    <h3 class="widget-title">标签云</h3>
+    <div class="widget-body tagcloud">
+      <a href="/tags/Algorithm/" style="font-size: 13.67px;">Algorithm</a> <a href="/tags/Apache/" style="font-size: 13px;">Apache</a> <a href="/tags/Banbrick/" style="font-size: 13.33px;">Banbrick</a> <a href="/tags/Docker/" style="font-size: 13.22px;">Docker</a> <a href="/tags/Golang/" style="font-size: 14px;">Golang</a> <a href="/tags/Javascript/" style="font-size: 13.56px;">Javascript</a> <a href="/tags/Linux/" style="font-size: 13.67px;">Linux</a> <a href="/tags/MySQL/" style="font-size: 13.67px;">MySQL</a> <a href="/tags/Mysql/" style="font-size: 13px;">Mysql</a> <a href="/tags/Nginx/" style="font-size: 13.11px;">Nginx</a> <a href="/tags/Nodejs/" style="font-size: 13px;">Nodejs</a> <a href="/tags/PHP/" style="font-size: 13.89px;">PHP</a> <a href="/tags/R/" style="font-size: 13.11px;">R</a> <a href="/tags/Redis/" style="font-size: 13.11px;">Redis</a> <a href="/tags/SVN/" style="font-size: 13px;">SVN</a> <a href="/tags/Sphinx/" style="font-size: 13.33px;">Sphinx</a> <a href="/tags/Translation/" style="font-size: 13.78px;">Translation</a> <a href="/tags/Yii/" style="font-size: 13.11px;">Yii</a> <a href="/tags/%E6%9D%82/" style="font-size: 13.44px;">杂</a> <a href="/tags/%E6%B1%87%E7%BC%96/" style="font-size: 13px;">汇编</a>
+    </div>
+  </div>
+
+        
+          
+  <div class="widget">
+    <h3 class="widget-title">归档</h3>
+    <div class="widget-body">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/03/">三月 2022</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/03/">三月 2021</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/03/">三月 2020</a><span class="archive-list-count">5</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/02/">二月 2020</a><span class="archive-list-count">26</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/12/">十二月 2019</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/04/">四月 2019</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/09/">九月 2018</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/07/">七月 2016</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/06/">六月 2016</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/11/">十一月 2015</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/10/">十月 2015</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/09/">九月 2015</a><span class="archive-list-count">5</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/08/">八月 2015</a><span class="archive-list-count">13</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/07/">七月 2015</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/11/">十一月 2014</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/03/">三月 2014</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/12/">十二月 2013</a><span class="archive-list-count">8</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/10/">十月 2013</a><span class="archive-list-count">8</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/09/">九月 2013</a><span class="archive-list-count">2</span></li></ul>
+    </div>
+  </div>
+
+
+        
+          
+  <div class="widget">
+    <h3 class="widget-title">最新文章</h3>
+    <div class="widget-body">
+      <ul class="recent-post-list list-unstyled no-thumbnail">
+        
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/%E5%8D%9A%E6%96%87/">博文</a><i class="icon icon-angle-right"></i><a class="category-link" href="/categories/%E5%8D%9A%E6%96%87/%E7%AC%94%E8%AE%B0/">笔记</a>
+              </p>
+              <p class="item-title">
+                <a href="/2022/03/14/%E4%BD%BF%E7%94%A8Go%E6%93%8D%E4%BD%9C%E6%96%87%E4%BB%B6/" class="title">使用Go操作文件</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2022-03-14T12:11:25.000Z" itemprop="datePublished">2022-03-14</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/%E5%8D%9A%E6%96%87/">博文</a>
+              </p>
+              <p class="item-title">
+                <a href="/2022/03/13/Docker%E5%AE%B9%E5%99%A8%E7%BD%91%E7%BB%9C/" class="title">Docker容器网络</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2022-03-13T04:10:09.000Z" itemprop="datePublished">2022-03-13</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/%E5%8D%9A%E6%96%87/">博文</a><i class="icon icon-angle-right"></i><a class="category-link" href="/categories/%E5%8D%9A%E6%96%87/%E7%AC%94%E8%AE%B0/">笔记</a>
+              </p>
+              <p class="item-title">
+                <a href="/2022/03/13/Iptables%E5%92%8C%E5%AE%B9%E5%99%A8/" class="title">Iptables和容器</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2022-03-13T03:01:46.000Z" itemprop="datePublished">2022-03-13</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/%E5%8D%9A%E6%96%87/">博文</a>
+              </p>
+              <p class="item-title">
+                <a href="/2022/03/12/Linux%E7%BD%91%E6%A1%A5%E5%B7%A5%E4%BD%9C%E5%8E%9F%E7%90%86/" class="title">Linux网桥工作原理</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2022-03-12T10:02:29.000Z" itemprop="datePublished">2022-03-12</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/%E5%8D%9A%E6%96%87/">博文</a>
+              </p>
+              <p class="item-title">
+                <a href="/2021/03/16/%E5%B9%B6%E5%8F%91%E5%92%8C%E8%B0%83%E5%BA%A6%E7%9A%84%E5%85%B3%E7%B3%BB/" class="title">并发和调度的关系</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2021-03-16T05:54:13.000Z" itemprop="datePublished">2021-03-16</time>
+              </p>
+            </div>
+          </li>
+          
+      </ul>
+    </div>
+  </div>
+  
+
+        
+      </section>
+
+      <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active" style="opacity: 1; display: block;">
+        <nav id="toc" class="article-toc">
+          <h3 class="toc-title">文章目录</h3>
+          <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#LL-Stack-Queue-DLL-Deque"><span class="toc-number">1.</span> <span class="toc-text">LL,Stack,Queue,DLL,Deque</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8A%A8%E6%9C%BA"><span class="toc-number">2.</span> <span class="toc-text">动机</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#List-ADT"><span class="toc-number">2.1.</span> <span class="toc-text">List ADT</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%95%B0%E7%BB%84%E7%9A%84%E5%AE%9E%E7%8E%B0-Part-1"><span class="toc-number">2.2.</span> <span class="toc-text">数组的实现 - Part 1</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%95%B0%E7%BB%84%E7%9A%84%E5%AE%9E%E7%8E%B0-Part-2"><span class="toc-number">2.3.</span> <span class="toc-text">数组的实现 - Part 2</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Time-Complexity-Summary-%E6%97%B6%E9%97%B4%E5%A4%8D%E6%9D%82%E6%80%A7%E6%A6%82%E8%A6%81"><span class="toc-number">2.4.</span> <span class="toc-text">Time Complexity Summary 时间复杂性概要</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Fixed-Space-Issue-%E5%9B%BA%E5%AE%9A%E7%A9%BA%E9%97%B4%E9%97%AE%E9%A2%98"><span class="toc-number">2.5.</span> <span class="toc-text">Fixed Space Issue 固定空间问题</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Variable-Space-%E5%8F%98%E9%95%BF%E7%A9%BA%E9%97%B4"><span class="toc-number">2.6.</span> <span class="toc-text">Variable Space 变长空间</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Observations-%E6%80%9D%E8%80%83"><span class="toc-number">2.7.</span> <span class="toc-text">Observations 思考</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Linked-List-%E9%93%BE%E8%A1%A8"><span class="toc-number">3.</span> <span class="toc-text">Linked List 链表</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%93%BE%E8%A1%A8%E7%9A%84C-%E5%AE%9E%E7%8E%B0"><span class="toc-number">3.1.</span> <span class="toc-text">链表的C++实现</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Linked-List-Additional-Data"><span class="toc-number">3.2.</span> <span class="toc-text">Linked List,Additional Data</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Variations-%E5%8F%98%E5%8C%96"><span class="toc-number">3.3.</span> <span class="toc-text">Variations 变化</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Get-i-Much-Slower-than-Array-%E6%AF%94%E6%95%B0%E7%BB%84%E6%85%A2%E5%BE%88%E5%A4%9A"><span class="toc-number">3.4.</span> <span class="toc-text">Get(i) - Much Slower than Array 比数组慢很多</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Search-v-Not-Better-than-Array-%E4%B8%8D%E6%AF%94%E6%95%B0%E7%BB%84%E4%BC%98"><span class="toc-number">3.5.</span> <span class="toc-text">Search(v) - Not Better than Array 不比数组优</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Insertion-Four-Cases-%E6%8F%92%E5%85%A5%E7%9A%84%E5%9B%9B%E7%A7%8D%E6%83%85%E5%86%B5"><span class="toc-number">3.6.</span> <span class="toc-text">Insertion - Four Cases 插入的四种情况</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Insert-i-v-%E5%A4%B4%E9%83%A8%E6%8F%92%E5%85%A5-i-0"><span class="toc-number">3.7.</span> <span class="toc-text">Insert(i,v) - 头部插入(i&#x3D;&#x3D;0)</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Insert-i-v-%E6%8F%92%E5%85%A5%E4%B8%80%E4%B8%AA%E7%A9%BA%E5%88%97%E8%A1%A8"><span class="toc-number">3.8.</span> <span class="toc-text">Insert(i,v) - 插入一个空列表</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Insert-i-v-i%E2%88%88-1-N-1"><span class="toc-number">3.9.</span> <span class="toc-text">Insert(i,v) - i∈[1 .. N-1]</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Insert-i-v-Beyond-the-Tail-i-N-%E6%8F%92%E5%85%A5%E5%B0%BE%E8%8A%82%E7%82%B9%E4%B9%8B%E5%90%8E"><span class="toc-number">3.10.</span> <span class="toc-text">Insert(i,v) - Beyond the Tail,i &#x3D;&#x3D; N 插入尾节点之后</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Removal-Three-Cases-%E7%A7%BB%E9%99%A4%E7%9A%84%E4%B8%89%E7%A7%8D%E6%9D%A1%E4%BB%B6"><span class="toc-number">3.11.</span> <span class="toc-text">Removal - Three Cases 移除的三种条件</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Remove-i-At-Head-i-0-%E7%A7%BB%E9%99%A4%E5%A4%B4%E5%85%83%E7%B4%A0"><span class="toc-number">3.12.</span> <span class="toc-text">Remove(i) - At Head(i &#x3D;&#x3D; 0) 移除头元素</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Remove-i-i-%E2%88%88-1-N-2"><span class="toc-number">3.13.</span> <span class="toc-text">Remove(i) - i ∈ [1 .. N-2]</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Remove-i-At-Tail-i-N-1-Part-1-%E7%A7%BB%E9%99%A4%E5%B0%BE%E5%85%83%E7%B4%A0-1"><span class="toc-number">3.14.</span> <span class="toc-text">Remove(i) - At Tail(i &#x3D;&#x3D; N-1) - Part 1 移除尾元素(1)</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Remove-i-At-Tail-i-N-1-Part-2-%E7%A7%BB%E9%99%A4%E5%B0%BE%E5%85%83%E7%B4%A0-2"><span class="toc-number">3.15.</span> <span class="toc-text">Remove(i) - At Tail(i &#x3D;&#x3D; N-1) - Part 2 移除尾元素(2)</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%97%B6%E9%97%B4%E5%A4%8D%E6%9D%82%E5%BA%A6%E6%A6%82%E8%A7%88"><span class="toc-number">3.16.</span> <span class="toc-text">时间复杂度概览</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%93%BE%E8%A1%A8%E7%9A%84%E5%BA%94%E7%94%A8%E5%9C%BA%E6%99%AF"><span class="toc-number">3.17.</span> <span class="toc-text">链表的应用场景</span></a></li></ol></li></ol>
+        </nav>
+      </section>
+    
+  </div>
+</aside>
+
+  
+  
+<aside class="sidebar sidebar-toc collapse" id="collapseToc" itemscope itemtype="http://schema.org/WPSideBar">
+  <div class="slimContent">
+    <nav id="toc" class="article-toc">
+      <h3 class="toc-title">文章目录</h3>
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#LL-Stack-Queue-DLL-Deque"><span class="toc-number">1.</span> <span class="toc-text">LL,Stack,Queue,DLL,Deque</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8A%A8%E6%9C%BA"><span class="toc-number">2.</span> <span class="toc-text">动机</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#List-ADT"><span class="toc-number">2.1.</span> <span class="toc-text">List ADT</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%95%B0%E7%BB%84%E7%9A%84%E5%AE%9E%E7%8E%B0-Part-1"><span class="toc-number">2.2.</span> <span class="toc-text">数组的实现 - Part 1</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%95%B0%E7%BB%84%E7%9A%84%E5%AE%9E%E7%8E%B0-Part-2"><span class="toc-number">2.3.</span> <span class="toc-text">数组的实现 - Part 2</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Time-Complexity-Summary-%E6%97%B6%E9%97%B4%E5%A4%8D%E6%9D%82%E6%80%A7%E6%A6%82%E8%A6%81"><span class="toc-number">2.4.</span> <span class="toc-text">Time Complexity Summary 时间复杂性概要</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Fixed-Space-Issue-%E5%9B%BA%E5%AE%9A%E7%A9%BA%E9%97%B4%E9%97%AE%E9%A2%98"><span class="toc-number">2.5.</span> <span class="toc-text">Fixed Space Issue 固定空间问题</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Variable-Space-%E5%8F%98%E9%95%BF%E7%A9%BA%E9%97%B4"><span class="toc-number">2.6.</span> <span class="toc-text">Variable Space 变长空间</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Observations-%E6%80%9D%E8%80%83"><span class="toc-number">2.7.</span> <span class="toc-text">Observations 思考</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Linked-List-%E9%93%BE%E8%A1%A8"><span class="toc-number">3.</span> <span class="toc-text">Linked List 链表</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%93%BE%E8%A1%A8%E7%9A%84C-%E5%AE%9E%E7%8E%B0"><span class="toc-number">3.1.</span> <span class="toc-text">链表的C++实现</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Linked-List-Additional-Data"><span class="toc-number">3.2.</span> <span class="toc-text">Linked List,Additional Data</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Variations-%E5%8F%98%E5%8C%96"><span class="toc-number">3.3.</span> <span class="toc-text">Variations 变化</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Get-i-Much-Slower-than-Array-%E6%AF%94%E6%95%B0%E7%BB%84%E6%85%A2%E5%BE%88%E5%A4%9A"><span class="toc-number">3.4.</span> <span class="toc-text">Get(i) - Much Slower than Array 比数组慢很多</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Search-v-Not-Better-than-Array-%E4%B8%8D%E6%AF%94%E6%95%B0%E7%BB%84%E4%BC%98"><span class="toc-number">3.5.</span> <span class="toc-text">Search(v) - Not Better than Array 不比数组优</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Insertion-Four-Cases-%E6%8F%92%E5%85%A5%E7%9A%84%E5%9B%9B%E7%A7%8D%E6%83%85%E5%86%B5"><span class="toc-number">3.6.</span> <span class="toc-text">Insertion - Four Cases 插入的四种情况</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Insert-i-v-%E5%A4%B4%E9%83%A8%E6%8F%92%E5%85%A5-i-0"><span class="toc-number">3.7.</span> <span class="toc-text">Insert(i,v) - 头部插入(i&#x3D;&#x3D;0)</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Insert-i-v-%E6%8F%92%E5%85%A5%E4%B8%80%E4%B8%AA%E7%A9%BA%E5%88%97%E8%A1%A8"><span class="toc-number">3.8.</span> <span class="toc-text">Insert(i,v) - 插入一个空列表</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Insert-i-v-i%E2%88%88-1-N-1"><span class="toc-number">3.9.</span> <span class="toc-text">Insert(i,v) - i∈[1 .. N-1]</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Insert-i-v-Beyond-the-Tail-i-N-%E6%8F%92%E5%85%A5%E5%B0%BE%E8%8A%82%E7%82%B9%E4%B9%8B%E5%90%8E"><span class="toc-number">3.10.</span> <span class="toc-text">Insert(i,v) - Beyond the Tail,i &#x3D;&#x3D; N 插入尾节点之后</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Removal-Three-Cases-%E7%A7%BB%E9%99%A4%E7%9A%84%E4%B8%89%E7%A7%8D%E6%9D%A1%E4%BB%B6"><span class="toc-number">3.11.</span> <span class="toc-text">Removal - Three Cases 移除的三种条件</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Remove-i-At-Head-i-0-%E7%A7%BB%E9%99%A4%E5%A4%B4%E5%85%83%E7%B4%A0"><span class="toc-number">3.12.</span> <span class="toc-text">Remove(i) - At Head(i &#x3D;&#x3D; 0) 移除头元素</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Remove-i-i-%E2%88%88-1-N-2"><span class="toc-number">3.13.</span> <span class="toc-text">Remove(i) - i ∈ [1 .. N-2]</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Remove-i-At-Tail-i-N-1-Part-1-%E7%A7%BB%E9%99%A4%E5%B0%BE%E5%85%83%E7%B4%A0-1"><span class="toc-number">3.14.</span> <span class="toc-text">Remove(i) - At Tail(i &#x3D;&#x3D; N-1) - Part 1 移除尾元素(1)</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Remove-i-At-Tail-i-N-1-Part-2-%E7%A7%BB%E9%99%A4%E5%B0%BE%E5%85%83%E7%B4%A0-2"><span class="toc-number">3.15.</span> <span class="toc-text">Remove(i) - At Tail(i &#x3D;&#x3D; N-1) - Part 2 移除尾元素(2)</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%97%B6%E9%97%B4%E5%A4%8D%E6%9D%82%E5%BA%A6%E6%A6%82%E8%A7%88"><span class="toc-number">3.16.</span> <span class="toc-text">时间复杂度概览</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%93%BE%E8%A1%A8%E7%9A%84%E5%BA%94%E7%94%A8%E5%9C%BA%E6%99%AF"><span class="toc-number">3.17.</span> <span class="toc-text">链表的应用场景</span></a></li></ol></li></ol>
+    </nav>
+  </div>
+</aside>
+
+<main class="main" role="main">
+  <div class="content">
+  <article id="post-数据结构-链表" class="article article-type-post" itemscope itemtype="http://schema.org/BlogPosting">
+    
+    <div class="article-header">
+      
+        
+  
+    <h1 class="article-title" itemprop="name">
+      <span style="color:#008e59;">[译]</span>数据结构_链表
+    </h1>
+  
+
+
+      
+      <div class="article-meta">
+        
+        <span class="article-date">
+    <i class="icon icon-calendar-check"></i>
+	<a href="/2020/02/10/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84-%E9%93%BE%E8%A1%A8/" class="article-date">
+	  <time datetime="2020-02-10T14:13:00.000Z" itemprop="datePublished">2020-02-10</time>
+	</a>
+</span>
+        
+  <span class="article-category">
+    <i class="icon icon-folder"></i>
+    <a class="article-category-link" href="/categories/%E5%8D%9A%E6%96%87/">博文</a>
+  </span>
+
+        
+  <span class="article-tag">
+    <i class="icon icon-tags"></i>
+	<a class="article-tag-link-link" href="/tags/Algorithm/" rel="tag">Algorithm</a>, <a class="article-tag-link-link" href="/tags/Golang/" rel="tag">Golang</a>, <a class="article-tag-link-link" href="/tags/Translation/" rel="tag">Translation</a>
+  </span>
+
+
+        
+
+        <span class="post-comment"><i class="icon icon-comment"></i> <a href="/2020/02/10/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84-%E9%93%BE%E8%A1%A8/#comments" class="article-comment-link">评论</a></span>
+        
+      </div>
+    </div>
+    <div class="article-entry marked-body" itemprop="articleBody">
+      
+        <h2 id="LL-Stack-Queue-DLL-Deque"><a href="#LL-Stack-Queue-DLL-Deque" class="headerlink" title="LL,Stack,Queue,DLL,Deque"></a>LL,Stack,Queue,DLL,Deque</h2><p>链表（Linked List）是一种数据结构，它由一组<code>节点</code>组成，它们作为一个整体表示一个序列。最简单的情形下，每一个节点由一个值<code>data</code>和指向下序列中一节点的引用<code>link</code>组成。</p>
+<p>在链表中查找数77<br><img src="/images/ds/LL_Search_77.gif" alt="search_77"></p>
+<p>链表及其变体是用来实现列表（List）、栈（Stack）、Queue（队列）、Deque ADTs<sup>1</sup>（双端队列）的底层数据结构。<br><code>Linked List and its variations are used as underlying data structure to implement List, Stack, Queue, and Deque ADTs</code></p>
+<p>下面我们会讨论链表（只包含一个<code>next</code>指针）和它的两个变体：Stack和Queue，还会讨论Doubly Linked List（DLL）（双向链表）（包含<code>next</code>指针和<code>previous</code>指针），及其变体：Deque。</p>
+<h2 id="动机"><a href="#动机" class="headerlink" title="动机"></a>动机</h2><p>链表这个数据结构通常会在大学本科阶段学习，有以下几个原因：</p>
+<ol>
+<li>它是一个简单的线性数据结构。</li>
+<li>作为一个抽象数据类型的列表，它有一系列的应用，例如学生列表，事件列表，任职列表等等（尽管有其他更多高级数据结构能做到同样(甚至更好)）或者作为栈/队列/双端队列的抽象数据类型。</li>
+<li>它有一些有趣的边界用例，指出了数据结构的良好实现的必要。</li>
+<li>它包含多种自定义的选项，因此特别适合使用<code>OOP Programming</code>面向对象编程来实现。</li>
+</ol>
+<span id="more"></span>
+
+<h3 id="List-ADT"><a href="#List-ADT" class="headerlink" title="List ADT"></a>List ADT</h3><p>List（列表）是一个有序数据序列 {a<sub>0</sub>, a<sub>1</sub>, …, a<sub>N-2</sub>, a<sub>N-1</sub>}<br>通常的List ADT（列表抽象数据类型）的操作有：<br>0. <code>get(i)</code> - 或许是个简单的操作，返回 a<sub>i</sub>（基于0的索引）。</p>
+<ol>
+<li><code>search(v)</code> - 判断值<code>v</code>在列表中存在(并返回其位置/索引) 或不存在（通常返回索引-1）</li>
+<li><code>insert(i,v)</code> - 在列表的位置/索引<code>i</code>处插入值<code>v</code>，即将从位置[i+1 .. N-1]的元素均向右移动一个位置来生成一个空穴存放值<code>v</code>。</li>
+<li><code>remove(i)</code> - 将列表中位置<code>i</code>的值移除。即将位置[i+1 .. N-1]的元素均向左移动一个位置来消除空穴。</li>
+</ol>
+<blockquote>
+<p>讨论：若我们需要在列表中移除值<code>v</code>呢？</p>
+</blockquote>
+<h3 id="数组的实现-Part-1"><a href="#数组的实现-Part-1" class="headerlink" title="数组的实现 - Part 1"></a>数组的实现 - Part 1</h3><p>（紧凑的）Array（数组）是实现List ADT的一个良好候选方式，因为它是处理数据集合的简单结构。</p>
+<p>当我们说紧凑数组，我们指的是没有空穴的数组，举例：假设数组中有N个元素（数组的容量是M， M ≥ N），那么只有位置[0,N-1]被占用，其他位置[N, M-1]都是空的。<br><img src="/images/ds/compactarray_illustration.png" alt="compacarray_illustration"></p>
+<h3 id="数组的实现-Part-2"><a href="#数组的实现-Part-2" class="headerlink" title="数组的实现 - Part 2"></a>数组的实现 - Part 2</h3><p>紧凑数组命名为A，下标范围[0 .. N-1]填充了数据。</p>
+<ol>
+<li><code>get(i)</code>返回元素<code>A[i]</code>。当数组是非紧凑的，这个简单的操作也会无必要的复杂。(This simple operation will be unnecessarily complicated if the array is not compact.)</li>
+<li><code>search(v)</code>我们逐项的遍历索引<code>i</code>（i∈[0 .. N-1]），检查A[i]==v。因为若值<code>v</code>存在，那么它的索引必将落在[0 .. N-1]中。</li>
+<li><code>insert(i,v)</code>我们将元素∈[i .. N-1]集合，顺序移动到∈[i+1 .. N]（向右移动）并设置<code>A[i] = v</code>。既要将<code>v</code>插入正确的索引<code>i</code>，还要确保数组是紧凑的。</li>
+<li><code>remove(i)</code>我们将元素∈[i+1 .. N-1]集合，顺序移动到∈[i .. N-2]（向左移动）将旧的<code>A[i]</code>覆盖掉。即能保持紧凑。</li>
+</ol>
+<h3 id="Time-Complexity-Summary-时间复杂性概要"><a href="#Time-Complexity-Summary-时间复杂性概要" class="headerlink" title="Time Complexity Summary 时间复杂性概要"></a>Time Complexity Summary 时间复杂性概要</h3><ol>
+<li><code>get(i)</code>非常快： 只需要一次查询，是<code>O(1)</code>。</li>
+<li><code>search(v)</code><ul>
+<li>最好的情况，值<code>v</code>是第一个元素，即<code>O(1)</code>。</li>
+<li>最坏的情况，值<code>v</code>不存在，我们需要<code>O(N)</code>复杂度的扫描才能确定这个实事。</li>
+</ul>
+</li>
+<li><code>insert(i,v)</code><ul>
+<li>最好的情况，<code>i == N</code>，不需要移动元素，即<code>O(1)</code>。</li>
+<li>最坏的情况，<code>i == 0</code>，需要移动N个元素，即<code>O(N)</code>。</li>
+</ul>
+</li>
+<li><code>remove(i)</code><ul>
+<li>最好的情况，<code>i == N-1</code>，不需要移动元素，即<code>O(1)</code>。</li>
+<li>最坏的情况，<code>i == 0</code>，需要移动N个元素，即<code>O(N)</code>。</li>
+</ul>
+</li>
+</ol>
+<h3 id="Fixed-Space-Issue-固定空间问题"><a href="#Fixed-Space-Issue-固定空间问题" class="headerlink" title="Fixed Space Issue 固定空间问题"></a>Fixed Space Issue 固定空间问题</h3><p>紧凑数组的容量M不是无限的，它是一个有限的数值。那么这就有一个问题，在许多的应用中无法提前预知<code>最大</code>的容量需要多大。</p>
+<ul>
+<li>若M过大，则未使用的空间浪费了。</li>
+<li>若M过小，则没有足够的空间来存储（数组会越界）。</li>
+</ul>
+<h3 id="Variable-Space-变长空间"><a href="#Variable-Space-变长空间" class="headerlink" title="Variable Space 变长空间"></a>Variable Space 变长空间</h3><p>解决方案：让M动态可变。那么当数组满了，我们生成一个更大的新数组（通常是2倍的原容量）并将旧数据移动到新数组中。那么，容量将不再成为限制，或者说只受限于计算机的内存容量（通常都很大）。<br><code>However, the classic array-based issues of space wastage and copying/shifting items overhead are still problematic.</code><br>然而，经典数组问题诸如空间浪费，复制、移动元素仍然是课题。（？没译好）</p>
+<h3 id="Observations-思考"><a href="#Observations-思考" class="headerlink" title="Observations 思考"></a>Observations 思考</h3><p>对于已知可能最大元素数量的固定大小M的集合，数组已经是基于<code>List ADT</code>实现的合理的最佳数据结构。</p>
+<p>对于容量为M的动态集合，由于频繁的插入、删除操作，简单的数组是一个糟糕的数据结构。<br><code>where dynamic operations such as insert/remove are common, a simple array is actually a poor choice of data structure.</code></p>
+<h2 id="Linked-List-链表"><a href="#Linked-List-链表" class="headerlink" title="Linked List 链表"></a>Linked List 链表</h2><p>现在我们介绍链表这个数据结构。它使用<code>指针</code>来允许元素在内存中非连续存储（这是与数组的本质区别）。元素的索引从<code>0</code>到<code>N-1</code>，使用元素i的指针来访问下一个元素i+1。<br><img src="/images/ds/ll_illustration.png" alt="ll_illustration"></p>
+<h3 id="链表的C-实现"><a href="#链表的C-实现" class="headerlink" title="链表的C++实现"></a>链表的C++实现</h3><p>其基本形式，链表的一个单一节点包含如下结构：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs c++"><span class="hljs-keyword">struct</span> <span class="hljs-title class_">Vertex</span> &#123; <span class="hljs-comment">// we can use either C struct or C++/Java class</span><br>  <span class="hljs-type">int</span> item; <span class="hljs-comment">// the data is stored here, an integer in this example</span><br>  Vertex* next; <span class="hljs-comment">// this pointer tells us where is the next vertex</span><br>&#125;;<br></code></pre></td></tr></table></figure>
+
+<p>Golang的实现</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs golang"><span class="hljs-keyword">type</span> Node <span class="hljs-keyword">struct</span> &#123;<br>    Item <span class="hljs-type">int</span><br>    next *Node<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<h3 id="Linked-List-Additional-Data"><a href="#Linked-List-Additional-Data" class="headerlink" title="Linked List,Additional Data"></a>Linked List,Additional Data</h3><p>链表这个数据结构中，还有几个额外的数据。我们使用默认的链表<code>[22 (head)-&gt;2-&gt;77-&gt;6-&gt;43-&gt;76-&gt;89 (tail)]</code>来说明。</p>
+<ol>
+<li><code>头节点</code>指针指向a<sub>0</sub> - 它的值是22，没有谁指向头结点的。</li>
+<li><code>尾节点</code>指针指向a<sub>N-1</sub> - 它是a<sub>6</sub> = 89，尾节点之后没有其他元素。</li>
+</ol>
+<p>就这些，我们仅仅增加了两个额外的变量。</p>
+<h3 id="Variations-变化"><a href="#Variations-变化" class="headerlink" title="Variations 变化"></a>Variations 变化</h3><p>注意在大学课本中对如何实现链表有各种细微的区别。如是否使用尾节点，是否使用循环结构，是否使用dummy head元素。<a href="/fbc">discuss here</a></p>
+<p>这里，我们实现的教学版本（有尾节点非循环结构，没有dummy head）可能与你所学的不是100%相同，但其核心思想是一样的。</p>
+<p>在本教学中，每一个节点包含整型值item，但很容易更换为其他类型。</p>
+<h3 id="Get-i-Much-Slower-than-Array-比数组慢很多"><a href="#Get-i-Much-Slower-than-Array-比数组慢很多" class="headerlink" title="Get(i) - Much Slower than Array 比数组慢很多"></a>Get(i) - Much Slower than Array 比数组慢很多</h3><p>由于我们保存了头尾节点的指针，除了头（索引0）尾（索引N-1）节点，其他节点需要列表顺序遍历来查找。</p>
+<p>我们看一个简单的C++实现：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs c++"><span class="hljs-function">Vertex* <span class="hljs-title">Get</span><span class="hljs-params">(<span class="hljs-type">int</span> i)</span> </span>&#123; <span class="hljs-comment">// returns the vertex</span><br>  Vertex* ptr = head; <span class="hljs-comment">// we have to start from head</span><br>  <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> k = <span class="hljs-number">0</span>; k &lt; i; k++) <span class="hljs-comment">// advance forward i time(s)</span><br>    ptr = ptr-&gt;next; <span class="hljs-comment">// the pointers are pointing to the higher index</span><br>  <span class="hljs-keyword">return</span> ptr;<br>&#125;<br></code></pre></td></tr></table></figure>
+<p>当i≤N-2时，其时间复杂度是<code>O(N)</code>。<a href="/2020/02/10/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84-%E9%93%BE%E8%A1%A8/#Time-Complexity-Summary-%E6%97%B6%E9%97%B4%E5%A4%8D%E6%9D%82%E6%80%A7%E6%A6%82%E8%A6%81">与数组的<code>O(1)</code>做一个比较。</a></p>
+<p>Golang实现</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs golang"><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-params">(ll *LL)</span></span> Get(i <span class="hljs-type">int</span>) *Node &#123;<br>    node := ll.head<br>    <span class="hljs-keyword">for</span> k:=<span class="hljs-number">0</span>;k&lt;i;k++ &#123;<br>        node = node.next<br>    &#125;<br>    <span class="hljs-keyword">return</span> node<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<h3 id="Search-v-Not-Better-than-Array-不比数组优"><a href="#Search-v-Not-Better-than-Array-不比数组优" class="headerlink" title="Search(v) - Not Better than Array 不比数组优"></a>Search(v) - Not Better than Array 不比数组优</h3><p>由于我们只有头尾节点的引用，另指针总是指向右侧（高位），我们只能从头结点开始，通过<code>next</code>指针顺序遍历。</p>
+<p>例：<code> [22 (head)-&gt;2-&gt;77-&gt;6-&gt;43-&gt;76-&gt;89 (tail)</code></p>
+<p>在索引2处找到元素77<br><img src="/images/ds/LL_Search_77.gif" alt="search_77"></p>
+<p>在列表中未找到，然而这只有在遍历完N个节点后才能确定，因此它是最坏的时间复杂度<code>O(N)</code>。<br><img src="/images/ds/LL_Search_7.gif" alt="search_7"></p>
+<h3 id="Insertion-Four-Cases-插入的四种情况"><a href="#Insertion-Four-Cases-插入的四种情况" class="headerlink" title="Insertion - Four Cases 插入的四种情况"></a>Insertion - Four Cases 插入的四种情况</h3><p>链表的插入比数组有更多的边界条件。</p>
+<p>大多数同学只有在它们写的链表代码失败时才能意识到所有的边界条件。</p>
+<p>在这里，我们直接给出所有的边界。</p>
+<p>对于插入<code>insert(i,v)</code>，有四种边界情况：</p>
+<ol>
+<li>插入链表头，i == 0。</li>
+<li>空链表（和上面的1相同）。</li>
+<li>插入尾节点之后。i == N。</li>
+<li>其他位置 i∈[1 .. N-1]。</li>
+</ol>
+<h3 id="Insert-i-v-头部插入-i-0"><a href="#Insert-i-v-头部插入-i-0" class="headerlink" title="Insert(i,v) - 头部插入(i==0)"></a>Insert(i,v) - 头部插入(i==0)</h3><p>头部插入简单高效，<code>O(1)</code><br>C++实现如下：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs c++">Vertex* vtx = <span class="hljs-keyword">new</span> <span class="hljs-built_in">Vertex</span>(); <span class="hljs-comment">// create new vertex vtx from item v</span><br>vtx-&gt;item = v;<br>vtx-&gt;next = head; <span class="hljs-comment">// link this new vertex to the (old) head vertex</span><br>head = vtx; <span class="hljs-comment">// the new vertex becomes the new head</span><br></code></pre></td></tr></table></figure>
+
+<p><code>insert(0, 50)</code>的动画：<br><img src="/images/ds/LL_Insert_0_50.gif" alt="LL_Insert_0_50"></p>
+<p>Golang实现：</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs Golang">node := &amp;Node&#123;&#125;<br>node.Item = v<br>node.next = ll.head<br>ll.head = node<br></code></pre></td></tr></table></figure>
+
+<p>讨论：在数组的头部插入会发生啥？</p>
+<h3 id="Insert-i-v-插入一个空列表"><a href="#Insert-i-v-插入一个空列表" class="headerlink" title="Insert(i,v) - 插入一个空列表"></a>Insert(i,v) - 插入一个空列表</h3><p>空结构是一个常见的边界条件，若无何时的测试它常常导致不可预期的崩溃。向空结构中插入新元素是合法的。幸运的是，实现的伪代码和向i==0插入是一样的，因此直接使用上面的代码即可。</p>
+<h3 id="Insert-i-v-i∈-1-N-1"><a href="#Insert-i-v-i∈-1-N-1" class="headerlink" title="Insert(i,v) - i∈[1 .. N-1]"></a>Insert(i,v) - i∈[1 .. N-1]</h3><p>结合<code>Get(i)</code>的代码，我们可以实现向列表中间插入元素：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs c++">Vertex* pre = <span class="hljs-built_in">Get</span>(i<span class="hljs-number">-1</span>); <span class="hljs-comment">// traverse to (i-1)-th vertex, O(N)</span><br>aft = pre-&gt;next; <span class="hljs-comment">// aft cannot be null, think about it</span><br>Vertex* vtx = <span class="hljs-keyword">new</span> <span class="hljs-built_in">Vertex</span>(); <span class="hljs-comment">// create new vertex</span><br>vtx-&gt;item = v;<br>vtx-&gt;next = aft; <span class="hljs-comment">// link this</span><br>pre-&gt;next = vtx; <span class="hljs-comment">// and this</span><br></code></pre></td></tr></table></figure>
+
+<p>Golang实现：</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs golang">pre  := ll.Get(i<span class="hljs-number">-1</span>)<br>aft  := pre.next<br>node := &amp;Node&#123;&#125;<br>node.Item = v<br>node.next = aft<br>pre.next  = node<br></code></pre></td></tr></table></figure>
+
+<p>常规插入：<br><img src="/images/ds/LL_Insert_3_44.gif" alt="LL_Insert_3_44"></p>
+<p>边界条件，向尾节点插入<br><img src="/images/ds/LL_Insert_6_55.gif" alt="LL_Insert_6_55"></p>
+<p>因需要遍历列表，该操作的时间复杂度是<code>O(N)</code>。</p>
+<h3 id="Insert-i-v-Beyond-the-Tail-i-N-插入尾节点之后"><a href="#Insert-i-v-Beyond-the-Tail-i-N-插入尾节点之后" class="headerlink" title="Insert(i,v) - Beyond the Tail,i == N 插入尾节点之后"></a>Insert(i,v) - Beyond the Tail,i == N 插入尾节点之后</h3><p>由于尾节点的存在，插入尾节点之后也是<code>O(1)</code>。</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs c++">Vertex* vtx = <span class="hljs-keyword">new</span> <span class="hljs-built_in">Vertex</span>(); <span class="hljs-comment">// this is also a C++ code</span><br>vtx-&gt;item = v; <span class="hljs-comment">// create new vertex vtx from item v</span><br>tail-&gt;next = vtx; <span class="hljs-comment">// just link this, as tail is the i = (N-1)-th item</span><br>tail = vtx; <span class="hljs-comment">// now update the tail pointer</span><br></code></pre></td></tr></table></figure>
+
+<p>Golang实现:</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs golang">node := &amp;Node&#123;&#125;<br>node.Item = v<br>tail.next = node<br>tail = node<br></code></pre></td></tr></table></figure>
+
+<p>讨论：在数组的尾部之后插入会发生啥？</p>
+<h3 id="Removal-Three-Cases-移除的三种条件"><a href="#Removal-Three-Cases-移除的三种条件" class="headerlink" title="Removal - Three Cases 移除的三种条件"></a>Removal - Three Cases 移除的三种条件</h3><p>移除操作<code>remove(i)</code>，根据<code>i</code>的值有三种可能性：</p>
+<ol>
+<li>i == 0，移除头元素，只影响<code>head</code>指针。</li>
+<li>i == N-1，移除尾元素，只影响<code>tail</code>指针。</li>
+<li>i ∈ [1 .. N-2]，其他位置。</li>
+</ol>
+<p>讨论：对比上面的插入场景。从空结构中移除操作是否合法？</p>
+<h3 id="Remove-i-At-Head-i-0-移除头元素"><a href="#Remove-i-At-Head-i-0-移除头元素" class="headerlink" title="Remove(i) - At Head(i == 0) 移除头元素"></a>Remove(i) - At Head(i == 0) 移除头元素</h3><p>非常简单，直接上代码：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs c++"><span class="hljs-keyword">if</span> (head == <span class="hljs-literal">NULL</span>) <span class="hljs-keyword">return</span>; <span class="hljs-comment">// avoid crashing when SLL is empty</span><br>Vertex* temp = head; <span class="hljs-comment">// so we can delete it later</span><br>head = head-&gt;next; <span class="hljs-comment">// book keeping, update the head pointer</span><br><span class="hljs-keyword">delete</span> temp; <span class="hljs-comment">// which is the old head</span><br></code></pre></td></tr></table></figure>
+
+<p>Golang实现：</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs golang"><span class="hljs-keyword">if</span> ll.head == <span class="hljs-literal">nil</span> &#123;<br>  <span class="hljs-keyword">return</span> <span class="hljs-literal">nil</span><br>&#125;<br><br>head := ll.head.next<br>ll.head = head<br><br><span class="hljs-keyword">return</span> head<br></code></pre></td></tr></table></figure>
+
+<p>讨论：对于数组，移除头元素会发生啥？</p>
+<h3 id="Remove-i-i-∈-1-N-2"><a href="#Remove-i-i-∈-1-N-2" class="headerlink" title="Remove(i) - i ∈ [1 .. N-2]"></a>Remove(i) - i ∈ [1 .. N-2]</h3><p>借用<code>Get(i)</code>的代码，很容易实现：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs c++">Vertex* pre = <span class="hljs-built_in">Get</span>(i<span class="hljs-number">-1</span>); <span class="hljs-comment">// traverse to (i-1)-th vertex, O(N)</span><br>Vertex* del = pre-&gt;next, aft = del-&gt;next;<br>pre-&gt;next = aft; <span class="hljs-comment">// bypass del</span><br><span class="hljs-keyword">delete</span> del;<br></code></pre></td></tr></table></figure>
+
+<p>Golang实现：</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs golang">prev := ll.Get(i<span class="hljs-number">-1</span>)<br>elem := prev.next<br>prev.next = elem.next<br><br><span class="hljs-keyword">return</span> elem<br></code></pre></td></tr></table></figure>
+<p>由于需要遍历列表，其时间复杂度<code>O(N)</code>。</p>
+<h3 id="Remove-i-At-Tail-i-N-1-Part-1-移除尾元素-1"><a href="#Remove-i-At-Tail-i-N-1-Part-1-移除尾元素-1" class="headerlink" title="Remove(i) - At Tail(i == N-1) - Part 1 移除尾元素(1)"></a>Remove(i) - At Tail(i == N-1) - Part 1 移除尾元素(1)</h3><p>假设列表非空，我们可以如下实现：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs c++">Vertex* pre = head;<br>temp = head-&gt;next;<br><span class="hljs-keyword">while</span> (temp-&gt;next != null) <span class="hljs-comment">// while my neighbor is not the tail</span><br>  pre = pre-&gt;next, temp = temp-&gt;next;<br>pre-&gt;next = null; <span class="hljs-comment">// alternatively: pre = Get(N-2), temp = Get(N-1)</span><br><span class="hljs-keyword">delete</span> temp; <span class="hljs-comment">// temp = (old) tail</span><br>tail = pre; <span class="hljs-comment">// update tail pointer</span><br></code></pre></td></tr></table></figure>
+
+<p>Golang实现：</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><code class="hljs golang">pre := ll.head<br>temp := pre.next<br><br><span class="hljs-keyword">for</span> ;temp.next != <span class="hljs-literal">nil</span>; &#123;<br>  pre = temp<br>  temp = temp.next<br>&#125;<br><br>ll.head = pre<br>pre.next = <span class="hljs-literal">nil</span><br><br><span class="hljs-keyword">return</span> temp<br></code></pre></td></tr></table></figure>
+<p>循环调用上述步骤，我们将从尾部逐项移除元素，直到只剩下一个元素（head == tail），此时我们再执行移除头元素的方法。注：从空结构中移除是非法的，所以当链表欧为空时，停止。</p>
+<h3 id="Remove-i-At-Tail-i-N-1-Part-2-移除尾元素-2"><a href="#Remove-i-At-Tail-i-N-1-Part-2-移除尾元素-2" class="headerlink" title="Remove(i) - At Tail(i == N-1) - Part 2 移除尾元素(2)"></a>Remove(i) - At Tail(i == N-1) - Part 2 移除尾元素(2)</h3><p>实际上，若我们维护了一个变量N来记录链表的大小，我们可以通过顺序遍历<code>Get(i)</code>来实现移除尾元素：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs c++">Vertex* pre = <span class="hljs-built_in">Get</span>(N<span class="hljs-number">-2</span>); <span class="hljs-comment">// go to one index just before tail, O(N)</span><br>pre-&gt;next = null;<br><span class="hljs-keyword">delete</span> tail;<br>tail = pre; <span class="hljs-comment">// we have access to old tail</span><br></code></pre></td></tr></table></figure>
+
+<p>Golang实现：</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs golang">prev := ll.Get(N<span class="hljs-number">-2</span>)<br>temp := prev.next<br><br>ll.tail = prev<br>prev.next = <span class="hljs-literal">nil</span><br><br><span class="hljs-keyword">return</span> temp<br></code></pre></td></tr></table></figure>
+<p>注意这个操作的时间复杂度是<code>O(N)</code>，为了插入到尾元素之后能正常进行，需要将<code>tail</code>指针从N-1移动到N-2。这种不高效的做法在后面Doubly Linked List（双向链表）中解决。</p>
+<p>讨论：对数组移除尾元素会发生啥？</p>
+<h3 id="时间复杂度概览"><a href="#时间复杂度概览" class="headerlink" title="时间复杂度概览"></a>时间复杂度概览</h3><ol>
+<li><code>get(i)</code>很慢，是<code>O(N)</code>。在链表中，我们需要从头元素开始顺序遍历</li>
+<li><code>search(v)</code><ul>
+<li>最好情况下，命中头元素，<code>O(1)</code>。</li>
+<li>最坏情况下，未找到，需要顺利遍历整个列表，是<code>O(N)</code>。</li>
+</ul>
+</li>
+<li><code>insert(i,v)</code><ul>
+<li>最好情况下，插入头部，<code>O(1)</code>。或插入尾元素之后（有tail指针）也是<code>O(1)</code>。</li>
+<li>最坏情况下，插入N-2位置，我们需要顺序遍历找到元素N-2（tail的前一个元素），是<code>O(N)</code>。</li>
+</ul>
+</li>
+<li><code>remove(i)</code><ul>
+<li>最好情况下，移除头元素，<code>O(1)</code>。</li>
+<li>最坏情况下，移除尾元素，为了更新<code>tail</code>指针需要顺序遍历整个链表，是<code>O(N)</code>。</li>
+</ul>
+</li>
+</ol>
+<h3 id="链表的应用场景"><a href="#链表的应用场景" class="headerlink" title="链表的应用场景"></a>链表的应用场景</h3><p>单纯的线性表（顺序表）很少有应用场景，因为紧凑数组（可变长的）能做得更好。</p>
+<p>但，链表的一个基础特性是允许元素（在内存中）非连续存储。因此是<code>Stack</code>栈和<code>Queue</code>队列的完美基础。</p>
+<hr>
+<p>名词解释：</p>
+<ol>
+<li><a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Abstract_data_type">ADT</a></li>
+</ol>
+
+      
+    </div>
+    <div class="article-footer">
+      <blockquote class="mt-2x">
+  <ul class="post-copyright list-unstyled">
+    
+    <li class="post-copyright-link hidden-xs">
+      <strong>本文链接：</strong>
+      <a href="https://straysh.github.life/2020/02/10/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84-%E9%93%BE%E8%A1%A8/" title="数据结构_链表" target="_blank" rel="external">https://straysh.github.life/2020/02/10/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84-%E9%93%BE%E8%A1%A8/</a>
+    </li>
+    
+    <li class="post-copyright-license">
+      <strong>版权声明： </strong> 本博客所有文章除特别声明外，均采用 <a href="http://creativecommons.org/licenses/by/4.0/deed.zh" target="_blank" rel="external">CC BY 4.0 CN协议</a> 许可协议。转载请注明出处！
+    </li>
+  </ul>
+</blockquote>
+
+
+<div class="panel panel-default panel-badger">
+  <div class="panel-body">
+    <figure class="media">
+      <div class="media-left">
+        <a href="https://hexo.straysh.com" target="_blank" class="img-burn thumb-sm visible-lg">
+          <img src="/images/avatar.jpg" class="img-rounded w-full" alt="">
+        </a>
+      </div>
+      <div class="media-body">
+        <h3 class="media-heading"><a href="https://hexo.straysh.com" target="_blank"><span class="text-dark">Straysh</span><small class="ml-1x">野生程序猿</small></a></h3>
+        <div>野生程序猿 &amp; 猫奴。</div>
+      </div>
+    </figure>
+  </div>
+</div>
+
+
+    </div>
+  </article>
+  
+    
+  <section id="comments">
+  	
+      <div id="disqus_thread">
+        <noscript>Please enable JavaScript to view the <a target="_blank" rel="noopener" href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+      </div>
+    
+  </section>
+
+
+  
+</div>
+
+  <nav class="bar bar-footer clearfix" data-stick-bottom>
+  <div class="bar-inner">
+  
+  <ul class="pager pull-left">
+    
+    <li class="prev">
+      <a href="/2020/02/11/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84-%E6%A0%88/" title="数据结构_栈"><i class="icon icon-angle-left" aria-hidden="true"></i><span>&nbsp;&nbsp;上一篇</span></a>
+    </li>
+    
+    
+    <li class="next">
+      <a href="/2020/02/10/log15-Readme-%E8%AF%91/" title="log15_Readme[译]"><span>下一篇&nbsp;&nbsp;</span><i class="icon icon-angle-right" aria-hidden="true"></i></a>
+    </li>
+    
+    
+    <li class="toggle-toc">
+      <a class="toggle-btn collapsed" data-toggle="collapse" href="#collapseToc" aria-expanded="false" title="文章目录" role="button">
+        <span>[&nbsp;</span><span>文章目录</span>
+        <i class="text-collapsed icon icon-anchor"></i>
+        <i class="text-in icon icon-close"></i>
+        <span>]</span>
+      </a>
+    </li>
+    
+  </ul>
+  
+  
+  
+  <div class="bar-right">
+    
+    <div class="share-component" data-sites="weibo,qq,wechat,facebook,twitter" data-mobile-sites="weibo,qq,qzone"></div>
+    
+  </div>
+  </div>
+</nav>
+  
+
+
+
+</main>
+
+  <footer class="footer" itemscope itemtype="http://schema.org/WPFooter">
+	
+	
+    <ul class="social-links">
+    	
+        <li><a href="https://github.com/straysh" target="_blank" title="Github" data-toggle=tooltip data-placement=top><i class="icon icon-github"></i></a></li>
+        
+        <li><a href="https://weibo.com/u/1689171115" target="_blank" title="Weibo" data-toggle=tooltip data-placement=top><i class="icon icon-weibo"></i></a></li>
+        
+        <li><a href="/atom.xml" target="_blank" title="Rss" data-toggle=tooltip data-placement=top><i class="icon icon-rss"></i></a></li>
+        
+    </ul>
+
+    <div class="copyright">
+    	
+        &copy; 2022 straysh.com 版权所有。ICP证：鄂ICP备2021016952号-1<!--Straysh-->
+        
+        <div class="publishby">
+        	Theme by <a href="https://github.com/cofess" target="_blank"> cofess </a>base on <a href="https://github.com/cofess/hexo-theme-pure" target="_blank">pure</a>.
+        </div>
+    </div>
+</footer>
+
+  <script src="//cdn.jsdelivr.net/npm/jquery@1.12.4/dist/jquery.min.js"></script>
+<script>
+window.jQuery || document.write('<script src="js/jquery.min.js"><\/script>')
+</script>
+
+<script src="/js/plugin.min.js"></script>
+
+
+<script src="/js/application.js"></script>
+
+
+    <script>
+(function (window) {
+    var INSIGHT_CONFIG = {
+        TRANSLATION: {
+            POSTS: '文章',
+            PAGES: '页面',
+            CATEGORIES: '分类',
+            TAGS: '标签',
+            UNTITLED: '(未命名)',
+        },
+        ROOT_URL: '/',
+        CONTENT_URL: '/content.json',
+    };
+    window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+})(window);
+</script>
+
+<script src="/js/insight.js"></script>
+
+
+
+
+
+
+   
+
+
+
+
+<!--   
+    
+    <script defer>
+    var disqus_config = function () {
+        
+            this.page.url = 'https://straysh.github.life/2020/02/10/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84-%E9%93%BE%E8%A1%A8/';
+        
+        this.page.identifier = '数据结构-链表';
+    };
+    (function() { 
+        var d = document, s = d.createElement('script');  
+        s.src = '//' + 'straysh' + '.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+</script>
+
+-->
+
+
+
+
+
+
+
+</body>
+</html>

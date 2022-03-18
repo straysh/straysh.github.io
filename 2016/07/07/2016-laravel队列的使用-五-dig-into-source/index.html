@@ -1,0 +1,640 @@
+<!DOCTYPE html>
+<html lang=zh>
+<head>
+  <meta charset="utf-8">
+  
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, minimal-ui">
+  <meta name="renderer" content="webkit">
+  <meta http-equiv="Cache-Control" content="no-transform" />
+  <meta http-equiv="Cache-Control" content="no-siteapp" />
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="format-detection" content="telephone=no,email=no,adress=no">
+  <!-- Color theme for statusbar -->
+  <meta name="theme-color" content="#000000" />
+  <!-- 强制页面在当前窗口以独立页面显示,防止别人在框架里调用页面 -->
+  <meta http-equiv="window-target" content="_top" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lxgw-wenkai-webfont@1.1.0/style.css" />
+  
+  
+  <title>laravel队列的使用(五)-dig-into-source | Hexo</title>
+  <meta name="description" content="Laravel队列源代码解析这边文章中,将简单梳理一下Laravel队列的源代码,主要弄清楚代码的执行流. 我们将从消费队列的两个终端命令开始并以queue:work为重点 一、.&#x2F;artisan queue:listen –timeout&#x3D;30 –tries&#x3D;3首先打开项目根下的artisan文件,可以看到调用了Illuminate\Console\Kernel对象的handle()方法 123">
+<meta property="og:type" content="article">
+<meta property="og:title" content="laravel队列的使用(五)-dig-into-source">
+<meta property="og:url" content="https://straysh.github.life/2016/07/07/2016-laravel%E9%98%9F%E5%88%97%E7%9A%84%E4%BD%BF%E7%94%A8-%E4%BA%94-dig-into-source/index.html">
+<meta property="og:site_name" content="Straysh的小院">
+<meta property="og:description" content="Laravel队列源代码解析这边文章中,将简单梳理一下Laravel队列的源代码,主要弄清楚代码的执行流. 我们将从消费队列的两个终端命令开始并以queue:work为重点 一、.&#x2F;artisan queue:listen –timeout&#x3D;30 –tries&#x3D;3首先打开项目根下的artisan文件,可以看到调用了Illuminate\Console\Kernel对象的handle()方法 123">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2016-07-07T03:46:09.000Z">
+<meta property="article:modified_time" content="2019-12-05T05:51:54.620Z">
+<meta property="article:author" content="Straysh">
+<meta property="article:tag" content="PHP">
+<meta name="twitter:card" content="summary">
+  <!-- Canonical links -->
+  <link rel="canonical" href="https://straysh.github.life/2016/07/07/2016-laravel%E9%98%9F%E5%88%97%E7%9A%84%E4%BD%BF%E7%94%A8-%E4%BA%94-dig-into-source/index.html">
+  
+    <link rel="alternate" href="/atom.xml" title="Straysh的小院" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.ico" type="image/x-icon">
+  
+  
+<link rel="stylesheet" href="/css/style.css">
+
+  
+<link rel="stylesheet" href="/css/custom.css">
+
+  
+  
+  
+  
+  
+<meta name="generator" content="Hexo 5.4.1"></head>
+
+
+<body class="main-center theme-green" itemscope itemtype="http://schema.org/WebPage">
+  <header class="header" style="background-image: url(/images/left_images/2.jpg);" itemscope itemtype="http://schema.org/WPHeader">
+  <div class="slimContent" style="height:100%;background-color: rgba(0,0,0,0.7);">
+    <div class="navbar-header">
+      
+      
+      <div class="profile-block text-center">
+        <a id="avatar" href="https://hexo.straysh.com" target="_blank">
+          <img class="img-circle img-rotate" src="/images/avatar.jpg" width="200" height="200">
+        </a>
+        <h2 id="name" class="hidden-xs hidden-sm">Straysh</h2>
+        <h3 id="title" class="hidden-xs hidden-sm hidden-md">野生程序猿</h3>
+        <small id="location" class="text-muted hidden-xs hidden-sm"><i class="icon icon-map-marker"></i> Beijing, China</small>
+      </div>
+      
+      <div class="search" id="search-form-wrap">
+
+    <form class="search-form sidebar-form">
+        <div class="input-group">
+            <input type="text" class="search-form-input form-control" placeholder="搜索" />
+            <span class="input-group-btn">
+                <button type="submit" class="search-form-submit btn btn-flat" onclick="return false;"><i class="icon icon-search"></i></button>
+            </span>
+        </div>
+    </form>
+    <div class="ins-search">
+  <div class="ins-search-mask"></div>
+  <div class="ins-search-container">
+    <div class="ins-input-wrapper">
+      <input type="text" class="ins-search-input" placeholder="想要查找什么..." x-webkit-speech />
+      <button type="button" class="close ins-close ins-selectable" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+    </div>
+    <div class="ins-section-wrapper">
+      <div class="ins-section-container"></div>
+    </div>
+  </div>
+</div>
+
+
+</div>
+      <button class="navbar-toggle collapsed" type="button" data-toggle="collapse" data-target="#main-navbar" aria-controls="main-navbar" aria-expanded="false">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+    </div>
+    <nav id="main-navbar" class="collapse navbar-collapse" itemscope itemtype="http://schema.org/SiteNavigationElement" role="navigation">
+      <ul class="nav navbar-nav main-nav menu-highlight">
+        
+        
+        <li class="menu-item menu-item-home">
+          <a href="/.">
+            
+            <i class="icon icon-home-fill"></i>
+            
+            <span class="menu-title">首页</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives">
+            
+            <i class="icon icon-archives-fill"></i>
+            
+            <span class="menu-title">归档</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories">
+            
+            <i class="icon icon-folder"></i>
+            
+            <span class="menu-title">分类</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags">
+            
+            <i class="icon icon-tags"></i>
+            
+            <span class="menu-title">标签</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-repository">
+          <a href="/repository">
+            
+            <i class="icon icon-project"></i>
+            
+            <span class="menu-title">项目</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-books">
+          <a href="/books">
+            
+            <i class="icon icon-book-fill"></i>
+            
+            <span class="menu-title">书单</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-links">
+          <a href="/links">
+            
+            <i class="icon icon-friendship"></i>
+            
+            <span class="menu-title">友链</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about">
+            
+            <i class="icon icon-cup-fill"></i>
+            
+            <span class="menu-title">关于</span>
+          </a>
+        </li>
+        
+      </ul>
+      
+	
+    <ul class="social-links">
+    	
+        <li><a href="https://github.com/straysh" target="_blank" title="Github" data-toggle=tooltip data-placement=top><i class="icon icon-github"></i></a></li>
+        
+        <li><a href="https://weibo.com/u/1689171115" target="_blank" title="Weibo" data-toggle=tooltip data-placement=top><i class="icon icon-weibo"></i></a></li>
+        
+        <li><a href="/atom.xml" target="_blank" title="Rss" data-toggle=tooltip data-placement=top><i class="icon icon-rss"></i></a></li>
+        
+    </ul>
+
+    </nav>
+  </div>
+</header>
+
+  
+    <aside class="sidebar" itemscope itemtype="http://schema.org/WPSideBar">
+  <div class="slimContent">
+
+    
+      <ul class="sidebar-nav motion-element" style="text-align:center; opacity: 1; display: block; transform: translateX(0px);">
+        <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+          系统目录
+        </li>
+      </ul>
+      <section class="site-overview-wrap sidebar-panel" style="opacity: 0; display: none;">
+        
+          <div class="widget">
+    <h3 class="widget-title">公告</h3>
+    <div class="widget-body">
+        <div id="board">
+            <div class="content">
+                <p>妳是风中的叶，风起而走，我想去追，怎么抓的住？</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+        
+          
+  <div class="widget">
+    <h3 class="widget-title">分类</h3>
+    <div class="widget-body">
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%8D%9A%E6%96%87/">博文</a><span class="category-list-count">102</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%8D%9A%E6%96%87/%E7%AC%94%E8%AE%B0/">笔记</a><span class="category-list-count">2</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E6%9D%82%E8%AE%B0/">杂记</a><span class="category-list-count">6</span></li></ul>
+    </div>
+  </div>
+
+
+        
+          
+  <div class="widget">
+    <h3 class="widget-title">标签</h3>
+    <div class="widget-body">
+      <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/Algorithm/" rel="tag">Algorithm</a><span class="tag-list-count">13</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Apache/" rel="tag">Apache</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Banbrick/" rel="tag">Banbrick</a><span class="tag-list-count">5</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Docker/" rel="tag">Docker</a><span class="tag-list-count">4</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Golang/" rel="tag">Golang</a><span class="tag-list-count">25</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Javascript/" rel="tag">Javascript</a><span class="tag-list-count">10</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Linux/" rel="tag">Linux</a><span class="tag-list-count">13</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/MySQL/" rel="tag">MySQL</a><span class="tag-list-count">13</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Mysql/" rel="tag">Mysql</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Nginx/" rel="tag">Nginx</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Nodejs/" rel="tag">Nodejs</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/PHP/" rel="tag">PHP</a><span class="tag-list-count">19</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/R/" rel="tag">R</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Redis/" rel="tag">Redis</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/SVN/" rel="tag">SVN</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Sphinx/" rel="tag">Sphinx</a><span class="tag-list-count">5</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Translation/" rel="tag">Translation</a><span class="tag-list-count">18</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Yii/" rel="tag">Yii</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%9D%82/" rel="tag">杂</a><span class="tag-list-count">6</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%B1%87%E7%BC%96/" rel="tag">汇编</a><span class="tag-list-count">1</span></li></ul>
+    </div>
+  </div>
+
+
+        
+          
+  <div class="widget">
+    <h3 class="widget-title">标签云</h3>
+    <div class="widget-body tagcloud">
+      <a href="/tags/Algorithm/" style="font-size: 13.67px;">Algorithm</a> <a href="/tags/Apache/" style="font-size: 13px;">Apache</a> <a href="/tags/Banbrick/" style="font-size: 13.33px;">Banbrick</a> <a href="/tags/Docker/" style="font-size: 13.22px;">Docker</a> <a href="/tags/Golang/" style="font-size: 14px;">Golang</a> <a href="/tags/Javascript/" style="font-size: 13.56px;">Javascript</a> <a href="/tags/Linux/" style="font-size: 13.67px;">Linux</a> <a href="/tags/MySQL/" style="font-size: 13.67px;">MySQL</a> <a href="/tags/Mysql/" style="font-size: 13px;">Mysql</a> <a href="/tags/Nginx/" style="font-size: 13.11px;">Nginx</a> <a href="/tags/Nodejs/" style="font-size: 13px;">Nodejs</a> <a href="/tags/PHP/" style="font-size: 13.89px;">PHP</a> <a href="/tags/R/" style="font-size: 13.11px;">R</a> <a href="/tags/Redis/" style="font-size: 13.11px;">Redis</a> <a href="/tags/SVN/" style="font-size: 13px;">SVN</a> <a href="/tags/Sphinx/" style="font-size: 13.33px;">Sphinx</a> <a href="/tags/Translation/" style="font-size: 13.78px;">Translation</a> <a href="/tags/Yii/" style="font-size: 13.11px;">Yii</a> <a href="/tags/%E6%9D%82/" style="font-size: 13.44px;">杂</a> <a href="/tags/%E6%B1%87%E7%BC%96/" style="font-size: 13px;">汇编</a>
+    </div>
+  </div>
+
+        
+          
+  <div class="widget">
+    <h3 class="widget-title">归档</h3>
+    <div class="widget-body">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/03/">三月 2022</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/03/">三月 2021</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/03/">三月 2020</a><span class="archive-list-count">5</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/02/">二月 2020</a><span class="archive-list-count">26</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/12/">十二月 2019</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/04/">四月 2019</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/09/">九月 2018</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/07/">七月 2016</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/06/">六月 2016</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/11/">十一月 2015</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/10/">十月 2015</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/09/">九月 2015</a><span class="archive-list-count">5</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/08/">八月 2015</a><span class="archive-list-count">13</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/07/">七月 2015</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/11/">十一月 2014</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/03/">三月 2014</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/12/">十二月 2013</a><span class="archive-list-count">8</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/10/">十月 2013</a><span class="archive-list-count">8</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/09/">九月 2013</a><span class="archive-list-count">2</span></li></ul>
+    </div>
+  </div>
+
+
+        
+          
+  <div class="widget">
+    <h3 class="widget-title">最新文章</h3>
+    <div class="widget-body">
+      <ul class="recent-post-list list-unstyled no-thumbnail">
+        
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/%E5%8D%9A%E6%96%87/">博文</a><i class="icon icon-angle-right"></i><a class="category-link" href="/categories/%E5%8D%9A%E6%96%87/%E7%AC%94%E8%AE%B0/">笔记</a>
+              </p>
+              <p class="item-title">
+                <a href="/2022/03/14/%E4%BD%BF%E7%94%A8Go%E6%93%8D%E4%BD%9C%E6%96%87%E4%BB%B6/" class="title">使用Go操作文件</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2022-03-14T12:11:25.000Z" itemprop="datePublished">2022-03-14</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/%E5%8D%9A%E6%96%87/">博文</a>
+              </p>
+              <p class="item-title">
+                <a href="/2022/03/13/Docker%E5%AE%B9%E5%99%A8%E7%BD%91%E7%BB%9C/" class="title">Docker容器网络</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2022-03-13T04:10:09.000Z" itemprop="datePublished">2022-03-13</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/%E5%8D%9A%E6%96%87/">博文</a><i class="icon icon-angle-right"></i><a class="category-link" href="/categories/%E5%8D%9A%E6%96%87/%E7%AC%94%E8%AE%B0/">笔记</a>
+              </p>
+              <p class="item-title">
+                <a href="/2022/03/13/Iptables%E5%92%8C%E5%AE%B9%E5%99%A8/" class="title">Iptables和容器</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2022-03-13T03:01:46.000Z" itemprop="datePublished">2022-03-13</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/%E5%8D%9A%E6%96%87/">博文</a>
+              </p>
+              <p class="item-title">
+                <a href="/2022/03/12/Linux%E7%BD%91%E6%A1%A5%E5%B7%A5%E4%BD%9C%E5%8E%9F%E7%90%86/" class="title">Linux网桥工作原理</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2022-03-12T10:02:29.000Z" itemprop="datePublished">2022-03-12</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/%E5%8D%9A%E6%96%87/">博文</a>
+              </p>
+              <p class="item-title">
+                <a href="/2021/03/16/%E5%B9%B6%E5%8F%91%E5%92%8C%E8%B0%83%E5%BA%A6%E7%9A%84%E5%85%B3%E7%B3%BB/" class="title">并发和调度的关系</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2021-03-16T05:54:13.000Z" itemprop="datePublished">2021-03-16</time>
+              </p>
+            </div>
+          </li>
+          
+      </ul>
+    </div>
+  </div>
+  
+
+        
+      </section>
+
+      <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active" style="opacity: 1; display: block;">
+        <nav id="toc" class="article-toc">
+          <h3 class="toc-title">文章目录</h3>
+          <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#Laravel%E9%98%9F%E5%88%97%E6%BA%90%E4%BB%A3%E7%A0%81%E8%A7%A3%E6%9E%90"><span class="toc-number">1.</span> <span class="toc-text">Laravel队列源代码解析</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E4%B8%80%E3%80%81-artisan-queue-listen-%E2%80%93timeout-30-%E2%80%93tries-3"><span class="toc-number">1.0.1.</span> <span class="toc-text">一、.&#x2F;artisan queue:listen –timeout&#x3D;30 –tries&#x3D;3</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E4%BA%8C%E3%80%81-artisan-queue-work-%E2%80%93daemon-%E2%80%93tries-3"><span class="toc-number">1.0.2.</span> <span class="toc-text">二、.&#x2F;artisan queue:work –daemon –tries&#x3D;3</span></a></li></ol></li></ol></li></ol>
+        </nav>
+      </section>
+    
+  </div>
+</aside>
+
+  
+  
+<main class="main" role="main">
+  <div class="content">
+  <article id="post-2016-laravel队列的使用-五-dig-into-source" class="article article-type-post" itemscope itemtype="http://schema.org/BlogPosting">
+    
+    <div class="article-header">
+      
+        
+  
+    <h1 class="article-title" itemprop="name">
+      laravel队列的使用(五)-dig-into-source
+    </h1>
+  
+
+
+      
+      <div class="article-meta">
+        
+        <span class="article-date">
+    <i class="icon icon-calendar-check"></i>
+	<a href="/2016/07/07/2016-laravel%E9%98%9F%E5%88%97%E7%9A%84%E4%BD%BF%E7%94%A8-%E4%BA%94-dig-into-source/" class="article-date">
+	  <time datetime="2016-07-07T03:46:09.000Z" itemprop="datePublished">2016-07-07</time>
+	</a>
+</span>
+        
+  <span class="article-category">
+    <i class="icon icon-folder"></i>
+    <a class="article-category-link" href="/categories/%E5%8D%9A%E6%96%87/">博文</a>
+  </span>
+
+        
+  <span class="article-tag">
+    <i class="icon icon-tags"></i>
+	<a class="article-tag-link-link" href="/tags/PHP/" rel="tag">PHP</a>
+  </span>
+
+
+        
+
+        <span class="post-comment"><i class="icon icon-comment"></i> <a href="/2016/07/07/2016-laravel%E9%98%9F%E5%88%97%E7%9A%84%E4%BD%BF%E7%94%A8-%E4%BA%94-dig-into-source/#comments" class="article-comment-link">评论</a></span>
+        
+      </div>
+    </div>
+    <div class="article-entry marked-body" itemprop="articleBody">
+      
+        <h2 id="Laravel队列源代码解析"><a href="#Laravel队列源代码解析" class="headerlink" title="Laravel队列源代码解析"></a>Laravel队列源代码解析</h2><p>这边文章中,将简单梳理一下Laravel队列的源代码,主要弄清楚代码的执行流.</p>
+<p>我们将从消费队列的两个终端命令开始并以<code>queue:work</code>为重点</p>
+<h4 id="一、-artisan-queue-listen-–timeout-30-–tries-3"><a href="#一、-artisan-queue-listen-–timeout-30-–tries-3" class="headerlink" title="一、./artisan queue:listen –timeout=30 –tries=3"></a>一、./artisan queue:listen –timeout=30 –tries=3</h4><p>首先打开项目根下的<code>artisan</code>文件,可以看到调用了<code>Illuminate\Console\Kernel</code>对象的handle()方法</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs php"><span class="hljs-variable">$kernel</span> = <span class="hljs-variable">$app</span>-&gt;<span class="hljs-title function_ invoke__">make</span>(<span class="hljs-title class_">Illuminate\Contracts\Console\Kernel</span>::<span class="hljs-variable language_">class</span>);<br><br><span class="hljs-variable">$status</span> = <span class="hljs-variable">$kernel</span>-&gt;<span class="hljs-title function_ invoke__">handle</span>(<br>    <span class="hljs-variable">$input</span> = <span class="hljs-keyword">new</span> <span class="hljs-title class_">Symfony\Component\Console\Input\ArgvInput</span>,<br>    <span class="hljs-keyword">new</span> <span class="hljs-title class_">Symfony\Component\Console\Output\ConsoleOutput</span><br>);<br><br></code></pre></td></tr></table></figure>
+
+<p>定位到<code>Illuminate\Console\Kernel::handle()</code>函数, try-catch中的主代码只有两行.其中<code>$this-&gt;bootstrap()</code>启动/绑定/延迟启动 一些系统服务.</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs php"><span class="hljs-variable language_">$this</span>-&gt;<span class="hljs-title function_ invoke__">bootstrap</span>();<br><span class="hljs-keyword">return</span> <span class="hljs-variable language_">$this</span>-&gt;<span class="hljs-title function_ invoke__">getArtisan</span>()-&gt;<span class="hljs-title function_ invoke__">run</span>(<span class="hljs-variable">$input</span>, <span class="hljs-variable">$output</span>);<br></code></pre></td></tr></table></figure>
+
+<p>继续定位到<code>getArtisan()</code>函数, 这里实例化了一个<code>Artisan</code>对象并返回.结合上面的代码,知道这里依次执行了<code>Artisan::resolveCommands()</code>和<code>Artisan::run()</code></p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs php"><span class="hljs-keyword">use</span> <span class="hljs-title">Illuminate</span>\<span class="hljs-title">Console</span>\<span class="hljs-title">Application</span> <span class="hljs-keyword">as</span> <span class="hljs-title">Artisan</span>;<br>...<br><span class="hljs-keyword">if</span> (<span class="hljs-title function_ invoke__">is_null</span>(<span class="hljs-variable">$this</span>-&gt;artisan)) &#123;<br>    <span class="hljs-keyword">return</span> <span class="hljs-variable language_">$this</span>-&gt;artisan = (<span class="hljs-keyword">new</span> <span class="hljs-title class_">Artisan</span>(<span class="hljs-variable language_">$this</span>-&gt;app, <span class="hljs-variable language_">$this</span>-&gt;events, <span class="hljs-variable language_">$this</span>-&gt;app-&gt;<span class="hljs-title function_ invoke__">version</span>()))<br>                        -&gt;<span class="hljs-title function_ invoke__">resolveCommands</span>(<span class="hljs-variable">$this</span>-&gt;commands);<br>&#125;<br><span class="hljs-keyword">return</span> <span class="hljs-variable language_">$this</span>-&gt;artisan;<br></code></pre></td></tr></table></figure>
+
+<p>继续dig, 在<code>Artisan</code>的父类<code>Symfony\Component\Console\Application as SymfonyApplication</code>中找到<code>run</code>方法</p>
+<p><code>run</code>方法中<code>$exitCode = $this-&gt;doRun($input, $output);</code></p>
+<p><code>doRun</code>方法中<code>$exitCode = $this-&gt;doRunCommand($command, $input, $output);</code></p>
+<p><code>doRunCommand</code>方法中<code>$exitCode = $command-&gt;run($input, $output);</code></p>
+<p>到这里,看到调用了$command对象的run方法.$command来自<code>doRun</code>方法中<code>$command = $this-&gt;find($name);</code>.这里不再继续调试,直接给出$command对象的一些信息</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs php">Illuminate\Queue\Console\ListenCommand &#123;<span class="hljs-comment">#634</span><br>  <span class="hljs-comment">#name: &quot;queue:listen&quot;</span><br>  <span class="hljs-comment">#description: &quot;Listen to a given queue&quot;</span><br>  <span class="hljs-comment">#listener: Illuminate\Queue\Listener &#123;#635</span><br>    <span class="hljs-comment">#environment: null</span><br>    <span class="hljs-comment">#sleep: 3</span><br>    <span class="hljs-comment">#maxTries: 0</span><br>    <span class="hljs-comment">#workerCommand: &quot;&#x27;/usr/bin/php5&#x27; &#x27;artisan&#x27; queue:work %s --queue=%s --delay=%s --memory=%s --sleep=%s --tries=%s&quot;</span><br>    <span class="hljs-comment">#outputHandler: null</span><br>  &#125;<br>... ...<br></code></pre></td></tr></table></figure>
+
+<p>追踪<code>Illuminate\Queue\Console\ListenCommand::fire()</code></p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs php"><span class="hljs-variable language_">$this</span>-&gt;listener-&gt;<span class="hljs-title function_ invoke__">listen</span>(<br>    <span class="hljs-variable">$connection</span>, <span class="hljs-variable">$queue</span>, <span class="hljs-variable">$delay</span>, <span class="hljs-variable">$memory</span>, <span class="hljs-variable">$timeout</span><br>);<br></code></pre></td></tr></table></figure>
+
+<p>其中的<code>$this-&gt;listener</code></p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><code class="hljs php">Illuminate\Queue\Listener &#123;<span class="hljs-comment">#635</span><br>  <span class="hljs-comment">#environment: &quot;local&quot;</span><br>  <span class="hljs-comment">#sleep: 3</span><br>  <span class="hljs-comment">#maxTries: &quot;3&quot;</span><br>  <span class="hljs-comment">#workerCommand: &quot;&#x27;/usr/bin/php5&#x27; &#x27;artisan&#x27; queue:work %s --queue=%s --delay=%s --memory=%s --sleep=%s --tries=%s&quot;</span><br>  <span class="hljs-comment">#outputHandler: Closure &#123;#22</span><br>    <span class="hljs-class"><span class="hljs-keyword">class</span>: &quot;<span class="hljs-title">Illuminate</span>\<span class="hljs-title">Queue</span>\<span class="hljs-title">Console</span>\<span class="hljs-title">ListenCommand</span>&quot;</span><br><span class="hljs-class">    <span class="hljs-title">this</span>: <span class="hljs-title">Illuminate</span>\<span class="hljs-title">Queue</span>\<span class="hljs-title">Console</span>\<span class="hljs-title">ListenCommand</span> </span>&#123;<span class="hljs-comment">#634 …&#125;</span><br>    parameters: <span class="hljs-keyword">array</span>:<span class="hljs-number">2</span> [<br>      <span class="hljs-string">&quot;<span class="hljs-subst">$type</span>&quot;</span> =&gt; []<br>      <span class="hljs-string">&quot;<span class="hljs-subst">$line</span>&quot;</span> =&gt; []<br>    ]<br>    line: <span class="hljs-string">&quot;107 to 109&quot;</span><br>  &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>追踪到<code>listen</code>函数</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs php"><span class="hljs-keyword">public</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">listen</span>(<span class="hljs-params"><span class="hljs-variable">$connection</span>, <span class="hljs-variable">$queue</span>, <span class="hljs-variable">$delay</span>, <span class="hljs-variable">$memory</span>, <span class="hljs-variable">$timeout</span> = <span class="hljs-number">60</span></span>)</span><br><span class="hljs-function"></span>&#123;<br>    <span class="hljs-variable">$process</span> = <span class="hljs-variable language_">$this</span>-&gt;<span class="hljs-title function_ invoke__">makeProcess</span>(<span class="hljs-variable">$connection</span>, <span class="hljs-variable">$queue</span>, <span class="hljs-variable">$delay</span>, <span class="hljs-variable">$memory</span>, <span class="hljs-variable">$timeout</span>);<br>    <span class="hljs-keyword">while</span> (<span class="hljs-literal">true</span>) &#123;<br>        <span class="hljs-variable language_">$this</span>-&gt;<span class="hljs-title function_ invoke__">runProcess</span>(<span class="hljs-variable">$process</span>, <span class="hljs-variable">$memory</span>);<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>追踪<code>runProcess</code>函数,找到Process类的</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs php"><span class="hljs-keyword">public</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">run</span>(<span class="hljs-params"><span class="hljs-variable">$callback</span> = <span class="hljs-literal">null</span></span>)</span><br><span class="hljs-function"></span>&#123;<br>    <span class="hljs-variable language_">$this</span>-&gt;<span class="hljs-title function_ invoke__">start</span>(<span class="hljs-variable">$callback</span>);<br>    <span class="hljs-keyword">return</span> <span class="hljs-variable language_">$this</span>-&gt;<span class="hljs-title function_ invoke__">wait</span>();<br>&#125;<br><span class="hljs-comment"># start函数中,最终看到执行了命令</span><br><span class="hljs-string">&#x27;/usr/bin/php5&#x27;</span> <span class="hljs-string">&#x27;artisan&#x27;</span> queue:work <span class="hljs-string">&#x27;&#x27;</span> --queue=<span class="hljs-string">&#x27;default&#x27;</span> --delay=<span class="hljs-number">0</span> --memory=<span class="hljs-number">128</span> --sleep=<span class="hljs-number">3</span> --tries=<span class="hljs-number">3</span> --env=<span class="hljs-string">&#x27;local&#x27;</span><br></code></pre></td></tr></table></figure>
+
+<p>到这里,已经很清楚了.<code>./artisan queue:listen</code>启动了一个死循环, 不停的尝试执行<code>./artisan queue:work</code></p>
+<h4 id="二、-artisan-queue-work-–daemon-–tries-3"><a href="#二、-artisan-queue-work-–daemon-–tries-3" class="headerlink" title="二、./artisan queue:work –daemon –tries=3"></a>二、./artisan queue:work –daemon –tries=3</h4><p>同上, 不同之处在于, <code>doRunCommand</code>方法中<code>$exitCode = $command-&gt;run($input, $output);</code>中$command</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs php">Illuminate\Queue\Console\WorkCommand &#123;<span class="hljs-comment">#610</span><br>  <span class="hljs-comment">#name: &quot;queue:work&quot;</span><br>  <span class="hljs-comment">#description: &quot;Process the next job on a queue&quot;</span><br>  <span class="hljs-comment">#worker: Illuminate\Queue\Worker &#123;#611</span><br>... ...<br></code></pre></td></tr></table></figure>
+
+<p>追踪<code>Illuminate\Queue\Console\WorkCommand::fire()</code></p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs php"><span class="hljs-variable">$response</span> = <span class="hljs-variable language_">$this</span>-&gt;<span class="hljs-title function_ invoke__">runWorker</span>(<br>    <span class="hljs-variable">$connection</span>, <span class="hljs-variable">$queue</span>, <span class="hljs-variable">$delay</span>, <span class="hljs-variable">$memory</span>, <span class="hljs-variable">$this</span>-&gt;<span class="hljs-title function_ invoke__">option</span>(<span class="hljs-string">&#x27;daemon&#x27;</span>)<br>);<br></code></pre></td></tr></table></figure>
+
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><code class="hljs php"><span class="hljs-keyword">protected</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">runWorker</span>(<span class="hljs-params"><span class="hljs-variable">$connection</span>, <span class="hljs-variable">$queue</span>, <span class="hljs-variable">$delay</span>, <span class="hljs-variable">$memory</span>, <span class="hljs-variable">$daemon</span> = <span class="hljs-literal">false</span></span>)</span><br><span class="hljs-function"></span>&#123;<br>    <span class="hljs-keyword">if</span> (<span class="hljs-variable">$daemon</span>) &#123;<br>        <span class="hljs-variable language_">$this</span>-&gt;worker-&gt;<span class="hljs-title function_ invoke__">setCache</span>(<span class="hljs-variable">$this</span>-&gt;laravel[<span class="hljs-string">&#x27;cache&#x27;</span>]-&gt;<span class="hljs-title function_ invoke__">driver</span>());<br><br>        <span class="hljs-variable language_">$this</span>-&gt;worker-&gt;<span class="hljs-title function_ invoke__">setDaemonExceptionHandler</span>(<br>            <span class="hljs-variable">$this</span>-&gt;laravel[<span class="hljs-string">&#x27;Illuminate\Contracts\Debug\ExceptionHandler&#x27;</span>]<br>        );<br><br>        <span class="hljs-keyword">return</span> <span class="hljs-variable language_">$this</span>-&gt;worker-&gt;<span class="hljs-title function_ invoke__">daemon</span>(<br>            <span class="hljs-variable">$connection</span>, <span class="hljs-variable">$queue</span>, <span class="hljs-variable">$delay</span>, <span class="hljs-variable">$memory</span>,<br>            <span class="hljs-variable">$this</span>-&gt;<span class="hljs-title function_ invoke__">option</span>(<span class="hljs-string">&#x27;sleep&#x27;</span>), <span class="hljs-variable">$this</span>-&gt;<span class="hljs-title function_ invoke__">option</span>(<span class="hljs-string">&#x27;tries&#x27;</span>)<br>        );<br>    &#125;<br><br>    <span class="hljs-keyword">return</span> <span class="hljs-variable language_">$this</span>-&gt;worker-&gt;<span class="hljs-title function_ invoke__">pop</span>(<br>        <span class="hljs-variable">$connection</span>, <span class="hljs-variable">$queue</span>, <span class="hljs-variable">$delay</span>,<br>        <span class="hljs-variable">$this</span>-&gt;<span class="hljs-title function_ invoke__">option</span>(<span class="hljs-string">&#x27;sleep&#x27;</span>), <span class="hljs-variable">$this</span>-&gt;<span class="hljs-title function_ invoke__">option</span>(<span class="hljs-string">&#x27;tries&#x27;</span>)<br>    );<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p><code>runWorker</code>中的<code>$this-&gt;worker</code></p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs php">Illuminate\Queue\Worker &#123;<span class="hljs-comment">#611</span><br>  <span class="hljs-comment">#manager: Illuminate\Queue\QueueManager &#123;#612</span><br>    <span class="hljs-comment">#app: Illuminate\Foundation\Application &#123;#3</span><br></code></pre></td></tr></table></figure>
+
+<p>首先对于不带<code>--daemon</code>的命令,那么上文中最后提到<code>./artisan queue:work</code>执行的就是<code>$this-&gt;worker-&gt;pop</code>.从队列列表中pop一个任务出来执行.执行完成之后sleep若干秒,进入while(true)死循环,无限重试pop.或者在内存使用超过<code>--memory</code>限制时,调用<code>die</code>终止进程.</p>
+<p>然后, 继续dig <code>--daemon</code>模式, 找到<code>Illuminate\Queue\Worker::daemon()</code></p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><code class="hljs php"><span class="hljs-keyword">public</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">daemon</span>(<span class="hljs-params"><span class="hljs-variable">$connectionName</span>, <span class="hljs-variable">$queue</span> = <span class="hljs-literal">null</span>, <span class="hljs-variable">$delay</span> = <span class="hljs-number">0</span>, <span class="hljs-variable">$memory</span> = <span class="hljs-number">128</span>, <span class="hljs-variable">$sleep</span> = <span class="hljs-number">3</span>, <span class="hljs-variable">$maxTries</span> = <span class="hljs-number">0</span></span>)</span><br><span class="hljs-function"></span>&#123;<br>    <span class="hljs-variable">$lastRestart</span> = <span class="hljs-variable language_">$this</span>-&gt;<span class="hljs-title function_ invoke__">getTimestampOfLastQueueRestart</span>();<br><br>    <span class="hljs-keyword">while</span> (<span class="hljs-literal">true</span>) &#123;<br>        <span class="hljs-keyword">if</span> (<span class="hljs-variable language_">$this</span>-&gt;<span class="hljs-title function_ invoke__">daemonShouldRun</span>()) &#123;<br>            <span class="hljs-variable language_">$this</span>-&gt;<span class="hljs-title function_ invoke__">runNextJobForDaemon</span>(<br>                <span class="hljs-variable">$connectionName</span>, <span class="hljs-variable">$queue</span>, <span class="hljs-variable">$delay</span>, <span class="hljs-variable">$sleep</span>, <span class="hljs-variable">$maxTries</span><br>            );<br>        &#125; <span class="hljs-keyword">else</span> &#123;<br>            <span class="hljs-variable language_">$this</span>-&gt;<span class="hljs-title function_ invoke__">sleep</span>(<span class="hljs-variable">$sleep</span>);<br>        &#125;<br><br>        <span class="hljs-keyword">if</span> (<span class="hljs-variable language_">$this</span>-&gt;<span class="hljs-title function_ invoke__">memoryExceeded</span>(<span class="hljs-variable">$memory</span>) || <span class="hljs-variable language_">$this</span>-&gt;<span class="hljs-title function_ invoke__">queueShouldRestart</span>(<span class="hljs-variable">$lastRestart</span>)) &#123;<br>            <span class="hljs-variable language_">$this</span>-&gt;<span class="hljs-title function_ invoke__">stop</span>();<br>        &#125;<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>这里还是一个死循环.依次执行</p>
+<ul>
+<li>尝试<code>daemonShouldRun()</code>, 若网站启用了<code>maintaince</code>模式则返回FALSE,否则广播<code>&#39;illuminate.queue.looping&#39;</code>事件</li>
+<li><code>runNextJobForDaemon()</code>函数中,仍然是尝试从队列列表中pop任务出来执行</li>
+<li>若<code>daemonShouldRun()</code>检测到FALSE, sleep若干秒</li>
+<li>内存检测,在内存使用超过<code>--memory</code>限制时,调用<code>die</code>终止进程.</li>
+</ul>
+
+      
+    </div>
+    <div class="article-footer">
+      <blockquote class="mt-2x">
+  <ul class="post-copyright list-unstyled">
+    
+    <li class="post-copyright-link hidden-xs">
+      <strong>本文链接：</strong>
+      <a href="https://straysh.github.life/2016/07/07/2016-laravel%E9%98%9F%E5%88%97%E7%9A%84%E4%BD%BF%E7%94%A8-%E4%BA%94-dig-into-source/" title="laravel队列的使用(五)-dig-into-source" target="_blank" rel="external">https://straysh.github.life/2016/07/07/2016-laravel%E9%98%9F%E5%88%97%E7%9A%84%E4%BD%BF%E7%94%A8-%E4%BA%94-dig-into-source/</a>
+    </li>
+    
+    <li class="post-copyright-license">
+      <strong>版权声明： </strong> 本博客所有文章除特别声明外，均采用 <a href="http://creativecommons.org/licenses/by/4.0/deed.zh" target="_blank" rel="external">CC BY 4.0 CN协议</a> 许可协议。转载请注明出处！
+    </li>
+  </ul>
+</blockquote>
+
+
+<div class="panel panel-default panel-badger">
+  <div class="panel-body">
+    <figure class="media">
+      <div class="media-left">
+        <a href="https://hexo.straysh.com" target="_blank" class="img-burn thumb-sm visible-lg">
+          <img src="/images/avatar.jpg" class="img-rounded w-full" alt="">
+        </a>
+      </div>
+      <div class="media-body">
+        <h3 class="media-heading"><a href="https://hexo.straysh.com" target="_blank"><span class="text-dark">Straysh</span><small class="ml-1x">野生程序猿</small></a></h3>
+        <div>野生程序猿 &amp; 猫奴。</div>
+      </div>
+    </figure>
+  </div>
+</div>
+
+
+    </div>
+  </article>
+  
+    
+  <section id="comments">
+  	
+      <div id="disqus_thread">
+        <noscript>Please enable JavaScript to view the <a target="_blank" rel="noopener" href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+      </div>
+    
+  </section>
+
+
+  
+</div>
+
+  <nav class="bar bar-footer clearfix" data-stick-bottom>
+  <div class="bar-inner">
+  
+  <ul class="pager pull-left">
+    
+    <li class="prev">
+      <a href="/2016/07/14/2016-Scrapy%E7%88%AC%E8%99%AB%E7%B3%BB%E5%88%97-%E9%A2%84%E5%A4%87%E7%AF%87/" title="Scrapy爬虫系列-预备篇"><i class="icon icon-angle-left" aria-hidden="true"></i><span>&nbsp;&nbsp;上一篇</span></a>
+    </li>
+    
+    
+    <li class="next">
+      <a href="/2016/07/07/2016-laravel%E9%98%9F%E5%88%97%E7%9A%84%E4%BD%BF%E7%94%A8-%E5%9B%9B-beanstalk-driver/" title="laravel队列的使用(四)-beanstalk-driver"><span>下一篇&nbsp;&nbsp;</span><i class="icon icon-angle-right" aria-hidden="true"></i></a>
+    </li>
+    
+    
+  </ul>
+  
+  
+  
+  <div class="bar-right">
+    
+    <div class="share-component" data-sites="weibo,qq,wechat,facebook,twitter" data-mobile-sites="weibo,qq,qzone"></div>
+    
+  </div>
+  </div>
+</nav>
+  
+
+
+
+</main>
+
+  <footer class="footer" itemscope itemtype="http://schema.org/WPFooter">
+	
+	
+    <ul class="social-links">
+    	
+        <li><a href="https://github.com/straysh" target="_blank" title="Github" data-toggle=tooltip data-placement=top><i class="icon icon-github"></i></a></li>
+        
+        <li><a href="https://weibo.com/u/1689171115" target="_blank" title="Weibo" data-toggle=tooltip data-placement=top><i class="icon icon-weibo"></i></a></li>
+        
+        <li><a href="/atom.xml" target="_blank" title="Rss" data-toggle=tooltip data-placement=top><i class="icon icon-rss"></i></a></li>
+        
+    </ul>
+
+    <div class="copyright">
+    	
+        &copy; 2022 straysh.com 版权所有。ICP证：鄂ICP备2021016952号-1<!--Straysh-->
+        
+        <div class="publishby">
+        	Theme by <a href="https://github.com/cofess" target="_blank"> cofess </a>base on <a href="https://github.com/cofess/hexo-theme-pure" target="_blank">pure</a>.
+        </div>
+    </div>
+</footer>
+
+  <script src="//cdn.jsdelivr.net/npm/jquery@1.12.4/dist/jquery.min.js"></script>
+<script>
+window.jQuery || document.write('<script src="js/jquery.min.js"><\/script>')
+</script>
+
+<script src="/js/plugin.min.js"></script>
+
+
+<script src="/js/application.js"></script>
+
+
+    <script>
+(function (window) {
+    var INSIGHT_CONFIG = {
+        TRANSLATION: {
+            POSTS: '文章',
+            PAGES: '页面',
+            CATEGORIES: '分类',
+            TAGS: '标签',
+            UNTITLED: '(未命名)',
+        },
+        ROOT_URL: '/',
+        CONTENT_URL: '/content.json',
+    };
+    window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+})(window);
+</script>
+
+<script src="/js/insight.js"></script>
+
+
+
+
+
+
+   
+
+
+
+
+<!--   
+    
+    <script defer>
+    var disqus_config = function () {
+        
+            this.page.url = 'https://straysh.github.life/2016/07/07/2016-laravel%E9%98%9F%E5%88%97%E7%9A%84%E4%BD%BF%E7%94%A8-%E4%BA%94-dig-into-source/';
+        
+        this.page.identifier = '2016-laravel队列的使用-五-dig-into-source';
+    };
+    (function() { 
+        var d = document, s = d.createElement('script');  
+        s.src = '//' + 'straysh' + '.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+</script>
+
+-->
+
+
+
+
+
+
+
+</body>
+</html>

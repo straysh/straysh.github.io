@@ -1,0 +1,711 @@
+<!DOCTYPE html>
+<html lang=zh>
+<head>
+  <meta charset="utf-8">
+  
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, minimal-ui">
+  <meta name="renderer" content="webkit">
+  <meta http-equiv="Cache-Control" content="no-transform" />
+  <meta http-equiv="Cache-Control" content="no-siteapp" />
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="format-detection" content="telephone=no,email=no,adress=no">
+  <!-- Color theme for statusbar -->
+  <meta name="theme-color" content="#000000" />
+  <!-- 强制页面在当前窗口以独立页面显示,防止别人在框架里调用页面 -->
+  <meta http-equiv="window-target" content="_top" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lxgw-wenkai-webfont@1.1.0/style.css" />
+  
+  
+  <title>协程切换到底做了啥 | Hexo</title>
+  <meta name="description" content="注：该文章基于Go 1.13Go协程很小，启动仅需2Kb栈空间。协程也很轻，从一个协程切换到另一个协程不需要很多操作。在深入协程切换前，我们先从高层复习下切换是如何工作的。 建议结合Go: Goroutine, OS Thread and CPU Management一起阅读本文章。 案例Go调度器将协程分配到线程上执行，依据以下两类：  当协程阻塞时：系统调用，mutex锁，或者协程。被阻塞的协">
+<meta property="og:type" content="article">
+<meta property="og:title" content="协程切换到底做了啥">
+<meta property="og:url" content="https://straysh.github.life/2021/03/16/%E5%8D%8F%E7%A8%8B%E5%88%87%E6%8D%A2%E5%88%B0%E5%BA%95%E5%81%9A%E4%BA%86%E5%95%A5/index.html">
+<meta property="og:site_name" content="Straysh的小院">
+<meta property="og:description" content="注：该文章基于Go 1.13Go协程很小，启动仅需2Kb栈空间。协程也很轻，从一个协程切换到另一个协程不需要很多操作。在深入协程切换前，我们先从高层复习下切换是如何工作的。 建议结合Go: Goroutine, OS Thread and CPU Management一起阅读本文章。 案例Go调度器将协程分配到线程上执行，依据以下两类：  当协程阻塞时：系统调用，mutex锁，或者协程。被阻塞的协">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://straysh.github.life/images/golang/a_journey_with_go/goroutine_switch_01.png">
+<meta property="og:image" content="https://straysh.github.life/images/golang/a_journey_with_go/goroutine_switch_02.png">
+<meta property="og:image" content="https://straysh.github.life/images/golang/a_journey_with_go/goroutine_switch_03.png">
+<meta property="og:image" content="https://straysh.github.life/images/golang/a_journey_with_go/goroutine_switch_04.png">
+<meta property="og:image" content="https://straysh.github.life/images/golang/a_journey_with_go/goroutine_switch_05.png">
+<meta property="og:image" content="https://straysh.github.life/images/golang/a_journey_with_go/goroutine_switch_06.png">
+<meta property="og:image" content="https://straysh.github.life/images/golang/a_journey_with_go/goroutine_switch_07.png">
+<meta property="og:image" content="https://straysh.github.life/images/golang/a_journey_with_go/goroutine_switch_08.png">
+<meta property="og:image" content="https://straysh.github.life/images/golang/a_journey_with_go/goroutine_switch_09.png">
+<meta property="article:published_time" content="2021-03-16T05:45:25.000Z">
+<meta property="article:modified_time" content="2021-03-16T05:50:19.909Z">
+<meta property="article:author" content="Straysh">
+<meta property="article:tag" content="Golang">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://straysh.github.life/images/golang/a_journey_with_go/goroutine_switch_01.png">
+  <!-- Canonical links -->
+  <link rel="canonical" href="https://straysh.github.life/2021/03/16/%E5%8D%8F%E7%A8%8B%E5%88%87%E6%8D%A2%E5%88%B0%E5%BA%95%E5%81%9A%E4%BA%86%E5%95%A5/index.html">
+  
+    <link rel="alternate" href="/atom.xml" title="Straysh的小院" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.ico" type="image/x-icon">
+  
+  
+<link rel="stylesheet" href="/css/style.css">
+
+  
+<link rel="stylesheet" href="/css/custom.css">
+
+  
+  
+  
+  
+    <link href="https://cdn.bootcss.com/fancybox/3.5.7/jquery.fancybox.min.css" rel="stylesheet">
+  
+  
+<meta name="generator" content="Hexo 5.4.1"></head>
+
+
+<body class="main-center theme-green" itemscope itemtype="http://schema.org/WebPage">
+  <header class="header" style="background-image: url(/images/left_images/2.jpg);" itemscope itemtype="http://schema.org/WPHeader">
+  <div class="slimContent" style="height:100%;background-color: rgba(0,0,0,0.7);">
+    <div class="navbar-header">
+      
+      
+      <div class="profile-block text-center">
+        <a id="avatar" href="https://hexo.straysh.com" target="_blank">
+          <img class="img-circle img-rotate" src="/images/avatar.jpg" width="200" height="200">
+        </a>
+        <h2 id="name" class="hidden-xs hidden-sm">Straysh</h2>
+        <h3 id="title" class="hidden-xs hidden-sm hidden-md">野生程序猿</h3>
+        <small id="location" class="text-muted hidden-xs hidden-sm"><i class="icon icon-map-marker"></i> Beijing, China</small>
+      </div>
+      
+      <div class="search" id="search-form-wrap">
+
+    <form class="search-form sidebar-form">
+        <div class="input-group">
+            <input type="text" class="search-form-input form-control" placeholder="搜索" />
+            <span class="input-group-btn">
+                <button type="submit" class="search-form-submit btn btn-flat" onclick="return false;"><i class="icon icon-search"></i></button>
+            </span>
+        </div>
+    </form>
+    <div class="ins-search">
+  <div class="ins-search-mask"></div>
+  <div class="ins-search-container">
+    <div class="ins-input-wrapper">
+      <input type="text" class="ins-search-input" placeholder="想要查找什么..." x-webkit-speech />
+      <button type="button" class="close ins-close ins-selectable" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+    </div>
+    <div class="ins-section-wrapper">
+      <div class="ins-section-container"></div>
+    </div>
+  </div>
+</div>
+
+
+</div>
+      <button class="navbar-toggle collapsed" type="button" data-toggle="collapse" data-target="#main-navbar" aria-controls="main-navbar" aria-expanded="false">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+    </div>
+    <nav id="main-navbar" class="collapse navbar-collapse" itemscope itemtype="http://schema.org/SiteNavigationElement" role="navigation">
+      <ul class="nav navbar-nav main-nav menu-highlight">
+        
+        
+        <li class="menu-item menu-item-home">
+          <a href="/.">
+            
+            <i class="icon icon-home-fill"></i>
+            
+            <span class="menu-title">首页</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives">
+            
+            <i class="icon icon-archives-fill"></i>
+            
+            <span class="menu-title">归档</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories">
+            
+            <i class="icon icon-folder"></i>
+            
+            <span class="menu-title">分类</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags">
+            
+            <i class="icon icon-tags"></i>
+            
+            <span class="menu-title">标签</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-repository">
+          <a href="/repository">
+            
+            <i class="icon icon-project"></i>
+            
+            <span class="menu-title">项目</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-books">
+          <a href="/books">
+            
+            <i class="icon icon-book-fill"></i>
+            
+            <span class="menu-title">书单</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-links">
+          <a href="/links">
+            
+            <i class="icon icon-friendship"></i>
+            
+            <span class="menu-title">友链</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about">
+            
+            <i class="icon icon-cup-fill"></i>
+            
+            <span class="menu-title">关于</span>
+          </a>
+        </li>
+        
+      </ul>
+      
+	
+    <ul class="social-links">
+    	
+        <li><a href="https://github.com/straysh" target="_blank" title="Github" data-toggle=tooltip data-placement=top><i class="icon icon-github"></i></a></li>
+        
+        <li><a href="https://weibo.com/u/1689171115" target="_blank" title="Weibo" data-toggle=tooltip data-placement=top><i class="icon icon-weibo"></i></a></li>
+        
+        <li><a href="/atom.xml" target="_blank" title="Rss" data-toggle=tooltip data-placement=top><i class="icon icon-rss"></i></a></li>
+        
+    </ul>
+
+    </nav>
+  </div>
+</header>
+
+  
+    <aside class="sidebar" itemscope itemtype="http://schema.org/WPSideBar">
+  <div class="slimContent">
+
+    
+      <ul class="sidebar-nav motion-element" style="text-align:center; opacity: 1; display: block; transform: translateX(0px);">
+        <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+          系统目录
+        </li>
+      </ul>
+      <section class="site-overview-wrap sidebar-panel" style="opacity: 0; display: none;">
+        
+          <div class="widget">
+    <h3 class="widget-title">公告</h3>
+    <div class="widget-body">
+        <div id="board">
+            <div class="content">
+                <p>妳是风中的叶，风起而走，我想去追，怎么抓的住？</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+        
+          
+  <div class="widget">
+    <h3 class="widget-title">分类</h3>
+    <div class="widget-body">
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%8D%9A%E6%96%87/">博文</a><span class="category-list-count">102</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%8D%9A%E6%96%87/%E7%AC%94%E8%AE%B0/">笔记</a><span class="category-list-count">2</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E6%9D%82%E8%AE%B0/">杂记</a><span class="category-list-count">6</span></li></ul>
+    </div>
+  </div>
+
+
+        
+          
+  <div class="widget">
+    <h3 class="widget-title">标签</h3>
+    <div class="widget-body">
+      <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/Algorithm/" rel="tag">Algorithm</a><span class="tag-list-count">13</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Apache/" rel="tag">Apache</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Banbrick/" rel="tag">Banbrick</a><span class="tag-list-count">5</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Docker/" rel="tag">Docker</a><span class="tag-list-count">4</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Golang/" rel="tag">Golang</a><span class="tag-list-count">25</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Javascript/" rel="tag">Javascript</a><span class="tag-list-count">10</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Linux/" rel="tag">Linux</a><span class="tag-list-count">13</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/MySQL/" rel="tag">MySQL</a><span class="tag-list-count">13</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Mysql/" rel="tag">Mysql</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Nginx/" rel="tag">Nginx</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Nodejs/" rel="tag">Nodejs</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/PHP/" rel="tag">PHP</a><span class="tag-list-count">19</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/R/" rel="tag">R</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Redis/" rel="tag">Redis</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/SVN/" rel="tag">SVN</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Sphinx/" rel="tag">Sphinx</a><span class="tag-list-count">5</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Translation/" rel="tag">Translation</a><span class="tag-list-count">18</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Yii/" rel="tag">Yii</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%9D%82/" rel="tag">杂</a><span class="tag-list-count">6</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%B1%87%E7%BC%96/" rel="tag">汇编</a><span class="tag-list-count">1</span></li></ul>
+    </div>
+  </div>
+
+
+        
+          
+  <div class="widget">
+    <h3 class="widget-title">标签云</h3>
+    <div class="widget-body tagcloud">
+      <a href="/tags/Algorithm/" style="font-size: 13.67px;">Algorithm</a> <a href="/tags/Apache/" style="font-size: 13px;">Apache</a> <a href="/tags/Banbrick/" style="font-size: 13.33px;">Banbrick</a> <a href="/tags/Docker/" style="font-size: 13.22px;">Docker</a> <a href="/tags/Golang/" style="font-size: 14px;">Golang</a> <a href="/tags/Javascript/" style="font-size: 13.56px;">Javascript</a> <a href="/tags/Linux/" style="font-size: 13.67px;">Linux</a> <a href="/tags/MySQL/" style="font-size: 13.67px;">MySQL</a> <a href="/tags/Mysql/" style="font-size: 13px;">Mysql</a> <a href="/tags/Nginx/" style="font-size: 13.11px;">Nginx</a> <a href="/tags/Nodejs/" style="font-size: 13px;">Nodejs</a> <a href="/tags/PHP/" style="font-size: 13.89px;">PHP</a> <a href="/tags/R/" style="font-size: 13.11px;">R</a> <a href="/tags/Redis/" style="font-size: 13.11px;">Redis</a> <a href="/tags/SVN/" style="font-size: 13px;">SVN</a> <a href="/tags/Sphinx/" style="font-size: 13.33px;">Sphinx</a> <a href="/tags/Translation/" style="font-size: 13.78px;">Translation</a> <a href="/tags/Yii/" style="font-size: 13.11px;">Yii</a> <a href="/tags/%E6%9D%82/" style="font-size: 13.44px;">杂</a> <a href="/tags/%E6%B1%87%E7%BC%96/" style="font-size: 13px;">汇编</a>
+    </div>
+  </div>
+
+        
+          
+  <div class="widget">
+    <h3 class="widget-title">归档</h3>
+    <div class="widget-body">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/03/">三月 2022</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/03/">三月 2021</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/03/">三月 2020</a><span class="archive-list-count">5</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/02/">二月 2020</a><span class="archive-list-count">26</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/12/">十二月 2019</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/04/">四月 2019</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/09/">九月 2018</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/07/">七月 2016</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/06/">六月 2016</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/11/">十一月 2015</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/10/">十月 2015</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/09/">九月 2015</a><span class="archive-list-count">5</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/08/">八月 2015</a><span class="archive-list-count">13</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/07/">七月 2015</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/11/">十一月 2014</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/03/">三月 2014</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/12/">十二月 2013</a><span class="archive-list-count">8</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/10/">十月 2013</a><span class="archive-list-count">8</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/09/">九月 2013</a><span class="archive-list-count">2</span></li></ul>
+    </div>
+  </div>
+
+
+        
+          
+  <div class="widget">
+    <h3 class="widget-title">最新文章</h3>
+    <div class="widget-body">
+      <ul class="recent-post-list list-unstyled no-thumbnail">
+        
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/%E5%8D%9A%E6%96%87/">博文</a><i class="icon icon-angle-right"></i><a class="category-link" href="/categories/%E5%8D%9A%E6%96%87/%E7%AC%94%E8%AE%B0/">笔记</a>
+              </p>
+              <p class="item-title">
+                <a href="/2022/03/14/%E4%BD%BF%E7%94%A8Go%E6%93%8D%E4%BD%9C%E6%96%87%E4%BB%B6/" class="title">使用Go操作文件</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2022-03-14T12:11:25.000Z" itemprop="datePublished">2022-03-14</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/%E5%8D%9A%E6%96%87/">博文</a>
+              </p>
+              <p class="item-title">
+                <a href="/2022/03/13/Docker%E5%AE%B9%E5%99%A8%E7%BD%91%E7%BB%9C/" class="title">Docker容器网络</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2022-03-13T04:10:09.000Z" itemprop="datePublished">2022-03-13</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/%E5%8D%9A%E6%96%87/">博文</a><i class="icon icon-angle-right"></i><a class="category-link" href="/categories/%E5%8D%9A%E6%96%87/%E7%AC%94%E8%AE%B0/">笔记</a>
+              </p>
+              <p class="item-title">
+                <a href="/2022/03/13/Iptables%E5%92%8C%E5%AE%B9%E5%99%A8/" class="title">Iptables和容器</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2022-03-13T03:01:46.000Z" itemprop="datePublished">2022-03-13</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/%E5%8D%9A%E6%96%87/">博文</a>
+              </p>
+              <p class="item-title">
+                <a href="/2022/03/12/Linux%E7%BD%91%E6%A1%A5%E5%B7%A5%E4%BD%9C%E5%8E%9F%E7%90%86/" class="title">Linux网桥工作原理</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2022-03-12T10:02:29.000Z" itemprop="datePublished">2022-03-12</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/%E5%8D%9A%E6%96%87/">博文</a>
+              </p>
+              <p class="item-title">
+                <a href="/2021/03/16/%E5%B9%B6%E5%8F%91%E5%92%8C%E8%B0%83%E5%BA%A6%E7%9A%84%E5%85%B3%E7%B3%BB/" class="title">并发和调度的关系</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2021-03-16T05:54:13.000Z" itemprop="datePublished">2021-03-16</time>
+              </p>
+            </div>
+          </li>
+          
+      </ul>
+    </div>
+  </div>
+  
+
+        
+      </section>
+
+      <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active" style="opacity: 1; display: block;">
+        <nav id="toc" class="article-toc">
+          <h3 class="toc-title">文章目录</h3>
+          <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%B3%A8%EF%BC%9A%E8%AF%A5%E6%96%87%E7%AB%A0%E5%9F%BA%E4%BA%8EGo-1-13"><span class="toc-number">1.</span> <span class="toc-text">注：该文章基于Go 1.13</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%A1%88%E4%BE%8B"><span class="toc-number">2.</span> <span class="toc-text">案例</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%A8%8B%E5%BA%8F%E8%AE%A1%E6%95%B0%E5%99%A8-Program-counter"><span class="toc-number">3.</span> <span class="toc-text">程序计数器(Program counter)</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%A0%88-Stack"><span class="toc-number">4.</span> <span class="toc-text">栈(Stack)</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%93%8D%E4%BD%9C-Operations"><span class="toc-number">5.</span> <span class="toc-text">操作(Operations)</span></a></li></ol>
+        </nav>
+      </section>
+    
+  </div>
+</aside>
+
+  
+  
+<aside class="sidebar sidebar-toc collapse" id="collapseToc" itemscope itemtype="http://schema.org/WPSideBar">
+  <div class="slimContent">
+    <nav id="toc" class="article-toc">
+      <h3 class="toc-title">文章目录</h3>
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%B3%A8%EF%BC%9A%E8%AF%A5%E6%96%87%E7%AB%A0%E5%9F%BA%E4%BA%8EGo-1-13"><span class="toc-number">1.</span> <span class="toc-text">注：该文章基于Go 1.13</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%A1%88%E4%BE%8B"><span class="toc-number">2.</span> <span class="toc-text">案例</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%A8%8B%E5%BA%8F%E8%AE%A1%E6%95%B0%E5%99%A8-Program-counter"><span class="toc-number">3.</span> <span class="toc-text">程序计数器(Program counter)</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%A0%88-Stack"><span class="toc-number">4.</span> <span class="toc-text">栈(Stack)</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%93%8D%E4%BD%9C-Operations"><span class="toc-number">5.</span> <span class="toc-text">操作(Operations)</span></a></li></ol>
+    </nav>
+  </div>
+</aside>
+
+<main class="main" role="main">
+  <div class="content">
+  <article id="post-协程切换到底做了啥" class="article article-type-post" itemscope itemtype="http://schema.org/BlogPosting">
+    
+    <div class="article-header">
+      
+        
+  
+    <h1 class="article-title" itemprop="name">
+      协程切换到底做了啥
+    </h1>
+  
+
+
+      
+      <div class="article-meta">
+        
+        <span class="article-date">
+    <i class="icon icon-calendar-check"></i>
+	<a href="/2021/03/16/%E5%8D%8F%E7%A8%8B%E5%88%87%E6%8D%A2%E5%88%B0%E5%BA%95%E5%81%9A%E4%BA%86%E5%95%A5/" class="article-date">
+	  <time datetime="2021-03-16T05:45:25.000Z" itemprop="datePublished">2021-03-16</time>
+	</a>
+</span>
+        
+  <span class="article-category">
+    <i class="icon icon-folder"></i>
+    <a class="article-category-link" href="/categories/%E5%8D%9A%E6%96%87/">博文</a>
+  </span>
+
+        
+  <span class="article-tag">
+    <i class="icon icon-tags"></i>
+	<a class="article-tag-link-link" href="/tags/Golang/" rel="tag">Golang</a>
+  </span>
+
+
+        
+
+        <span class="post-comment"><i class="icon icon-comment"></i> <a href="/2021/03/16/%E5%8D%8F%E7%A8%8B%E5%88%87%E6%8D%A2%E5%88%B0%E5%BA%95%E5%81%9A%E4%BA%86%E5%95%A5/#comments" class="article-comment-link">评论</a></span>
+        
+      </div>
+    </div>
+    <div class="article-entry marked-body" itemprop="articleBody">
+      
+        <h2 id="注：该文章基于Go-1-13"><a href="#注：该文章基于Go-1-13" class="headerlink" title="注：该文章基于Go 1.13"></a>注：该文章基于Go 1.13</h2><p>Go协程很小，启动仅需2Kb栈空间。协程也很轻，从一个协程切换到另一个协程不需要很多操作。在深入协程切换前，我们先从高层复习下切换是如何工作的。</p>
+<p>建议结合<a target="_blank" rel="noopener" href="https://medium.com/a-journey-with-go/go-what-does-a-goroutine-switch-actually-involve-394c202dddb7">Go: Goroutine, OS Thread and CPU Management</a>一起阅读本文章。</p>
+<h2 id="案例"><a href="#案例" class="headerlink" title="案例"></a>案例</h2><p>Go调度器将协程分配到线程上执行，依据以下两类：</p>
+<ul>
+<li>当协程阻塞时：系统调用，mutex锁，或者协程。被阻塞的协程进入休眠状态/放入一个队列中，并允许Go调度并运行其他等待中的协程。</li>
+<li>在函数调用时，若在初始阶段，协程需要扩展其栈空间。该中断允许调度器运行其他协程，避免当前写成独占CPU。</li>
+</ul>
+<p>以上场景中，调度器<code>g0</code>负责将当前协程替换为其他协程并准备运行之。然后，被替换的协程取代<code>g0</code>在线程上运行。</p>
+<p>将<code>running</code>协程替换为其他协程，涉及两个切换：</p>
+<ul>
+<li><p><code>running</code>协程切换为<code>g0</code>:<br><img src="/images/golang/a_journey_with_go/goroutine_switch_01.png"></p>
+</li>
+<li><p><code>g0</code>切换为下一个协程<code>g</code>：<br><img src="/images/golang/a_journey_with_go/goroutine_switch_02.png"></p>
+</li>
+</ul>
+<p>在Go语言中，切换协程是轻量的。保存协程状态需要两样东西：</p>
+<ul>
+<li>在被取消调度前，协程停止的行号。当前执行指令被记录在程序计数器中(PC)。协程稍后会在相同的位置恢复。</li>
+<li>协程栈空间，用以再次执行时恢复变量。</li>
+</ul>
+<p>来看个例子</p>
+<h2 id="程序计数器-Program-counter"><a href="#程序计数器-Program-counter" class="headerlink" title="程序计数器(Program counter)"></a>程序计数器(Program counter)</h2><p>例子中，一个写成生产数据，另一个消费数据：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><code class="hljs go"><span class="hljs-keyword">package</span> main<br><br><span class="hljs-keyword">import</span> <span class="hljs-string">&quot;sync&quot;</span><br><br><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span> &#123;<br>    <span class="hljs-keyword">var</span> wg sync.WaitGroup<br><br>    c := <span class="hljs-built_in">make</span>(<span class="hljs-keyword">chan</span> <span class="hljs-type">int</span>, <span class="hljs-number">10</span>)<br><br>    wg.Add(<span class="hljs-number">1</span>)<br>    <span class="hljs-keyword">go</span> <span class="hljs-function"><span class="hljs-keyword">func</span><span class="hljs-params">()</span></span>&#123;<br>        <span class="hljs-keyword">for</span> i:=<span class="hljs-number">0</span>;i&lt;<span class="hljs-number">100</span>;i++&#123;<br>            c &lt;- i<br>        &#125;<br>        <span class="hljs-built_in">close</span>(c)<br><br>        wg.Done()<br>    &#125;()<br><br>    <span class="hljs-keyword">for</span> i:=<span class="hljs-number">0</span>;i&lt;<span class="hljs-number">3</span>;i++ &#123;<br>        wg.Add(<span class="hljs-number">1</span>)<br><br>        <span class="hljs-keyword">go</span> <span class="hljs-function"><span class="hljs-keyword">func</span><span class="hljs-params">()</span></span>&#123;<br>            <span class="hljs-keyword">for</span> v:=<span class="hljs-keyword">range</span> c &#123;<br>                <span class="hljs-keyword">if</span> v%<span class="hljs-number">2</span> == <span class="hljs-number">0</span> &#123;<br>                    <span class="hljs-built_in">println</span>(v)<br>                &#125;<br>            &#125;<br>            wg.Done()<br>        &#125;()<br>    &#125;<br><br>    wg.Wait()<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>程序将打印出1~99的偶数。先看第一个协程-生产者-将数字添加到管道(带缓冲的管道)。当管道装满时，数据放送方将被阻塞。同事，Go将切换到<code>go</code>并调度另一个协程来工作。</p>
+<p>根据上文的知识，此时，Go需要保存当前操作以便恢复时能继续v执行。程序计数器(PC)被保存为协程的一个内部结构体。此处为图示：<br><img src="/images/golang/a_journey_with_go/goroutine_switch_03.png"></p>
+<p>可以使用<code>go tool objdump</code>命令查看指令及其地址信息。此处以生产者为例</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">go tool compile -N -l 1.go<br>go tool objdump 1.o<br></code></pre></td></tr></table></figure>
+<p><img src="/images/golang/a_journey_with_go/goroutine_switch_04.png"></p>
+<p>程序逐个指令执行，直到被函数<code>runtime.channelsend1</code>阻塞。Go将当前程序计数器保存到协程的内部属性中。本例中，程序计数器被保存到地址<code>0x4268d0</code>：<br><img src="/images/golang/a_journey_with_go/goroutine_switch_05.png"></p>
+<p>然后，<code>g0</code>协程唤醒休眠的协程，执行同样的质量，循环数字并推入管道。接下来，我们看看协程切换时的站空间管理。</p>
+<h2 id="栈-Stack"><a href="#栈-Stack" class="headerlink" title="栈(Stack)"></a>栈(Stack)</h2><p>在被阻塞前，<code>running</code>协程有它自己的栈空间。其中包含临时内存，如变量<code>i</code>：<br><img src="/images/golang/a_journey_with_go/goroutine_switch_06.png"></p>
+<p>然后，当管道阻塞时，协程及其栈被切换到<code>g0</code>(<code>g0</code>有一个更大的栈空间)：<br><img src="/images/golang/a_journey_with_go/goroutine_switch_07.png"></p>
+<p>协程切换前，栈空间会被保存以便恢复协程时可以继续执行：<br><img src="/images/golang/a_journey_with_go/goroutine_switch_08.png"></p>
+<p>现在，我们对协程切换有了一个完整的认识。我们来看看它是如何影响性能的。</p>
+<h2 id="操作-Operations"><a href="#操作-Operations" class="headerlink" title="操作(Operations)"></a>操作(Operations)</h2><p>我们继续使用上面的代码测量协程切换消耗的时间。因查找下一个待调度协程需要时间，因此这个例子中的测量结果不是太精准。从函数的prolog切换比从阻塞的管道切换协程，要花费更多的操作。</p>
+<p>总结一下待测量的操作：</p>
+<ul>
+<li>当前被管道阻塞的协程<code>g</code>，切换到<code>g0</code>协程：<ul>
+<li><code>PC</code>和栈指针一起被保存到内部结构体</li>
+<li><code>g0</code>被设置为<code>running</code>协程</li>
+<li><code>g0</code>的栈空间替换当前栈空间</li>
+</ul>
+</li>
+<li><code>g0</code>查找下一个待调度协程。</li>
+<li><code>g0</code>与待调度协程切换：<ul>
+<li><code>PC</code>和栈指针从内部结构体中恢复。</li>
+<li>程序跳至<code>PC</code>指针位置执行</li>
+</ul>
+</li>
+</ul>
+<p><img src="/images/golang/a_journey_with_go/goroutine_switch_09.png"></p>
+<p>协程切换，从<code>g</code>到<code>g0</code>或从<code>g0</code>到<code>g</code>是最快的阶段。仅包含有限的几个指令，而调度器查找下一个协程需要很多操作。查找待调度协程甚至需要更多时间，这取决于运行的程序。</p>
+<p>图示的测试结果，给出了性能的数量级示意。通常也没有标准的工具来做这么测量。当然测量结果也与架构相关(作者使用的是 Mac 2.9GHz 双核i5)。</p>
+<hr>
+<ul>
+<li>原文 <a target="_blank" rel="noopener" href="https://medium.com/a-journey-with-go/go-what-does-a-goroutine-switch-actually-involve-394c202dddb7">Go: What Does a Goroutine Switch Actually Involve?</a></li>
+</ul>
+
+      
+    </div>
+    <div class="article-footer">
+      <blockquote class="mt-2x">
+  <ul class="post-copyright list-unstyled">
+    
+    <li class="post-copyright-link hidden-xs">
+      <strong>本文链接：</strong>
+      <a href="https://straysh.github.life/2021/03/16/%E5%8D%8F%E7%A8%8B%E5%88%87%E6%8D%A2%E5%88%B0%E5%BA%95%E5%81%9A%E4%BA%86%E5%95%A5/" title="协程切换到底做了啥" target="_blank" rel="external">https://straysh.github.life/2021/03/16/%E5%8D%8F%E7%A8%8B%E5%88%87%E6%8D%A2%E5%88%B0%E5%BA%95%E5%81%9A%E4%BA%86%E5%95%A5/</a>
+    </li>
+    
+    <li class="post-copyright-license">
+      <strong>版权声明： </strong> 本博客所有文章除特别声明外，均采用 <a href="http://creativecommons.org/licenses/by/4.0/deed.zh" target="_blank" rel="external">CC BY 4.0 CN协议</a> 许可协议。转载请注明出处！
+    </li>
+  </ul>
+</blockquote>
+
+
+<div class="panel panel-default panel-badger">
+  <div class="panel-body">
+    <figure class="media">
+      <div class="media-left">
+        <a href="https://hexo.straysh.com" target="_blank" class="img-burn thumb-sm visible-lg">
+          <img src="/images/avatar.jpg" class="img-rounded w-full" alt="">
+        </a>
+      </div>
+      <div class="media-body">
+        <h3 class="media-heading"><a href="https://hexo.straysh.com" target="_blank"><span class="text-dark">Straysh</span><small class="ml-1x">野生程序猿</small></a></h3>
+        <div>野生程序猿 &amp; 猫奴。</div>
+      </div>
+    </figure>
+  </div>
+</div>
+
+
+    </div>
+  </article>
+  
+    
+  <section id="comments">
+  	
+      <div id="disqus_thread">
+        <noscript>Please enable JavaScript to view the <a target="_blank" rel="noopener" href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+      </div>
+    
+  </section>
+
+
+  
+</div>
+
+  <nav class="bar bar-footer clearfix" data-stick-bottom>
+  <div class="bar-inner">
+  
+  <ul class="pager pull-left">
+    
+    <li class="prev">
+      <a href="/2021/03/16/g0%E4%B8%80%E4%B8%AA%E7%89%B9%E6%AE%8A%E7%9A%84%E5%8D%8F%E7%A8%8B/" title="g0一个特殊的协程.md"><i class="icon icon-angle-left" aria-hidden="true"></i><span>&nbsp;&nbsp;上一篇</span></a>
+    </li>
+    
+    
+    <li class="next">
+      <a href="/2021/03/16/go%E5%8D%8F%E7%A8%8B%E6%98%AF%E5%A6%82%E4%BD%95%E5%90%AF%E5%8A%A8%E5%92%8C%E9%80%80%E5%87%BA%E7%9A%84/" title="go协程是如何启动和退出的"><span>下一篇&nbsp;&nbsp;</span><i class="icon icon-angle-right" aria-hidden="true"></i></a>
+    </li>
+    
+    
+    <li class="toggle-toc">
+      <a class="toggle-btn collapsed" data-toggle="collapse" href="#collapseToc" aria-expanded="false" title="文章目录" role="button">
+        <span>[&nbsp;</span><span>文章目录</span>
+        <i class="text-collapsed icon icon-anchor"></i>
+        <i class="text-in icon icon-close"></i>
+        <span>]</span>
+      </a>
+    </li>
+    
+  </ul>
+  
+  
+  
+  <div class="bar-right">
+    
+    <div class="share-component" data-sites="weibo,qq,wechat,facebook,twitter" data-mobile-sites="weibo,qq,qzone"></div>
+    
+  </div>
+  </div>
+</nav>
+  
+
+
+
+</main>
+
+  <footer class="footer" itemscope itemtype="http://schema.org/WPFooter">
+	
+	
+    <ul class="social-links">
+    	
+        <li><a href="https://github.com/straysh" target="_blank" title="Github" data-toggle=tooltip data-placement=top><i class="icon icon-github"></i></a></li>
+        
+        <li><a href="https://weibo.com/u/1689171115" target="_blank" title="Weibo" data-toggle=tooltip data-placement=top><i class="icon icon-weibo"></i></a></li>
+        
+        <li><a href="/atom.xml" target="_blank" title="Rss" data-toggle=tooltip data-placement=top><i class="icon icon-rss"></i></a></li>
+        
+    </ul>
+
+    <div class="copyright">
+    	
+        &copy; 2022 straysh.com 版权所有。ICP证：鄂ICP备2021016952号-1<!--Straysh-->
+        
+        <div class="publishby">
+        	Theme by <a href="https://github.com/cofess" target="_blank"> cofess </a>base on <a href="https://github.com/cofess/hexo-theme-pure" target="_blank">pure</a>.
+        </div>
+    </div>
+</footer>
+
+  <script src="//cdn.jsdelivr.net/npm/jquery@1.12.4/dist/jquery.min.js"></script>
+<script>
+window.jQuery || document.write('<script src="js/jquery.min.js"><\/script>')
+</script>
+
+<script src="/js/plugin.min.js"></script>
+
+
+<script src="/js/application.js"></script>
+
+
+    <script>
+(function (window) {
+    var INSIGHT_CONFIG = {
+        TRANSLATION: {
+            POSTS: '文章',
+            PAGES: '页面',
+            CATEGORIES: '分类',
+            TAGS: '标签',
+            UNTITLED: '(未命名)',
+        },
+        ROOT_URL: '/',
+        CONTENT_URL: '/content.json',
+    };
+    window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+})(window);
+</script>
+
+<script src="/js/insight.js"></script>
+
+
+
+
+
+
+   
+
+
+
+
+<!--   
+    
+    <script defer>
+    var disqus_config = function () {
+        
+            this.page.url = 'https://straysh.github.life/2021/03/16/%E5%8D%8F%E7%A8%8B%E5%88%87%E6%8D%A2%E5%88%B0%E5%BA%95%E5%81%9A%E4%BA%86%E5%95%A5/';
+        
+        this.page.identifier = '协程切换到底做了啥';
+    };
+    (function() { 
+        var d = document, s = d.createElement('script');  
+        s.src = '//' + 'straysh' + '.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+</script>
+
+-->
+
+
+<!--  <script src="https://cdn.bootcss.com/fancybox/3.5.7/jquery.fancybox.min.js"></script>-->
+  <script src="/js/jquery.fancybox.min.js"></script>
+  <script>
+  //利用 FancyBox 实现点击图片放大
+  $(document).ready(function() {
+    // $('article img').not('[hidden]').not('.panel-body img').each(function() {
+    //   var $image = $(this);
+    //   var imageCaption = $image.attr('alt');
+    //   var $imageWrapLink = $image.parent('a');
+    //   if ($imageWrapLink.length < 1) {
+    //     var src = this.getAttribute('src');
+    //     var idx = src.lastIndexOf('?');
+    //     if (idx != -1) {
+    //       src = src.substring(0, idx);
+    //     }
+    //     $imageWrapLink = $image.wrap('<a href="' + src + '"></a>').parent('a');
+    //   }
+    //   $imageWrapLink.attr('data-fancybox', 'images');
+    //   if (imageCaption) {
+    //     $imageWrapLink.attr('data-caption', imageCaption);
+    //   }
+    // });
+    // $().fancybox({
+    //   selector: '[data-fancybox="images"]',
+    //   hash: false,
+    //   loop: false,
+    // });
+
+    $('[data-fancybox]').fancybox({
+      // afterShow :function() {
+      //   $('.fancybox-button--zoom').click();
+      // }
+    });
+  });
+  </script>
+
+
+
+
+
+
+</body>
+</html>
