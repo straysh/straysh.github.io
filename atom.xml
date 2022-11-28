@@ -6,7 +6,7 @@
   <link href="https://straysh.github.life/atom.xml" rel="self"/>
   
   <link href="https://straysh.github.life/"/>
-  <updated>2022-03-15T02:23:23.963Z</updated>
+  <updated>2022-11-28T05:26:49.888Z</updated>
   <id>https://straysh.github.life/</id>
   
   <author>
@@ -15,6 +15,37 @@
   </author>
   
   <generator uri="https://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>kafka原理及监控指标</title>
+    <link href="https://straysh.github.life/2022/11/28/kafka%E5%8E%9F%E7%90%86%E5%8F%8A%E7%9B%91%E6%8E%A7%E6%8C%87%E6%A0%87/"/>
+    <id>https://straysh.github.life/2022/11/28/kafka%E5%8E%9F%E7%90%86%E5%8F%8A%E7%9B%91%E6%8E%A7%E6%8C%87%E6%A0%87/</id>
+    <published>2022-11-28T04:36:07.000Z</published>
+    <updated>2022-11-28T05:26:49.888Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html">&lt;p&gt;文章来源：&lt;a href=&quot;https://www.percona.com/blog/2017/04/10/innodb-page-merging-and-page-splitting/&quot;&gt;InnoDB Page Merging and Page</summary>
+        
+      
+    
+    
+    
+    <category term="博文" scheme="https://straysh.github.life/categories/%E5%8D%9A%E6%96%87/"/>
+    
+    <category term="笔记" scheme="https://straysh.github.life/categories/%E5%8D%9A%E6%96%87/%E7%AC%94%E8%AE%B0/"/>
+    
+    
+    <category term="Linux" scheme="https://straysh.github.life/tags/Linux/"/>
+    
+    <category term="Translation" scheme="https://straysh.github.life/tags/Translation/"/>
+    
+    <category term="Kafka" scheme="https://straysh.github.life/tags/Kafka/"/>
+    
+  </entry>
   
   <entry>
     <title>使用Go操作文件</title>
@@ -520,33 +551,6 @@
     
     
     <category term="Mysql" scheme="https://straysh.github.life/tags/Mysql/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>杂记_风物长宜放眼量，人间正道是沧桑 - 一位北美留学生的内心独唱</title>
-    <link href="https://straysh.github.life/2020/02/27/%E6%9D%82%E8%AE%B0-%E9%A3%8E%E7%89%A9%E9%95%BF%E5%AE%9C%E6%94%BE%E7%9C%BC%E9%87%8F%EF%BC%8C%E4%BA%BA%E9%97%B4%E6%AD%A3%E9%81%93%E6%98%AF%E6%B2%A7%E6%A1%91-%E4%B8%80%E4%BD%8D%E5%8C%97%E7%BE%8E%E7%95%99%E5%AD%A6%E7%94%9F%E7%9A%84%E5%86%85%E5%BF%83%E7%8B%AC%E5%94%B1/"/>
-    <id>https://straysh.github.life/2020/02/27/%E6%9D%82%E8%AE%B0-%E9%A3%8E%E7%89%A9%E9%95%BF%E5%AE%9C%E6%94%BE%E7%9C%BC%E9%87%8F%EF%BC%8C%E4%BA%BA%E9%97%B4%E6%AD%A3%E9%81%93%E6%98%AF%E6%B2%A7%E6%A1%91-%E4%B8%80%E4%BD%8D%E5%8C%97%E7%BE%8E%E7%95%99%E5%AD%A6%E7%94%9F%E7%9A%84%E5%86%85%E5%BF%83%E7%8B%AC%E5%94%B1/</id>
-    <published>2020-02-27T12:11:09.000Z</published>
-    <updated>2020-03-23T15:35:04.383Z</updated>
-    
-    
-      
-      
-        
-        
-    <summary type="html">&lt;h2 id=&quot;文章来源：微信文章&quot;&gt;&lt;a href=&quot;#文章来源：微信文章&quot; class=&quot;headerlink&quot; title=&quot;文章来源：微信文章&quot;&gt;&lt;/a&gt;文章来源：&lt;a</summary>
-        
-      
-    
-    
-    
-    <category term="杂记" scheme="https://straysh.github.life/categories/%E6%9D%82%E8%AE%B0/"/>
-    
-    
-    <category term="杂" scheme="https://straysh.github.life/tags/%E6%9D%82/"/>
-    
-    <category term="Banbrick" scheme="https://straysh.github.life/tags/Banbrick/"/>
     
   </entry>
   
